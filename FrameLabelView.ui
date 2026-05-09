@@ -13,7 +13,10 @@
   <property name="windowTitle">
    <string>Frame</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -29,8 +32,12 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="CustomView" name="graphicsView"/>
+   <item alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
+    <widget class="CustomView" name="graphicsView">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 170, 255);</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

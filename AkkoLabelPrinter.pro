@@ -1,4 +1,4 @@
-QT       += core gui printsupport
+QT       += core gui printsupport network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,7 +34,9 @@ DESTDIR = ../../bin
 SOURCES += \
     CLabelSave.cpp \
     CustomItems.cpp \
+    DialogFieldPickup.cpp \
     DialogRecList.cpp \
+    DialogReferId.cpp \
     DialogSet.cpp \
     FrameLabelView.cpp \
     FramePrintControl.cpp \
@@ -44,14 +46,18 @@ SOURCES += \
 HEADERS += \
     CLabelSave.h \
     CustomItems.h \
+    DialogFieldPickup.h \
     DialogRecList.h \
+    DialogReferId.h \
     DialogSet.h \
     FrameLabelView.h \
     FramePrintControl.h \
     mainwindow.h
 
 FORMS += \
+    DialogFieldPickup.ui \
     DialogRecList.ui \
+    DialogReferId.ui \
     DialogSet.ui \
     FrameLabelView.ui \
     FramePrintControl.ui \

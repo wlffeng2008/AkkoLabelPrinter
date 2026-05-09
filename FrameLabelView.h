@@ -116,8 +116,8 @@ public:
         if (area.isEmpty())
             return QPixmap();
 
-        int nW = area.width() ;
-        int nH = area.height() ;
+        int nW = area.width();
+        int nH = area.height();
 
         QPixmap pixmap(nW, nH);
         pixmap.fill(Qt::white);
@@ -200,10 +200,10 @@ public:
     ~FrameLabelView();
 
     void Load(const QString&srtFile) ;
-    void Save() ;
-    void Preview() ;
-    void Print() ;
-    void Delete() ;
+    void Save();
+    void Preview();
+    void Print();
+    void Delete();
 
     bool Remove(const QString&strName);
 
@@ -212,26 +212,26 @@ public:
     void AddImageQR(const QString&strQrText, const QString&strName);
     void AddImage128(const QString&str128Text, const QString&strName);
     void AddImage(const QImage & image, const QString&strName);
+    void SetPaperSize(qreal width,qreal height);
 
-    QFont GetFont() ;
-    void SetFont(QFont&font) ;
+    QFont GetFont();
+    void SetFont(QFont&font);
 
 signals:
-    void onItemSelected(QObject *pSender) ;
+    void onItemSelected(QObject *pSender);
 
 protected:
-    void keyPressEvent( QKeyEvent *event ) override;
-    void keyReleaseEvent( QKeyEvent *event ) override;
+    void keyPressEvent( QKeyEvent *event) override;
+    void keyReleaseEvent( QKeyEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
 private:
     Ui::FrameLabelView *ui;
 
+    QString m_strTemlate;
+    bool m_bCtrlPress = false;
 
-    QString m_strTemlate ;
-    bool m_bCtrlPress = false ;
-
-    QObject *m_pSelect  = nullptr ;
+    QObject *m_pSelect  = nullptr;
     CustomView *m_pView = nullptr;
     CustomScene *m_pScene = nullptr;
 };

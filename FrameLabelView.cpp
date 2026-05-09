@@ -67,18 +67,41 @@ FrameLabelView::~FrameLabelView()
 
 void FrameLabelView::resizeEvent(QResizeEvent *event)
 {
-    QSize LSize = ui->graphicsView->size();
-    int nW = LSize.width();
-    int nH = LSize.height();
-
-    if(nH < nW)
-        ui->graphicsView->setFixedWidth(nH);
-    else
-        ui->graphicsView->setFixedHeight(nW);
-
-    m_pScene->setSceneRect(QRectF(0,0,m_pView->size().width(),m_pView->size().width()));
+    //ui->graphicsView->setFixedSize(600,400);
+    //m_pScene->setSceneRect(QRectF(0,0,600,400));
 
     QFrame::resizeEvent(event);
+}
+
+void FrameLabelView::SetPaperSize(qreal width, qreal height)
+{
+    QSize LSize = this->size();
+
+    qDebug() << LSize;
+    int nW = LSize.width();
+    int nH = LSize.height();
+    qreal ratio = width/height;
+
+    int nLimit = nW;
+    if(nW > nH)
+        nLimit = nH;
+
+    if(ratio > 1)
+    {
+        //nW = nLimit;
+        nH = nW / ratio;
+    }
+
+    if(ratio < 1)
+    {
+        //nH = nLimit;
+        nW = nH * ratio;
+    }
+
+    qDebug() << nW << nH;
+
+    ui->graphicsView->setFixedSize(nW-1,nH-1);
+    m_pScene->setSceneRect(QRectF(0,0,nW-1,nH-1));
 }
 
 QFont FrameLabelView::GetFont()
@@ -218,8 +241,9 @@ void FrameLabelView::AddImageQR(const QString&strQrText, const QString&strName)
 
 void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
 {
-    QImage image = genQrCode(strQrText.toStdString().c_str(),"./code128-1234.bmp",BARCODE_CODE128,0);
-    AddImage(image,strName);
+    QImage image = genQrCode(strQrText.toStdString().c_str(),"/code128-1234.bmp",BARCODE_CODE128,0);
+    QRect rcCut(0,0,image.size().width(),image.size().height()*0.3);
+    AddImage(image.copy(rcCut),strName);
 }
 
 void FrameLabelView::Delete()

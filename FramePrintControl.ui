@@ -28,9 +28,9 @@
   <widget class="QPushButton" name="pushButtonPrint">
    <property name="geometry">
     <rect>
-     <x>304</x>
-     <y>644</y>
-     <width>80</width>
+     <x>322</x>
+     <y>650</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -41,9 +41,9 @@
   <widget class="QPushButton" name="pushButtonPreview">
    <property name="geometry">
     <rect>
-     <x>204</x>
-     <y>644</y>
-     <width>81</width>
+     <x>322</x>
+     <y>620</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -56,431 +56,673 @@
     <rect>
      <x>8</x>
      <y>2</y>
-     <width>387</width>
-     <height>631</height>
+     <width>386</width>
+     <height>612</height>
     </rect>
    </property>
    <property name="title">
     <string>数据</string>
    </property>
-   <widget class="QPushButton" name="pushButtonCreate">
-    <property name="geometry">
-     <rect>
-      <x>296</x>
-      <y>82</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>生成二维码</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>22</y>
-      <width>69</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>二维码扫描:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditQrInput">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>20</y>
-      <width>157</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="placeholderText">
-     <string>请保持本输入框获得焦点,1️以方便扫码输入 </string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>52</y>
-      <width>69</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>当前数量:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelCurCount">
-    <property name="geometry">
-     <rect>
-      <x>89</x>
-      <y>52</y>
-      <width>44</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>0</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelAllCount">
-    <property name="geometry">
-     <rect>
-      <x>343</x>
-      <y>52</y>
-      <width>33</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>0</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="textEditAll">
+   <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
       <x>6</x>
-      <y>146</y>
-      <width>374</width>
-      <height>474</height>
+      <y>16</y>
+      <width>378</width>
+      <height>592</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>6</x>
-      <y>86</y>
-      <width>73</width>
-      <height>16</height>
-     </rect>
+    <property name="currentIndex">
+     <number>1</number>
     </property>
-    <property name="text">
-     <string>单次数量:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>52</y>
-      <width>50</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>总数量:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditLimit">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>84</y>
-      <width>44</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>40</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBoxDouble">
-    <property name="geometry">
-     <rect>
-      <x>228</x>
-      <y>84</y>
-      <width>56</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>双列</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonClear">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>50</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>清零</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonSet">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>82</y>
-      <width>80</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>修改...</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>118</y>
-      <width>69</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Code 128:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditCode0">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>115</y>
-      <width>44</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>BJ</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditCode1">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>115</y>
-      <width>80</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>20260507</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditCode2">
-    <property name="geometry">
-     <rect>
-      <x>228</x>
-      <y>115</y>
-      <width>37</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>A</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditCode3">
-    <property name="geometry">
-     <rect>
-      <x>272</x>
-      <y>115</y>
-      <width>50</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>0001</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButtonEdit">
-    <property name="geometry">
-     <rect>
-      <x>226</x>
-      <y>50</y>
-      <width>55</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>编辑...</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBoxCheckLen">
-    <property name="geometry">
-     <rect>
-      <x>254</x>
-      <y>20</y>
-      <width>74</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>校验长度:</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEditLenght">
-    <property name="geometry">
-     <rect>
-      <x>333</x>
-      <y>20</y>
-      <width>43</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>16</string>
-    </property>
-    <property name="maxLength">
-     <number>3</number>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-    </property>
-    <property name="readOnly">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBoxGen128">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>116</y>
-      <width>52</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>生成</string>
-    </property>
+    <widget class="QWidget" name="page0">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <widget class="QTextEdit" name="textEditAll">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>134</y>
+        <width>374</width>
+        <height>448</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonCreate">
+      <property name="geometry">
+       <rect>
+        <x>294</x>
+        <y>70</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>生成二维码</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>288</x>
+        <y>40</y>
+        <width>50</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>总数量:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditCode2">
+      <property name="geometry">
+       <rect>
+        <x>226</x>
+        <y>103</y>
+        <width>37</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>A</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>10</y>
+        <width>69</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>二维码扫描:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonSet">
+      <property name="geometry">
+       <rect>
+        <x>138</x>
+        <y>70</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>修改...</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>40</y>
+        <width>69</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>当前数量:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxGen128">
+      <property name="geometry">
+       <rect>
+        <x>328</x>
+        <y>104</y>
+        <width>52</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>生成</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditLenght">
+      <property name="geometry">
+       <rect>
+        <x>331</x>
+        <y>8</y>
+        <width>43</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>16</string>
+      </property>
+      <property name="maxLength">
+       <number>3</number>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>74</y>
+        <width>73</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>单次数量:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditQrInput">
+      <property name="geometry">
+       <rect>
+        <x>88</x>
+        <y>8</y>
+        <width>157</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>请保持本输入框获得焦点,1️以方便扫码输入 </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>106</y>
+        <width>69</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Code 128:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditLimit">
+      <property name="geometry">
+       <rect>
+        <x>88</x>
+        <y>72</y>
+        <width>44</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>40</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonEdit">
+      <property name="geometry">
+       <rect>
+        <x>224</x>
+        <y>38</y>
+        <width>55</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>编辑...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonClear">
+      <property name="geometry">
+       <rect>
+        <x>138</x>
+        <y>38</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>清零</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditCode3">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>103</y>
+        <width>50</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>0001</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxCheckLen">
+      <property name="geometry">
+       <rect>
+        <x>252</x>
+        <y>8</y>
+        <width>74</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>校验长度:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditCode1">
+      <property name="geometry">
+       <rect>
+        <x>138</x>
+        <y>103</y>
+        <width>80</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>20260507</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxDouble">
+      <property name="geometry">
+       <rect>
+        <x>226</x>
+        <y>72</y>
+        <width>56</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>双列</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelAllCount">
+      <property name="geometry">
+       <rect>
+        <x>341</x>
+        <y>40</y>
+        <width>33</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelCurCount">
+      <property name="geometry">
+       <rect>
+        <x>87</x>
+        <y>40</y>
+        <width>44</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditCode0">
+      <property name="geometry">
+       <rect>
+        <x>88</x>
+        <y>103</y>
+        <width>44</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>BJ</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page1">
+     <widget class="QLineEdit" name="lineEditUrl">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>2</y>
+        <width>265</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>http://113.98.191.209:8085/sales/erpOrderItem/list</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>6</y>
+        <width>44</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Url:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonGet">
+      <property name="geometry">
+       <rect>
+        <x>322</x>
+        <y>28</y>
+        <width>50</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>刷新</string>
+      </property>
+     </widget>
+     <widget class="QTableView" name="tableView">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>80</y>
+        <width>320</width>
+        <height>474</height>
+       </rect>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>566</y>
+        <width>44</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>数据:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditBarcode">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>564</y>
+        <width>172</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonBarcode">
+      <property name="geometry">
+       <rect>
+        <x>308</x>
+        <y>562</y>
+        <width>66</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>生成条码</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxAutoGet">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>30</y>
+        <width>124</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>自动刷新  间隔(S):</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditIntrval">
+      <property name="geometry">
+       <rect>
+        <x>178</x>
+        <y>30</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>120</string>
+      </property>
+     </widget>
+     <widget class="QProgressBar" name="progressBarGet">
+      <property name="geometry">
+       <rect>
+        <x>224</x>
+        <y>30</y>
+        <width>94</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+      <property name="textVisible">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>-5</x>
+        <y>58</y>
+        <width>55</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>订单数量:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelOrderCount">
+      <property name="geometry">
+       <rect>
+        <x>56</x>
+        <y>54</y>
+        <width>162</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>0 [0000-00-00 00:00:00]</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBoxAutoOut">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>56</y>
+        <width>156</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>自动打印所有订单条形码</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonFileld">
+      <property name="geometry">
+       <rect>
+        <x>234</x>
+        <y>562</y>
+        <width>66</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>字段选择</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonReferId">
+      <property name="geometry">
+       <rect>
+        <x>322</x>
+        <y>0</y>
+        <width>50</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>主播ID</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QLabel" name="label_19">
    <property name="geometry">
     <rect>
-     <x>72</x>
-     <y>646</y>
-     <width>75</width>
+     <x>238</x>
+     <y>622</y>
+     <width>35</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>打印数量:</string>
+    <string>数量:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -489,10 +731,10 @@
   <widget class="QSpinBox" name="spinBoxPrintCount">
    <property name="geometry">
     <rect>
-     <x>151</x>
-     <y>646</y>
-     <width>41</width>
-     <height>21</height>
+     <x>276</x>
+     <y>622</y>
+     <width>37</width>
+     <height>22</height>
     </rect>
    </property>
    <property name="minimum">
@@ -508,9 +750,9 @@
   <widget class="QCheckBox" name="checkBoxAutoPrint">
    <property name="geometry">
     <rect>
-     <x>12</x>
-     <y>648</y>
-     <width>80</width>
+     <x>246</x>
+     <y>652</y>
+     <width>74</width>
      <height>19</height>
     </rect>
    </property>
@@ -519,6 +761,89 @@
    </property>
    <property name="tristate">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>624</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>纸张宽度(mm):</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>652</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>纸张高度(mm):</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPaperW">
+   <property name="geometry">
+    <rect>
+     <x>114</x>
+     <y>624</y>
+     <width>40</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>60</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPaperH">
+   <property name="geometry">
+    <rect>
+     <x>114</x>
+     <y>652</y>
+     <width>40</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>40</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonSetPaper">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>650</y>
+     <width>66</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>应用</string>
    </property>
   </widget>
  </widget>

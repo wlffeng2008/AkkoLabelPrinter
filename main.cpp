@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
         QPushButton:focus{background-color: #30B0EF;}
         QPushButton:hover{background-color: #C0B0BF;}
-        QPushButton {background-color: #3030EF; border-radius: 4px; color:white; border:2px solid gray; min-width: 50px; min-height: 22px;}
+        QPushButton {background-color: #3030EF; border-radius: 4px; color:white; border:1px solid gray; min-width: 50px; min-height: 22px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
         QTableView { background: #F0FFFF; border:1px solid gray;}
