@@ -25,7 +25,7 @@ signals:
 private:
     Ui::DialogRecList *ui;
 
-    int m_nSelected=-1;
+    int m_nSelected = -1;
     QStandardItemModel *m_pModel=nullptr;
 };
 

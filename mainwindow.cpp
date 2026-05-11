@@ -3,6 +3,8 @@
 
 #include <QTimer>
 #include <QLabel>
+#include <QWindow>
+#include <QCheckBox>
 #include <QMessageBox>
 #include <QDateTime>
 #include <QSpacerItem>
@@ -25,6 +27,20 @@ MainWindow::MainWindow(QWidget *parent)
     QLabel *pLabelTime = new QLabel(strText,this);
     pLabelTime->setStyleSheet("QLabel{ padding-left:10px;color:blue; font-weight: bold;}");
     ui->statusbar->addWidget(pLabelTime);
+
+
+    QCheckBox *pCheck = new QCheckBox("ON TOP",this);
+    ui->statusbar->addWidget(pCheck);
+
+    connect(pCheck,&QCheckBox::toggled,this,[=](bool checked){
+        QWindow *pWin = windowHandle() ;
+        if(checked)
+            pWin->setFlags(pWin->flags() | Qt::WindowStaysOnTopHint) ;
+        else
+            pWin->setFlags(pWin->flags() & ~Qt::WindowStaysOnTopHint) ;
+        show() ;
+    }) ;
+
 
     QTimer *pTimerFlash = new QTimer(this);
     connect(pTimerFlash,&QTimer::timeout,this,[=]{

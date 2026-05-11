@@ -19,12 +19,13 @@
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
 
-class CustomScene : public QGraphicsScene {
+class CustomScene : public QGraphicsScene
+{
     Q_OBJECT
-
 public:
-    CustomScene( QObject *parent = nullptr ) : QGraphicsScene( parent ){
-        connect( this, &QGraphicsScene::selectionChanged, [=](){
+    CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
+    {
+        connect(this, &QGraphicsScene::selectionChanged, [=](){
             QList<QGraphicsItem *> items = this->selectedItems();
             for( int i = 0; i < items.size(); i++ )
             {
@@ -47,7 +48,7 @@ public:
             }
         }
 
-        return nullptr ;
+        return nullptr;
     }
 
     CustomPixmapItem *getPixmapItem(const QString&strName)
@@ -88,31 +89,32 @@ signals:
 protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
     {
-        QGraphicsItem *item = itemAt( event->scenePos(), QTransform() );
+        QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
         if( !item )
         {
             clearSelection();
             emit sigNoItemSelected();
-            pView_->viewport()->repaint() ;
+            pView_->viewport()->repaint();
         }
         m_pLastItem = item ;
-        QGraphicsScene::mousePressEvent( event );
+        QGraphicsScene::mousePressEvent(event);
     }
 private:
     QGraphicsView *pView_ = nullptr;
     QGraphicsItem *m_pLastItem=nullptr;
 };
 
-class CustomView : public QGraphicsView {
+class CustomView : public QGraphicsView
+{
     Q_OBJECT
-
 public:
     CustomView(QWidget *parent = nullptr) : QGraphicsView(parent) {
-        setBackgroundBrush( QBrush( Qt::white ) );  // 示例：设置为白色
+        setBackgroundBrush(QBrush(Qt::white));
     }
-    void setPrintMatrix(int nRows=1,int nCols=1){m_nCols=nCols; m_nRows=nRows;} ;
+    void setPrintMatrix(int nRows=1,int nCols=1){m_nCols = nCols; m_nRows = nRows; };
 
-    QPixmap grabSpecifiedArea(const QRectF &area) {
+    QPixmap grabSpecifiedArea(const QRectF &area)
+    {
         if (area.isEmpty())
             return QPixmap();
 
@@ -128,8 +130,8 @@ public:
         int nCols = m_nCols;
         int nRows = m_nRows;
 
-        if(nCols<=0 || nRows <= 0)
-            return pixmap ;
+        if(nCols <= 0 || nRows <= 0)
+            return pixmap;
 
         QPixmap pixmap2(nW * nCols, nH * nRows);
         pixmap2.fill(Qt::white);
@@ -139,7 +141,7 @@ public:
         {
             for(int j=0; j<nCols; j++)
             {
-                painter2.drawPixmap(j*nW,i*nH,nW,nH,pixmap) ;
+                painter2.drawPixmap(j*nW,i*nH,nW,nH,pixmap);
             }
         }
 
@@ -160,15 +162,14 @@ public:
     }
 
     void print(const QRectF &area) {
-        QPrinter printer(QPrinter::HighResolution);      // 使用高分辨率的 QPrinter
+        QPrinter printer(QPrinter::HighResolution);       // 使用高分辨率的 QPrinter
         printer.setOutputFormat(QPrinter::NativeFormat);  // 使用系统默认的打印机
-        //printer.setPageSize(QPageSize(QPageSize::A4));  // 默认设置为 A4 纸
-        printArea( &printer, area );
+        printArea(&printer, area);
     }
 
 private:
     void printArea(QPrinter *printer, const QRectF &area) {
-        scene()->clearSelection() ;
+        scene()->clearSelection();
         QPixmap pixmap = grabSpecifiedArea(area);
         if (!pixmap.isNull())
         {
@@ -176,7 +177,7 @@ private:
             QRect rect = painter.viewport();
             QSize size = pixmap.size();
             size.scale(rect.size(), Qt::KeepAspectRatio);  // 保持比例缩放
-            painter.setViewport(rect.x(), rect.y(), size.width() , size.height());
+            painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
             painter.setWindow(pixmap.rect());
             painter.drawPixmap(0, 0, pixmap);
         }
@@ -199,7 +200,7 @@ public:
     explicit FrameLabelView(QWidget *parent = nullptr);
     ~FrameLabelView();
 
-    void Load(const QString&srtFile) ;
+    void Load(const QString&srtFile);
     void Save();
     void Preview();
     void Print();

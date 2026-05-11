@@ -1,6 +1,9 @@
 #include "DialogRecList.h"
 #include "ui_DialogRecList.h"
 
+#include <QTimer>
+#include <QModelIndex>
+
 DialogRecList::DialogRecList(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::DialogRecList)
@@ -18,16 +21,23 @@ DialogRecList::DialogRecList(QWidget *parent)
         emit onTextChanged();
     });
     connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
-        if(m_nSelected>=0)
-        {
-            m_pModel->removeRow(m_nSelected);
-            emit onTextChanged();
-            m_nSelected = -1;
+
+        QItemSelectionModel* selection = ui->tableView->selectionModel();
+        QModelIndexList rows = selection->selectedRows();
+
+        foreach (QModelIndex index, rows) {
+            m_pModel->removeRow(index.row());
         }
+        emit onTextChanged();
     });
 
-    connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
-        emit onTextChanged();
+    connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
+        appendCode(QString("%1").arg(time(nullptr)));
+        QTimer::singleShot(100,this,[=]{
+            QModelIndex index = ui->tableView->model()->index(m_pModel->rowCount()-1, 0);
+            ui->tableView->setCurrentIndex(index);
+            ui->tableView->edit(index);
+        });
     });
 
     connect(ui->pushButtonCancel,&QPushButton::clicked,this,[=]{
@@ -39,6 +49,7 @@ DialogRecList::DialogRecList(QWidget *parent)
         m_nSelected = index.row();
     });
     connect(m_pModel,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+        Q_UNUSED(item)
         emit onTextChanged();
     });
 }
@@ -58,6 +69,7 @@ void DialogRecList::appendCode(const QString&text)
 {
     QStandardItem *item = new QStandardItem(text.trimmed());
     m_pModel->appendRow(item);
+
     emit onTextChanged();
 }
 
@@ -89,7 +101,6 @@ QString DialogRecList::toText(int colCount)
         if(i%colCount || colCount == 1)
             strTail = "\n" ;
         text += m_pModel->item(i,0)->text().trimmed() + strTail;
-        qDebug() << i << text ;
     }
 
     return text.trimmed();

@@ -21,6 +21,7 @@ public:
 private:
     Ui::DialogReferId *ui;
 
+    int m_nSelected = -1;
     QStandardItemModel *m_pModel = nullptr;
 };
 

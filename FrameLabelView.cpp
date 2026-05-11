@@ -5,6 +5,8 @@
 
 #include "zint.h"
 
+#include <QPrinter>
+#include <QPrinterInfo>
 #include <QTimer>
 #include <QRectF>
 #include <QFileDialog>
@@ -46,7 +48,7 @@ FrameLabelView::FrameLabelView(QWidget *parent)
 
     m_pView = ui->graphicsView;
 
-    m_pScene = new CustomScene( this );
+    m_pScene = new CustomScene(this);
 
     m_pView->setScene(m_pScene);
     m_pScene->setView(m_pView);
@@ -55,7 +57,7 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     m_pView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     m_pView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    connect( m_pScene, &CustomScene::sigNoItemSelected,this, [=](){
+    connect( m_pScene, &CustomScene::sigNoItemSelected, this, [=](){
         emit onItemSelected(nullptr);
     });
 }
@@ -69,6 +71,7 @@ void FrameLabelView::resizeEvent(QResizeEvent *event)
 {
     //ui->graphicsView->setFixedSize(600,400);
     //m_pScene->setSceneRect(QRectF(0,0,600,400));
+    SetPaperSize(600,400);
 
     QFrame::resizeEvent(event);
 }
@@ -77,28 +80,19 @@ void FrameLabelView::SetPaperSize(qreal width, qreal height)
 {
     QSize LSize = this->size();
 
-    qDebug() << LSize;
     int nW = LSize.width();
     int nH = LSize.height();
     qreal ratio = width/height;
 
-    int nLimit = nW;
-    if(nW > nH)
-        nLimit = nH;
-
     if(ratio > 1)
     {
-        //nW = nLimit;
         nH = nW / ratio;
     }
 
     if(ratio < 1)
     {
-        //nH = nLimit;
         nW = nH * ratio;
     }
-
-    qDebug() << nW << nH;
 
     ui->graphicsView->setFixedSize(nW-1,nH-1);
     m_pScene->setSceneRect(QRectF(0,0,nW-1,nH-1));
@@ -149,14 +143,14 @@ void FrameLabelView::Load(const QString&srtFile)
     {
         if (auto textItem = dynamic_cast<CustomTextItem*>(item))
         {
-            connect( textItem, &CustomTextItem::sigRectChanged_ , [this]( QObject *pSender ){
-                emit onItemSelected(pSender) ;
+            connect( textItem, &CustomTextItem::sigRectChanged_, [this](QObject *pSender){
+                emit onItemSelected(pSender);
             } );
         }
         else if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
         {
-            connect( pixmapItem, &CustomPixmapItem::sigRectChanged_ , [this](QObject *pSender ){
-                emit onItemSelected(pSender) ;
+            connect( pixmapItem, &CustomPixmapItem::sigRectChanged_, [this](QObject *pSender){
+                emit onItemSelected(pSender);
             } );
         }
     }
@@ -185,7 +179,7 @@ void FrameLabelView::Preview()
 
 void FrameLabelView::Print()
 {
-    QRectF rc(0,0,m_pView->size().width(),m_pView->size().height()) ;
+    QRectF rc(0,0,m_pView->size().width(),m_pView->size().height());
     m_pView->print(rc);
 }
 
@@ -194,14 +188,14 @@ void FrameLabelView::AddText(const QString&strText, const QString&strName)
     CustomTextItem* textItem = m_pScene->getTextItem(strName);
     if(!textItem)
     {
-        textItem = new CustomTextItem( strText );
-        m_pScene->addItem( textItem );
-        textItem->setPos( 0, m_pView->size().height()/2 );
+        textItem = new CustomTextItem(strText);
+        m_pScene->addItem(textItem);
+        textItem->setPos(10, 20);
         textItem->setName(strName);
 
         textItem->setFont(s_font);
 
-        connect( textItem, &CustomTextItem::sigRectChanged_ ,this, [=]( QObject *pSender ){
+        connect(textItem, &CustomTextItem::sigRectChanged_, this, [=](QObject *pSender){
             emit onItemSelected(pSender);
         } );
     }
@@ -216,11 +210,11 @@ void FrameLabelView::AddImage(const QImage & image, const QString&strName)
     if(!imgItem)
     {
         imgItem = new CustomPixmapItem();
-        m_pScene->addItem( imgItem );
-        imgItem->setPos( 0, m_pView->size().height()/2 );
+        m_pScene->addItem(imgItem);
+        imgItem->setPos(10, 40);
         imgItem->setName(strName);
 
-        connect( imgItem, &CustomPixmapItem::sigRectChanged_ , this, [=]( QObject *pSender ){
+        connect(imgItem, &CustomPixmapItem::sigRectChanged_, this, [=](QObject *pSender){
             emit onItemSelected(pSender);
         } );
     }
@@ -249,7 +243,7 @@ void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
 void FrameLabelView::Delete()
 {
     QList<QGraphicsItem *> items = m_pScene->selectedItems();
-    for( QGraphicsItem *item : items )
+    for( QGraphicsItem *item : items)
     {
         m_pScene->removeItem( item );
         delete item;
@@ -262,10 +256,9 @@ bool FrameLabelView::Remove(const QString&strName)
     return m_pScene->Remove(strName);
 }
 
-void FrameLabelView::keyReleaseEvent( QKeyEvent *event )
+void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
 {
     auto nKey = event->key();
-    qDebug()<< "Key Release:" << Qt::hex << nKey;
 
     bool bCtrlPress = (event->modifiers() & Qt::ControlModifier);
     m_bCtrlPress = bCtrlPress;
@@ -280,28 +273,28 @@ void FrameLabelView::keyReleaseEvent( QKeyEvent *event )
 
             int x = pos.x();
             int y = pos.y();
-            int nx = x ;
-            int ny = y ;
+            int nx = x;
+            int ny = y;
 
-            if(event->key() == Qt::Key_Left)
-                nx -=5 ;
-            if(event->key() == Qt::Key_Right)
-                nx +=5 ;
+            if(nKey == Qt::Key_Left)
+                nx -= 5;
+            if(nKey == Qt::Key_Right)
+                nx += 5;
 
-            if(event->key() == Qt::Key_Up)
-                ny -=5 ;
-            if(event->key()  == Qt::Key_Down)
-                ny +=5 ;
+            if(nKey == Qt::Key_Up)
+                ny -= 5;
+            if(nKey  == Qt::Key_Down)
+                ny += 5;
 
-            if(event->key() == Qt::Key_Minus)
-                fscaleN *= 0.95 ;
-            if(event->key()  == Qt::Key_Equal)
-                fscaleN *= 1.05 ;
+            if(nKey == Qt::Key_Minus)
+                fscaleN *= 0.95;
+            if(nKey == Qt::Key_Equal)
+                fscaleN *= 1.05;
 
             if(nx<0)
-                nx=0;
+                nx = 0;
             if(ny<0)
-                ny=0;
+                ny = 0;
 
             if(nx != x || ny != y)
                 item->setPos(nx,ny);
@@ -314,11 +307,11 @@ void FrameLabelView::keyReleaseEvent( QKeyEvent *event )
     QFrame::keyReleaseEvent(event);
 }
 
-void FrameLabelView::keyPressEvent( QKeyEvent *event )
+void FrameLabelView::keyPressEvent(QKeyEvent *event)
 {
     auto nKey = event->key();
-    // qDebug()<< "Key Press:" << Qt::hex << event->modifiers() << nKey;
-    if (event->key() == Qt::Key_Delete)
+
+    if (nKey == Qt::Key_Delete)
     {
         Delete();
     }

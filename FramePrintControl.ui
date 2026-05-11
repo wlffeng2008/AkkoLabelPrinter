@@ -28,11 +28,14 @@
   <widget class="QPushButton" name="pushButtonPrint">
    <property name="geometry">
     <rect>
-     <x>322</x>
+     <x>320</x>
      <y>650</y>
      <width>66</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
     <string>打印</string>
@@ -41,11 +44,14 @@
   <widget class="QPushButton" name="pushButtonPreview">
    <property name="geometry">
     <rect>
-     <x>322</x>
+     <x>320</x>
      <y>620</y>
      <width>66</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
     <string>打印预览</string>
@@ -87,8 +93,8 @@
        <rect>
         <x>4</x>
         <y>134</y>
-        <width>374</width>
-        <height>448</height>
+        <width>368</width>
+        <height>452</height>
        </rect>
       </property>
       <property name="font">
@@ -107,6 +113,9 @@
         <height>24</height>
        </rect>
       </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
       <property name="text">
        <string>生成二维码</string>
       </property>
@@ -114,7 +123,7 @@
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>288</x>
+        <x>287</x>
         <y>40</y>
         <width>50</width>
         <height>16</height>
@@ -132,7 +141,7 @@
        <rect>
         <x>226</x>
         <y>103</y>
-        <width>37</width>
+        <width>39</width>
         <height>21</height>
        </rect>
       </property>
@@ -176,6 +185,9 @@
         <width>80</width>
         <height>24</height>
        </rect>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="text">
        <string>修改...</string>
@@ -326,6 +338,9 @@
         <height>24</height>
        </rect>
       </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
       <property name="text">
        <string>编辑...</string>
       </property>
@@ -339,6 +354,9 @@
         <height>24</height>
        </rect>
       </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
       <property name="text">
        <string>清零</string>
       </property>
@@ -346,9 +364,9 @@
      <widget class="QLineEdit" name="lineEditCode3">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>275</x>
         <y>103</y>
-        <width>50</width>
+        <width>45</width>
         <height>21</height>
        </rect>
       </property>
@@ -422,7 +440,7 @@
      <widget class="QLabel" name="labelAllCount">
       <property name="geometry">
        <rect>
-        <x>341</x>
+        <x>340</x>
         <y>40</y>
         <width>33</width>
         <height>16</height>
@@ -525,7 +543,7 @@
         <x>322</x>
         <y>28</y>
         <width>50</width>
-        <height>23</height>
+        <height>24</height>
        </rect>
       </property>
       <property name="text">
@@ -537,9 +555,12 @@
        <rect>
         <x>54</x>
         <y>80</y>
-        <width>320</width>
-        <height>474</height>
+        <width>318</width>
+        <height>476</height>
        </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
@@ -569,7 +590,7 @@
        <rect>
         <x>54</x>
         <y>564</y>
-        <width>172</width>
+        <width>170</width>
         <height>21</height>
        </rect>
       </property>
@@ -577,7 +598,7 @@
      <widget class="QPushButton" name="pushButtonBarcode">
       <property name="geometry">
        <rect>
-        <x>308</x>
+        <x>306</x>
         <y>562</y>
         <width>66</width>
         <height>24</height>
@@ -702,7 +723,7 @@
         <x>322</x>
         <y>0</y>
         <width>50</width>
-        <height>23</height>
+        <height>24</height>
        </rect>
       </property>
       <property name="text">
@@ -841,6 +862,9 @@
      <width>66</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
     <string>应用</string>

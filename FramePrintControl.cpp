@@ -10,12 +10,46 @@
 #include <QFontDialog>
 #include <QDir>
 #include <QFile>
+#include <QPrinterInfo>
 #include <QDateTime>
 #include <QMessageBox>
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+
+// 检测是否存在【实体打印机】
+bool hasRealPhysicalPrinter()
+{
+    // 获取系统所有打印机
+    QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
+    // 虚拟打印机关键字（过滤掉）
+    QStringList virtualKeywords = {
+        "PDF", "XPS", "OneNote", "Microsoft Print", "Fax", "图片传真"
+    };
+
+    foreach (QPrinterInfo info, printers) {
+        QString name = info.printerName();
+        qDebug() << name ;
+
+        // 排除虚拟打印机
+        bool isVirtual = false;
+        foreach (QString key, virtualKeywords) {
+            if (name.contains(key, Qt::CaseInsensitive)) {
+                isVirtual = true;
+                break;
+            }
+        }
+        if (isVirtual) continue;
+
+        // 剩下的 = 实体打印机
+        return true;
+    }
+
+    // 没找到实体打印机
+    return false;
+}
 
 FramePrintControl::FramePrintControl(QWidget *parent)
     : QFrame(parent)
@@ -28,6 +62,22 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_strTemplFile = m_pSet->value("lastTemplFile", QApplication::applicationDirPath() + "/config/default.tem").toString();
 
     ui->checkBoxDouble->setChecked(true);
+
+
+    bool hasPrinter = QPrinterInfo::availablePrinters().size() > 0;
+
+    if (hasPrinter) {
+        qDebug() << "系统已连接打印机";
+    } else {
+        qDebug() << "系统没有任何打印机";
+    }
+    qDebug() << QPrinterInfo::defaultPrinter();
+
+    if (hasRealPhysicalPrinter()) {
+        qDebug() << "✅ 找到实体打印机，可以打印";
+    } else {
+        qDebug() << "❌ 未连接实体打印机";
+    }
 
     m_recList = new DialogRecList(this);
     m_referId = new DialogReferId(this);
@@ -46,7 +96,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->checkBoxGen128->setChecked(m_pSet->value("gen128",true).toBool());
 
     connect(ui->pushButtonCreate,&QPushButton::clicked,this,[=]{
-
         QString strSN = ui->textEditAll->toPlainText().trimmed();
         //strSN.replace("\n\r\n","\n");
         strSN.replace("\n","\r\n");
@@ -174,7 +223,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         ui->tableView->setModel(m_pModel);
         QHeaderView *pHeader = ui->tableView->horizontalHeader();
         pHeader->setSectionResizeMode(QHeaderView::Stretch);
-
         pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
         pHeader->resizeSection(1,60);
 
@@ -182,9 +230,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_nSelected = index.row();
             QStandardItem *item0 = m_pModel->item(index.row(),0);
             ui->lineEditBarcode->setText(item0->text());
-        });
-        connect(m_pModel,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
-            //emit onTextChanged();
+            ui->pushButtonBarcode->click();
         });
 
         static int autoGet = 0;
@@ -217,16 +263,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 for(int i=0; i<count; i++)
                 {
                     QStandardItem *item0 = m_pModel->item(i,0);
-                    QStandardItem *item1 = m_pModel->item(i,1);
                     if(item0->data().toInt() == 0)
                     {
-                        m_getType = 1;
-                        QString strGet = QString("http://113.98.191.209:8085/sales/erpOrderItem/status?outerOiId=%1&bizStatus=1").arg(item0->text());
-                        m_http->get(strGet);
-
-                        m_nSelected = i;
-                        item0->setData(1);
-                        item1->setText("已打印");
+                        ui->tableView->setCurrentIndex(item0->index());
                         ui->lineEditBarcode->setText(item0->text());
                         ui->pushButtonBarcode->click();
                         break;
@@ -260,12 +299,12 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 QString strShopId = jData["shopId"].toString();
                 QString strInId   = jData["oid"].toString();
 
-                if(m_fieldList->getChecked(0)) m_pLabelView->AddText(QString("店铺名称：")+ strShop,"shopName"); else m_pLabelView->Remove("shopName");
-                if(m_fieldList->getChecked(1)) m_pLabelView->AddText(QString("产品名称：")+ strName,"name"); else m_pLabelView->Remove("name");
+                if(m_fieldList->getChecked(0)) m_pLabelView->AddText(QString("店铺名称：")+ strShop,"shopName");         else m_pLabelView->Remove("shopName");
+                if(m_fieldList->getChecked(1)) m_pLabelView->AddText(QString("产品名称：")+ strName,"name");             else m_pLabelView->Remove("name");
                 if(m_fieldList->getChecked(2)) m_pLabelView->AddText(QString("产品属性：")+ strValue,"propertiesValue"); else m_pLabelView->Remove("propertiesValue");
-                if(m_fieldList->getChecked(3)) m_pLabelView->AddText(QString("收货地址：")+ strAddr,"receiverAddress"); else m_pLabelView->Remove("receiverAddress");
-                if(m_fieldList->getChecked(4)) m_pLabelView->AddText(QString("订单日期：")+ strDate,"orderDate"); else m_pLabelView->Remove("orderDate");
-                if(m_fieldList->getChecked(5)) m_pLabelView->AddText(QString("支付日期：")+ strPDate,"payDate"); else m_pLabelView->Remove("payDate");
+                if(m_fieldList->getChecked(3)) m_pLabelView->AddText(QString("收货地址：")+ strAddr,"receiverAddress");  else m_pLabelView->Remove("receiverAddress");
+                if(m_fieldList->getChecked(4)) m_pLabelView->AddText(QString("订单日期：")+ strDate,"orderDate");        else m_pLabelView->Remove("orderDate");
+                if(m_fieldList->getChecked(5)) m_pLabelView->AddText(QString("支付日期：")+ strPDate,"payDate");         else m_pLabelView->Remove("payDate");
                 //m_pLabelView->AddText( strShopId,"shopId");
                 //m_pLabelView->AddText( strInId,"oid");
             }
@@ -293,8 +332,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 QJsonArray jArr = jObj["data"].toArray();
                 m_jArr = jArr;
 
-                // {"outerOiId":"6952654009601169031","bizStatus":"0","name":"Akko x Monsgeek 75手托 馒头","propertiesValue":"馒头","receiverAddress":"河南省-南阳市-宛城区-汉冶街道","orderDate":"2026-05-08 16:31:34","shopName":"AKKO潮玩旗舰店","shopId":"18854618","oid":"7780084"}
-                m_pModel->setRowCount(0);
+                 m_pModel->setRowCount(0);
                 int count = jArr.count();
                 for(int i=0; i<count; i++)
                 {
@@ -332,7 +370,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_http->get(text);
         });
         QTimer::singleShot(1000,this,[=]{
-            ui->pushButtonGet->click();
+            if(ui->stackedWidget->currentIndex() == 1)
+                ui->pushButtonGet->click();
         });
     }
     QTimer::singleShot(600,this,[=]{
@@ -383,5 +422,26 @@ void FramePrintControl::on_pushButtonPrint_clicked()
     int nCount = ui->spinBoxPrintCount->value();
     for(int i=0; i<nCount; i++)
         m_pLabelView->Print();
+
+    if(ui->stackedWidget->currentIndex() == 1)
+    {
+        int count = m_pModel->rowCount();
+        for(int i=0; i<count; i++)
+        {
+            QStandardItem *item0 = m_pModel->item(i,0);
+            QStandardItem *item1 = m_pModel->item(i,1);
+            if(item0->text() == ui->lineEditBarcode->text())
+            {
+                m_getType = 1;
+                QString strGet = QString("http://113.98.191.209:8085/sales/erpOrderItem/status?outerOiId=%1&bizStatus=1").arg(item0->text());
+                m_http->get(strGet);
+
+                m_nSelected = i;
+                item0->setData(1);
+                item1->setText("已打印");
+                break;
+            }
+        }
+    }
 }
 
