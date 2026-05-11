@@ -28,16 +28,15 @@ MainWindow::MainWindow(QWidget *parent)
     pLabelTime->setStyleSheet("QLabel{ padding-left:10px;color:blue; font-weight: bold;}");
     ui->statusbar->addWidget(pLabelTime);
 
-
     QCheckBox *pCheck = new QCheckBox("ON TOP",this);
     ui->statusbar->addWidget(pCheck);
 
     connect(pCheck,&QCheckBox::toggled,this,[=](bool checked){
         QWindow *pWin = windowHandle() ;
         if(checked)
-            pWin->setFlags(pWin->flags() | Qt::WindowStaysOnTopHint) ;
+            pWin->setFlags(pWin->flags() | Qt::WindowStaysOnTopHint);
         else
-            pWin->setFlags(pWin->flags() & ~Qt::WindowStaysOnTopHint) ;
+            pWin->setFlags(pWin->flags() & ~Qt::WindowStaysOnTopHint);
         show() ;
     }) ;
 

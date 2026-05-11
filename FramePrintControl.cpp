@@ -56,13 +56,15 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     , ui(new Ui::FramePrintControl)
 {
     ui->setupUi(this);
+    QString strCfgPath = QApplication::applicationDirPath() + "/config";
+    QDir D(strCfgPath);
+    if(!D.exists()) D.mkdir(strCfgPath);
 
-    m_pSet = new QSettings(QApplication::applicationDirPath() + "/config/global.ini",QSettings::IniFormat);
+    m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
 
-    m_strTemplFile = m_pSet->value("lastTemplFile", QApplication::applicationDirPath() + "/config/default.tem").toString();
+    m_strTemplFile = m_pSet->value("lastTemplFile", strCfgPath + "/default.tem").toString();
 
     ui->checkBoxDouble->setChecked(true);
-
 
     bool hasPrinter = QPrinterInfo::availablePrinters().size() > 0;
 
@@ -366,8 +368,13 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pModel->setRowCount(0);
             m_getType = 0;
             ui->labelOrderCount->setText("0 [0000-00-00 00:00:00]");
-            QString text = ui->lineEditUrl->text().trimmed();
-            m_http->get(text);
+
+            QString strUrl = ui->lineEditUrl->text().trimmed();
+            QString strRefer = m_referId->getIds();
+            if(!strRefer.isEmpty())
+                strUrl += QString("?referrerId=") + strRefer;
+
+            m_http->get(strUrl);
         });
         QTimer::singleShot(1000,this,[=]{
             if(ui->stackedWidget->currentIndex() == 1)

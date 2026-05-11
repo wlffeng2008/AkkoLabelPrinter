@@ -17,7 +17,7 @@ class DialogReferId : public QDialog
 public:
     explicit DialogReferId(QWidget *parent = nullptr);
     ~DialogReferId();
-
+    QString getIds();
 private:
     Ui::DialogReferId *ui;
 
