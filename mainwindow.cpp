@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QString strTitle = QString("简易标签打印 - V1.15 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
+    QString strTitle = QString("简易标签打印 - V1.20 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
     setWindowTitle( strTitle );
     QTimer::singleShot(200,this,[=]{ ui->frameR->BindLabelView(ui->frameL) ;});
 

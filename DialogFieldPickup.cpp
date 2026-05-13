@@ -10,7 +10,7 @@ DialogFieldPickup::DialogFieldPickup(QWidget *parent)
     ui->setupUi(this);
 
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
-    static QSettings fieldSet(strCfgPath + "/field.ini");
+    static QSettings fieldSet(strCfgPath + "/field.ini",QSettings::IniFormat);
 
     m_pModel = new QStandardItemModel(this);
     m_pModel->setHorizontalHeaderLabels(QString("字段名称").split(','));

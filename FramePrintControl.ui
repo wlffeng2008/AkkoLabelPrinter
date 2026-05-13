@@ -61,9 +61,9 @@
    <property name="geometry">
     <rect>
      <x>8</x>
-     <y>2</y>
+     <y>6</y>
      <width>386</width>
-     <height>612</height>
+     <height>610</height>
     </rect>
    </property>
    <property name="title">
@@ -637,7 +637,7 @@
        </font>
       </property>
       <property name="text">
-       <string>120</string>
+       <string>10</string>
       </property>
      </widget>
      <widget class="QProgressBar" name="progressBarGet">

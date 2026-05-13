@@ -259,6 +259,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
         QTimer *pTMOut = new QTimer(this);
         connect(pTMOut,&QTimer::timeout,this,[=]{
+            m_nSelected = -1;
+            pTMOut->stop();
+            pTMOut->start(2500);
             if(ui->checkBoxAutoOut->isChecked())
             {
                 int count = m_pModel->rowCount();
@@ -267,6 +270,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                     QStandardItem *item0 = m_pModel->item(i,0);
                     if(item0->data().toInt() == 0)
                     {
+                        m_nSelected = i;
                         ui->tableView->setCurrentIndex(item0->index());
                         ui->lineEditBarcode->setText(item0->text());
                         ui->pushButtonBarcode->click();
@@ -288,7 +292,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddImage128(strCode,"128Code");
             m_pLabelView->AddText(strCode,"128Text");
 
-            //if(!ui->checkBoxOnlyOrder->isChecked())
+            if(m_nSelected >= 0)
             {
                 QJsonObject jData = m_jArr[m_nSelected].toObject();
 
@@ -307,11 +311,13 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 if(m_fieldList->getChecked(3)) m_pLabelView->AddText(QString("收货地址：")+ strAddr,"receiverAddress");  else m_pLabelView->Remove("receiverAddress");
                 if(m_fieldList->getChecked(4)) m_pLabelView->AddText(QString("订单日期：")+ strDate,"orderDate");        else m_pLabelView->Remove("orderDate");
                 if(m_fieldList->getChecked(5)) m_pLabelView->AddText(QString("支付日期：")+ strPDate,"payDate");         else m_pLabelView->Remove("payDate");
+
                 //m_pLabelView->AddText( strShopId,"shopId");
                 //m_pLabelView->AddText( strInId,"oid");
             }
+            m_nSelected = -1;
 
-            QTimer::singleShot(100,this,[=]{
+            QTimer::singleShot(300,this,[=]{
                 if(ui->checkBoxAutoPrint->isChecked() || ui->checkBoxAutoOut->isChecked())
                 {
                     ui->pushButtonPrint->click();
@@ -349,11 +355,11 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                     item1->setEditable(false);
                     m_pModel->appendRow({item0,item1});
                 }
-                QDateTime NOW = QDateTime::currentDateTime();
-                QString strInfo=QString("%1 [%2]").arg(count).arg(NOW.toString("yyyy-MM-dd hh:mm:ss"));
+                QDateTime NOW  = QDateTime::currentDateTime();
+                QString strInfo= QString("%1 [%2]").arg(count).arg(NOW.toString("yyyy-MM-dd hh:mm:ss"));
 
                 ui->labelOrderCount->setText(strInfo);
-                pTMOut->start(1000);
+                pTMOut->start(500);
             }
             else
             {
@@ -373,6 +379,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strRefer = m_referId->getIds();
             if(!strRefer.isEmpty())
                 strUrl += QString("?referrerId=") + strRefer;
+
+            qDebug() << strUrl ;
 
             m_http->get(strUrl);
         });

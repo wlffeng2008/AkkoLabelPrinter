@@ -11,7 +11,7 @@
 #include <QRectF>
 #include <QFileDialog>
 
-static QImage genQrCode(const std::string &strText,const std::string&strFile="./1234567Qr.bmp",int symbology=BARCODE_QRCODE,int showText=0,int nH=15)
+static QImage genQrCode(const std::string &strText,const std::string&strFile="/1234567Qr.bmp",int symbology=BARCODE_QRCODE,int showText=0,int nH=15)
 {
     QImage imgBar;
     struct zint_symbol *symbol = ZBarcode_Create();
@@ -235,7 +235,8 @@ void FrameLabelView::AddImageQR(const QString&strQrText, const QString&strName)
 
 void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
 {
-    QImage image = genQrCode(strQrText.toStdString().c_str(),"/code128-1234.bmp",BARCODE_CODE128,0);
+    QString strFile = QApplication::applicationDirPath() + QString("/config/barcode2026.bmp");
+    QImage image = genQrCode(strQrText.toStdString().c_str(),strFile.toStdString().c_str(),BARCODE_CODE128,0);
     QRect rcCut(0,0,image.size().width(),image.size().height()*0.3);
     AddImage(image.copy(rcCut),strName);
 }
