@@ -554,9 +554,9 @@
       <property name="geometry">
        <rect>
         <x>54</x>
-        <y>80</y>
+        <y>85</y>
         <width>318</width>
-        <height>476</height>
+        <height>471</height>
        </rect>
       </property>
       <property name="focusPolicy">
@@ -624,9 +624,9 @@
      <widget class="QLineEdit" name="lineEditIntrval">
       <property name="geometry">
        <rect>
-        <x>178</x>
+        <x>182</x>
         <y>30</y>
-        <width>40</width>
+        <width>36</width>
         <height>20</height>
        </rect>
       </property>
@@ -660,7 +660,7 @@
       <property name="geometry">
        <rect>
         <x>-5</x>
-        <y>58</y>
+        <y>60</y>
         <width>55</width>
         <height>15</height>
        </rect>
@@ -676,7 +676,7 @@
       <property name="geometry">
        <rect>
         <x>56</x>
-        <y>54</y>
+        <y>56</y>
         <width>162</width>
         <height>22</height>
        </rect>
@@ -694,14 +694,14 @@
      <widget class="QCheckBox" name="checkBoxAutoOut">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>56</y>
-        <width>156</width>
+        <x>224</x>
+        <y>58</y>
+        <width>76</width>
         <height>19</height>
        </rect>
       </property>
       <property name="text">
-       <string>自动打印所有订单条形码</string>
+       <string>自动打印</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonFileld">
@@ -728,6 +728,19 @@
       </property>
       <property name="text">
        <string>主播ID</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonHistory">
+      <property name="geometry">
+       <rect>
+        <x>302</x>
+        <y>56</y>
+        <width>71</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>历史订单</string>
       </property>
      </widget>
     </widget>
@@ -857,7 +870,7 @@
   <widget class="QPushButton" name="pushButtonSetPaper">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>170</x>
      <y>650</y>
      <width>66</width>
      <height>24</height>

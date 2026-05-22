@@ -327,7 +327,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
         m_http = new HttpHandler(this);
         connect(m_http,&HttpHandler::onHttpReturn,this,[=](const QString&text,int code){
-            // qDebug().noquote() << text;
+            //qDebug().noquote() << text;
             QJsonDocument jDoc = QJsonDocument::fromJson(text.toUtf8());
             if(!jDoc.isObject())
             {
@@ -346,11 +346,19 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 {
                     QJsonObject jData = jArr[i].toObject();
 
-                    QString strOutId = jData["outerOiId"].toString();
+                    QString strOutId  = jData["outerOiId"].toString();
+                    QString strStatus = jData["bizStatus"].toString();
 
                     QStandardItem *item0 = new QStandardItem(strOutId);
                     QStandardItem *item1 = new QStandardItem("未打印");
+
                     item0->setData(0);
+                    if(strStatus== "1")
+                    {
+                        item0->setData(1);
+                        item1->setText("已打印");
+                    }
+
                     item0->setEditable(false);
                     item1->setEditable(false);
                     m_pModel->appendRow({item0,item1});
@@ -369,6 +377,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 }
             }
         });
+
         connect(ui->pushButtonGet,&QPushButton::clicked,this,[=]{
             pTMOut->stop();
             m_pModel->setRowCount(0);
@@ -380,10 +389,24 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             if(!strRefer.isEmpty())
                 strUrl += QString("?referrerId=") + strRefer;
 
-            qDebug() << strUrl ;
+            m_http->get(strUrl);
+        });
+
+        connect(ui->pushButtonHistory,&QPushButton::clicked,this,[=]{
+            pTMOut->stop();
+            m_pModel->setRowCount(0);
+            ui->checkBoxAutoGet->setChecked(false);
+            m_getType = 0;
+            ui->labelOrderCount->setText("0 [0000-00-00 00:00:00]");
+
+            QString strUrl = "http://113.98.191.209:8085/sales/erpOrderItem/history"; //ui->lineEditUrl->text().trimmed();
+            QString strRefer = m_referId->getIds();
+            if(!strRefer.isEmpty())
+                strUrl += QString("?referrerId=") + strRefer;
 
             m_http->get(strUrl);
         });
+
         QTimer::singleShot(1000,this,[=]{
             if(ui->stackedWidget->currentIndex() == 1)
                 ui->pushButtonGet->click();

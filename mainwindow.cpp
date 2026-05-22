@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->addWidget(pCheck);
 
     connect(pCheck,&QCheckBox::toggled,this,[=](bool checked){
-        QWindow *pWin = windowHandle() ;
+        QWindow *pWin = windowHandle();
         if(checked)
             pWin->setFlags(pWin->flags() | Qt::WindowStaysOnTopHint);
         else
