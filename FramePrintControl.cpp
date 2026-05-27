@@ -85,6 +85,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_referId = new DialogReferId(this);
     m_fieldList = new DialogFieldPickup(this);
 
+    ui->lineEditUrl->hide();
+
     ui->lineEditLimit->setText(m_pSet->value("limitCount","40").toString());
     ui->lineEditCode0->setText(m_pSet->value("Code0","BJ").toString());
     ui->lineEditCode1->setText(m_pSet->value("Code1","20260507").toString());
@@ -239,6 +241,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         QTimer *pTMGet = new QTimer(this);
         connect(ui->checkBoxAutoGet,&QCheckBox::checkStateChanged,this,[=](Qt::CheckState state){
             pTMGet->stop();
+            ui->progressBarGet->setRange(0,ui->lineEditIntrval->text().toInt());
             autoGet = 0;
             bool checked = ui->checkBoxAutoGet->isChecked();
             if(checked) pTMGet->start(1000);
@@ -246,8 +249,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
         connect(pTMGet,&QTimer::timeout,this,[=]{
             int interval = ui->lineEditIntrval->text().toInt();
-            if(interval<10) interval=10;
-            ui->progressBarGet->setRange(0,interval);
+            if(interval<5) interval=5;
+            //ui->progressBarGet->setRange(0,interval);
             autoGet++;
             if(autoGet >= interval)
             {
@@ -327,7 +330,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
         m_http = new HttpHandler(this);
         connect(m_http,&HttpHandler::onHttpReturn,this,[=](const QString&text,int code){
-            //qDebug().noquote() << text;
+            // qDebug().noquote() << text;
             QJsonDocument jDoc = QJsonDocument::fromJson(text.toUtf8());
             if(!jDoc.isObject())
             {
@@ -399,11 +402,29 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_getType = 0;
             ui->labelOrderCount->setText("0 [0000-00-00 00:00:00]");
 
-            QString strUrl = "http://113.98.191.209:8085/sales/erpOrderItem/history"; //ui->lineEditUrl->text().trimmed();
+            QString strUrl = "http://113.98.191.209:8085/sales/erpOrderItem/history";
             QString strRefer = m_referId->getIds();
             if(!strRefer.isEmpty())
                 strUrl += QString("?referrerId=") + strRefer;
 
+            m_http->get(strUrl);
+        });
+
+        connect(ui->pushButtonQuery,&QPushButton::clicked,this,[=]{
+            QString strOrderId = ui->lineEditOrderId->text().trimmed();
+            if(strOrderId.length() < 5)
+            {
+                QMessageBox::warning(this,"提示","请输入订单号！");
+                return;
+            }
+            pTMOut->stop();
+            m_pModel->setRowCount(0);
+            ui->checkBoxAutoGet->setChecked(false);
+            m_getType = 0;
+            ui->labelOrderCount->setText("0 [0000-00-00 00:00:00]");
+
+            QString strUrl = QString("http://113.98.191.209:8085/sales/erpOrderItem/getByOuterOiId?outerOiId=") + strOrderId;
+            qDebug().noquote() << strUrl;
             m_http->get(strUrl);
         });
 

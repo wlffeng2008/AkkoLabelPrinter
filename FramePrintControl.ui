@@ -511,30 +511,14 @@
      <widget class="QLineEdit" name="lineEditUrl">
       <property name="geometry">
        <rect>
-        <x>54</x>
-        <y>2</y>
-        <width>265</width>
+        <x>224</x>
+        <y>4</y>
+        <width>16</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
        <string>http://113.98.191.209:8085/sales/erpOrderItem/list</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>4</x>
-        <y>6</y>
-        <width>44</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Url:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonGet">
@@ -554,9 +538,9 @@
       <property name="geometry">
        <rect>
         <x>54</x>
-        <y>85</y>
+        <y>113</y>
         <width>318</width>
-        <height>471</height>
+        <height>443</height>
        </rect>
       </property>
       <property name="focusPolicy">
@@ -659,8 +643,8 @@
      <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>-5</x>
-        <y>60</y>
+        <x>-2</x>
+        <y>88</y>
         <width>55</width>
         <height>15</height>
        </rect>
@@ -676,8 +660,8 @@
       <property name="geometry">
        <rect>
         <x>56</x>
-        <y>56</y>
-        <width>162</width>
+        <y>84</y>
+        <width>176</width>
         <height>22</height>
        </rect>
       </property>
@@ -694,9 +678,9 @@
      <widget class="QCheckBox" name="checkBoxAutoOut">
       <property name="geometry">
        <rect>
-        <x>224</x>
-        <y>58</y>
-        <width>76</width>
+        <x>252</x>
+        <y>86</y>
+        <width>80</width>
         <height>19</height>
        </rect>
       </property>
@@ -720,27 +704,72 @@
      <widget class="QPushButton" name="pushButtonReferId">
       <property name="geometry">
        <rect>
-        <x>322</x>
-        <y>0</y>
-        <width>50</width>
+        <x>52</x>
+        <y>2</y>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>主播ID</string>
+       <string>主播ID 管理</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButtonHistory">
       <property name="geometry">
        <rect>
-        <x>302</x>
-        <y>56</y>
-        <width>71</width>
+        <x>252</x>
+        <y>0</y>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
        <string>历史订单</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>-2</x>
+        <y>58</y>
+        <width>55</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>订单号码:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEditOrderId">
+      <property name="geometry">
+       <rect>
+        <x>54</x>
+        <y>56</y>
+        <width>263</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>请输入(扫描)订单号码</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonQuery">
+      <property name="geometry">
+       <rect>
+        <x>322</x>
+        <y>56</y>
+        <width>50</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>查询</string>
       </property>
      </widget>
     </widget>
