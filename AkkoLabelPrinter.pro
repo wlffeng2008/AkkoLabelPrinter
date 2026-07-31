@@ -16,7 +16,7 @@ QMAKE_TARGET_PRODUCT = LabelPrinter
 #版权所有
 QMAKE_TARGET_COPYRIGHT = "微信: 13537556177"
 #文件说明
-QMAKE_TARGET_DESCRIPTION = "LabelPrinter By QT6.11.0"
+QMAKE_TARGET_DESCRIPTION = "LabelPrinter By QT6.11.1"
 
 RC_LANG = 0x0004
 
@@ -36,6 +36,7 @@ SOURCES += \
     CLabelSave.cpp \
     CustomItems.cpp \
     DialogFieldPickup.cpp \
+    DialogLabelEdit.cpp \
     DialogRecList.cpp \
     DialogReferId.cpp \
     DialogSet.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     CLabelSave.h \
     CustomItems.h \
     DialogFieldPickup.h \
+    DialogLabelEdit.h \
     DialogRecList.h \
     DialogReferId.h \
     DialogSet.h \
@@ -57,6 +59,7 @@ HEADERS += \
 
 FORMS += \
     DialogFieldPickup.ui \
+    DialogLabelEdit.ui \
     DialogRecList.ui \
     DialogReferId.ui \
     DialogSet.ui \

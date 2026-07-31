@@ -4,6 +4,7 @@
 #include "DialogRecList.h"
 #include "DialogReferId.h"
 #include "DialogFieldPickup.h"
+#include "DialogLabelEdit.h"
 
 #include <QFrame>
 #include <QStandardItemModel>
@@ -110,6 +111,7 @@ private:
     DialogRecList *m_recList = nullptr;
     DialogReferId *m_referId = nullptr;
     DialogFieldPickup *m_fieldList = nullptr;
+    DialogLabelEdit *m_labelEdit = nullptr;
     void ShowSN();
 
     QString m_strTemplFile;

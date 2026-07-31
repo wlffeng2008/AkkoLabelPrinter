@@ -69,7 +69,6 @@ public:
             m_item->setCursor(Qt::ClosedHandCursor);  // Change cursor for moving
             event->accept();
         }
-
         //emitRectSig();
     }
 
@@ -215,7 +214,10 @@ protected:
     CustomBaseItem base;  // Instance of Resizable to handle resizing
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        base.handleMousePressEvent(event);
+        base.handleMousePressEvent(event);        
+        setSelected(true);
+        emit sigRectChanged_(this);
+        qDebug() << m_strName;
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -224,6 +226,9 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
+        setSelected(true);
+        emit sigRectChanged_(this);
+        qDebug() << m_strName;
     }
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
@@ -317,10 +322,27 @@ public:
 protected:
     CustomBaseItem base;
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override { base.handleMousePressEvent(event);}
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override { base.handleMouseMoveEvent(event); }
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override { base.handleMouseReleaseEvent(event); }
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override { base.handleHoverMoveEvent(event); }
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+        base.handleMousePressEvent(event);
+        setSelected(true);
+        emit sigRectChanged_(this);
+        qDebug() << m_strName  << getItemRect();
+    }
+
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
+        base.handleMouseMoveEvent(event);
+    }
+
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
+        base.handleMouseReleaseEvent(event);
+        setSelected(true);
+        emit sigRectChanged_(this);
+        qDebug() << m_strName << getItemRect();
+    }
+
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
+        base.handleHoverMoveEvent(event);
+    }
 
     QRectF boundingRect() const override { return QGraphicsPixmapItem::boundingRect(); }
 

@@ -65,6 +65,19 @@ public:
         return nullptr;
     }
 
+    QStringList getAllItems()
+    {
+        QStringList names;
+        for (auto item : items())
+        {
+            if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
+            {
+                names.push_back(pixmapItem->m_strName.trimmed());
+            }
+        }
+        return names;
+    }
+
     bool Remove(const QString&strName)
     {
         CustomTextItem *textItem = getTextItem(strName);
@@ -83,8 +96,97 @@ public:
         return false;
     }
 
+    bool SetItemPos(const QString&strName,int x,int y){
+        CustomTextItem *textItem = getTextItem(strName);
+        if(textItem)
+        {
+            QPoint pt = textItem->pos().toPoint();
+            if(x != -1) pt.setX(x);
+            if(y != -1) pt.setY(y);
+            textItem->setPos(pt);
+            return true;
+        }
+
+        CustomPixmapItem *pixmapItem = getPixmapItem(strName);
+        if(pixmapItem)
+        {
+            QPoint pt = pixmapItem->pos().toPoint();
+            if(x != -1) pt.setX(x);
+            if(y != -1) pt.setY(y);
+            textItem->setPos(pt);
+            return true;
+        }
+        return false;
+    }
+
+    bool SetItemSize(const QString&strName,int w,int h){
+        CustomTextItem *textItem = getTextItem(strName);
+        if(textItem)
+        {
+            QPoint pt = textItem->pos().toPoint();
+            textItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));
+            return true;
+        }
+
+        CustomPixmapItem *pixmapItem = getPixmapItem(strName);
+        if(pixmapItem)
+        {
+            QPoint pt = pixmapItem->pos().toPoint();
+            textItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));;
+            return true;
+        }
+        return false;
+    }
+
+    bool SetItemScale(const QString&strName,float scale){
+        CustomTextItem *textItem = getTextItem(strName);
+        if(textItem)
+        {
+            textItem->setScale(scale);
+            return true;
+        }
+
+        CustomPixmapItem *pixmapItem = getPixmapItem(strName);
+        if(pixmapItem)
+        {
+            pixmapItem->setScale(scale);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool GetItem(const QString&strName,int &x,int &y,int &w, int&h,float &scale){
+        CustomTextItem *textItem = getTextItem(strName);
+        if(textItem)
+        {
+            scale = textItem->scale();
+            QPoint pt = textItem->pos().toPoint();
+            QRectF rc = textItem->getItemRect();
+            x = pt.x();
+            y = pt.y();
+            w = rc.width();
+            h = rc.height();
+            return true;
+        }
+
+        CustomPixmapItem *pixmapItem = getPixmapItem(strName);
+        if(pixmapItem)
+        {
+            scale = pixmapItem->scale();
+            QPoint pt = pixmapItem->pos().toPoint();
+            QRectF rc = pixmapItem->getItemRect();
+            x = pt.x();
+            y = pt.y();
+            w = rc.width();
+            h = rc.height();
+            return true;
+        }
+        return false;
+    }
+
 signals:
-    void sigNoItemSelected();
+    void itemtemSelected();
 
 protected:
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
@@ -93,7 +195,7 @@ protected:
         if( !item )
         {
             clearSelection();
-            emit sigNoItemSelected();
+            emit itemtemSelected();
             pView_->viewport()->repaint();
         }
         m_pLastItem = item ;
@@ -213,6 +315,12 @@ public:
     void AddImageQR(const QString&strQrText, const QString&strName);
     void AddImage128(const QString&str128Text, const QString&strName);
     void AddImage(const QImage & image, const QString&strName);
+    void AddLine(bool horizontal,const QString&strName);
+
+    void SetItemPos(const QString&strName,int x,int y);
+    void SetItemScale(const QString&strName,float scale);
+    void GetItem(const QString&strName,int &x,int &y,float &scale);
+
     void SetPaperSize(qreal width,qreal height);
 
     QFont GetFont();
@@ -220,6 +328,7 @@ public:
 
 signals:
     void onItemSelected(QObject *pSender);
+    void onItemLoaded();
 
 protected:
     void keyPressEvent( QKeyEvent *event) override;
@@ -231,6 +340,7 @@ private:
 
     QString m_strTemlate;
     bool m_bCtrlPress = false;
+    bool m_bShiftPress = false;
 
     QObject *m_pSelect  = nullptr;
     CustomView *m_pView = nullptr;

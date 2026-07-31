@@ -62,7 +62,12 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
 
-    m_strTemplFile = m_pSet->value("lastTemplFile", strCfgPath + "/default.tem").toString();
+    int nFunc = 2;
+    ui->stackedWidget->setCurrentIndex(nFunc);
+
+    QString strTemp = QString("/default%1.tem").arg(nFunc);
+
+    m_strTemplFile = strCfgPath + strTemp;//m_pSet->value("lastTemplFile", strCfgPath + strTemp).toString();
 
     ui->checkBoxDouble->setChecked(true);
 
@@ -81,9 +86,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         qDebug() << "❌ 未连接实体打印机";
     }
 
-    m_recList = new DialogRecList(this);
-    m_referId = new DialogReferId(this);
+    m_recList   = new DialogRecList(this);
+    m_referId   = new DialogReferId(this);
     m_fieldList = new DialogFieldPickup(this);
+    m_labelEdit = new DialogLabelEdit(this);
 
     ui->lineEditUrl->hide();
 
@@ -92,12 +98,31 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->lineEditCode1->setText(m_pSet->value("Code1","20260507").toString());
     ui->lineEditCode2->setText(m_pSet->value("Code2","A").toString());
     ui->lineEditCode3->setText(m_pSet->value("Code3","0001").toString());
-    ui->lineEditPaperW->setText(m_pSet->value("PaperW","60").toString());
-    ui->lineEditPaperH->setText(m_pSet->value("PaperH","40").toString());
 
     ui->lineEditLenght->setText(m_pSet->value("askLen","16").toString());
     ui->checkBoxCheckLen->setChecked(m_pSet->value("checkLen",true).toBool());
     ui->checkBoxGen128->setChecked(m_pSet->value("gen128",true).toBool());
+
+    ui->lineEdit300->setText(m_pSet->value("text300","16").toString());
+    ui->lineEdit301->setText(m_pSet->value("text301","16").toString());
+    ui->lineEdit302->setText(m_pSet->value("text302","16").toString());
+    ui->lineEdit303->setText(m_pSet->value("text303","16").toString());
+    ui->spinBoxCount->setValue(m_pSet->value("count304","1").toInt());
+    ui->spinBoxUnit->setValue(m_pSet->value("text308","1").toInt());
+    ui->dateTimeEdit0->setDateTime(QDateTime::currentDateTime());
+    ui->dateTimeEdit1->setDateTime(QDateTime::currentDateTime());
+
+    ui->label300->setText(m_pSet->value("name300","厂商名称").toString().replace("：","").trimmed() + "：");
+    ui->label301->setText(m_pSet->value("name301","采购订单号").toString().replace("：","").trimmed() + "：");
+    ui->label302->setText(m_pSet->value("name302","品名/规格").toString().replace("：","").trimmed() + "：");
+    ui->label303->setText(m_pSet->value("name303","物料编码").toString().replace("：","").trimmed() + "：");
+    ui->label304->setText(m_pSet->value("name304","数量").toString().replace("：","").trimmed() + "：");
+    ui->label305->setText(m_pSet->value("name305","生产日期").toString().replace("：","").trimmed() + "：");
+    ui->label306->setText(m_pSet->value("name306","交货日期").toString().replace("：","").trimmed() + "：");
+    ui->label307->setText(m_pSet->value("name307","检验结果").toString().replace("：","").trimmed() + "：");
+
+    ui->lineEditPaperW->setText(m_pSet->value("PaperW","60").toString());
+    ui->lineEditPaperH->setText(m_pSet->value("PaperH","40").toString());
 
     connect(ui->pushButtonCreate,&QPushButton::clicked,this,[=]{
         QString strSN = ui->textEditAll->toPlainText().trimmed();
@@ -148,6 +173,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             ui->lineEditLimit->setText(dlg.m_strCount);
             m_pSet->setValue("limitCount",dlg.m_strCount);
         }
+    });
+    connect(ui->pushButtonLabelMng,&QPushButton::clicked,this,[=]{
+        m_labelEdit->show();
     });
 
     QTimer *pTMGet = new QTimer(this);
@@ -328,6 +356,135 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             });
         });
 
+        connect(ui->pushButtonToday0,&QPushButton::clicked,this,[=]{
+            ui->dateTimeEdit0->setDateTime(QDateTime::currentDateTime());
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->pushButtonToday1,&QPushButton::clicked,this,[=]{
+            ui->dateTimeEdit1->setDateTime(QDateTime::currentDateTime());
+            ui->pushButtonGenLabel->click();
+        });
+
+        connect(ui->lineEdit300,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->lineEdit301,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->lineEdit302,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->lineEdit303,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->radioButton0,&QRadioButton::clicked,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->radioButton1,&QRadioButton::clicked,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+
+        connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
+
+            QString strName300 = ui->label300->text().trimmed();
+            QString strText300 = ui->lineEdit300->text().trimmed();
+
+            QString strName301 = ui->label301->text().trimmed();
+            QString strText301 = ui->lineEdit301->text().trimmed();
+            QString strName302 = ui->label302->text().trimmed();
+            QString strText302 = ui->lineEdit302->text().trimmed();
+            QString strName303 = ui->label303->text().trimmed();
+            QString strText303 = ui->lineEdit303->text().trimmed();
+
+            QString strName304 = ui->label304->text().trimmed();
+            QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
+
+            QString strName305 = ui->label305->text().trimmed();
+            QString strText305 = QString("%1").arg(ui->dateTimeEdit0->dateTime().toString("yyyy-MM-dd"));//  HH:mm:ss
+            QString strName306 = ui->label306->text().trimmed();
+            QString strText306 = QString("%1").arg(ui->dateTimeEdit1->dateTime().toString("yyyy-MM-dd"));
+            QString strName307 = ui->label307->text().trimmed();
+            QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"  NG  ");
+
+            QString strText308 = QString("%1").arg(ui->spinBoxUnit->value());
+
+            strName300.replace("：","　　");
+            strName301.replace("：","　　");
+            strName302.replace("：","　　");
+            strName303.replace("：","　　");
+            strName304.replace("：","　　");
+            strName305.replace("：","　　");
+            strName306.replace("：","　　");
+            strName307.replace("：","　　");
+
+            m_pLabelView->AddText(strName300 + strText300, "value300");
+            m_pLabelView->AddText(strName301 + strText301, "value301");
+            m_pLabelView->AddText(strName302 + strText302, "value302");
+            m_pLabelView->AddText(strName303 + strText303, "value303");
+            m_pLabelView->AddText(strName304 + strText304, "value304");
+            m_pLabelView->AddText(strName305 + strText305, "value305");
+            m_pLabelView->AddText(strName306 + strText306, "value306");
+            m_pLabelView->AddText(strName307 , "value307");
+            m_pLabelView->AddText(strText307, "Qpass");
+            m_pLabelView->AddImageQR(strText303,"QrCode303");
+
+            m_pLabelView->AddLine(true,"LineH0");
+            m_pLabelView->AddLine(true,"LineH1");
+            m_pLabelView->AddLine(true,"LineH2");
+            m_pLabelView->AddLine(true,"LineH3");
+            m_pLabelView->AddLine(true,"LineH4");
+            m_pLabelView->AddLine(true,"LineH5");
+            m_pLabelView->AddLine(true,"LineH6");
+            m_pLabelView->AddLine(true,"LineH7");
+            m_pLabelView->AddLine(true,"LineH8");
+
+            m_pLabelView->AddLine(false,"LineV0");
+            m_pLabelView->AddLine(false,"LineV1");
+            m_pLabelView->AddLine(false,"LineV2");/**/
+
+            m_pSet->setValue("name300",strName300);
+            m_pSet->setValue("name301",strName301);
+            m_pSet->setValue("name302",strName302);
+            m_pSet->setValue("name303",strName303);
+            m_pSet->setValue("name304",strName304);
+            m_pSet->setValue("name305",strName305);
+            m_pSet->setValue("name306",strName306);
+            m_pSet->setValue("name307",strName307);
+
+            m_pSet->setValue("text300",strText300);
+            m_pSet->setValue("text301",strText301);
+            m_pSet->setValue("text302",strText302);
+            m_pSet->setValue("text303",strText303);
+            m_pSet->setValue("text308",strText308);
+
+            QTimer::singleShot(300,this,[=]{
+                if(ui->checkBoxAutoPrint->isChecked() || ui->checkBoxAutoOut->isChecked())
+                {
+                    ui->pushButtonPrint->click();
+                }
+            });
+        });
+
+        connect(ui->spinBoxCount,&QSpinBox::valueChanged,this,[=](int value){
+            int nUnit = ui->spinBoxUnit->value();
+            if(nUnit <= 0)
+                return;
+            int nPrintCount = value / nUnit;
+            if(value % nUnit) nPrintCount ++;
+            ui->spinBoxPrintCount->setValue(nPrintCount);
+            ui->pushButtonGenLabel->click();
+        });
+
+        connect(ui->spinBoxUnit,&QSpinBox::valueChanged,this,[=](int value){
+            int nUnit = value;
+            if(nUnit <= 0)
+                return;
+            int nPrintCount = ui->spinBoxCount->value() / nUnit;
+            if(ui->spinBoxCount->value() % nUnit) nPrintCount ++;
+            ui->spinBoxPrintCount->setValue(nPrintCount);
+            ui->pushButtonGenLabel->click();
+        });
+
         m_http = new HttpHandler(this);
         connect(m_http,&HttpHandler::onHttpReturn,this,[=](const QString&text,int code){
             // qDebug().noquote() << text;
@@ -433,6 +590,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
                 ui->pushButtonGet->click();
         });
     }
+
     QTimer::singleShot(600,this,[=]{
         ui->pushButtonSetPaper->click();
     });
@@ -468,7 +626,10 @@ void FramePrintControl::LoadTemplate(const QString&strFile)
 void FramePrintControl::BindLabelView(FrameLabelView *pView)
 {
     m_pLabelView = pView;
-    LoadTemplate(m_strTemplFile);
+    ui->pushButtonSetPaper->click();
+    QTimer::singleShot(100,this,[=]{
+        LoadTemplate(m_strTemplFile);
+    });
 }
 
 void FramePrintControl::on_pushButtonPreview_clicked()

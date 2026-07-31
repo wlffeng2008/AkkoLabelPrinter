@@ -131,10 +131,12 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
         if (type == "text")
         {
             QString text = obj["text"].toString();
-            qreal x = obj["x"].toDouble();
-            qreal y = obj["y"].toDouble();
-            qreal scale = obj["scale"].toDouble();
+            float x = obj["x"].toDouble();
+            float y = obj["y"].toDouble();
+            float scale = obj["scale"].toDouble();
             QString type_in = obj["type_in"].toString();
+
+            text.replace("：","　　");
 
             CustomTextItem *textItem = new CustomTextItem( text );
             textItem->setPos(x, y);
@@ -156,11 +158,12 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
         }
         else if (type == "pixmap")
         {
-            qreal x = obj["x"].toDouble();
-            qreal y = obj["y"].toDouble();
-            qreal scale = obj["scale"].toDouble();
+            float x = obj["x"].toDouble();
+            float y = obj["y"].toDouble();
+            float scale = obj["scale"].toDouble();
             QString type_in = obj["type_in"].toString();
             QString imageData = obj["imageData"].toString();
+
 
             // if(scale <= 0.1)
             //     scale = 0.5;
@@ -173,6 +176,8 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
                 x = nW-10 ;
             if(y > nH-10)
                 y = nH-10 ;
+
+            //qDebug() << name << x << y  << scale  << nW << nH;
 
             QImage image = decodeImage(imageData);
             CustomPixmapItem *pixmapItem = new CustomPixmapItem(QPixmap::fromImage(image));
