@@ -51,6 +51,58 @@ bool hasRealPhysicalPrinter()
     return false;
 }
 
+void drawTextAutoWrapAndScale(QPainter* painter, const QRect& rect, const QString& text, QFont baseFont, Qt::Alignment alignment = Qt::AlignCenter)
+{
+    if (!painter || rect.isEmpty() || text.isEmpty())
+        return;
+
+    const int minFontSize = 1;
+    const int maxFontSize = 200;
+    int bestFontSize = minFontSize;
+
+    // 二分搜索合适字号
+    int low = minFontSize;
+    int high = maxFontSize;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        baseFont.setPointSize(mid);
+
+        QTextDocument doc;
+        doc.setDefaultFont(baseFont);
+        doc.setPlainText(text);
+        doc.setTextWidth(rect.width()); // 设置换行宽度
+
+        QSizeF textSize = doc.size();
+        if (textSize.height() <= rect.height())
+        {
+            bestFontSize = mid;
+            low = mid + 1;
+        }
+        else
+        {
+            high = mid - 1;
+        }
+    }
+
+    baseFont.setPointSize(bestFontSize);
+
+    QTextDocument doc;
+    doc.setDefaultFont(baseFont);
+    doc.setPlainText(text);
+    doc.setTextWidth(rect.width());
+
+    // 设置文本对齐
+    QTextOption option;
+    option.setAlignment(alignment);
+    doc.setDefaultTextOption(option);
+
+    painter->save();
+    painter->translate(rect.topLeft());
+    doc.drawContents(painter, QRectF(0,0, rect.width(), rect.height()));
+    painter->restore();
+}
+
 FramePrintControl::FramePrintControl(QWidget *parent)
     : QFrame(parent)
     , ui(new Ui::FramePrintControl)
@@ -70,6 +122,18 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_strTemplFile = strCfgPath + strTemp;//m_pSet->value("lastTemplFile", strCfgPath + strTemp).toString();
 
     ui->checkBoxDouble->setChecked(true);
+
+    // {
+    //     QImage textImg(1000,300,QImage::Format_RGB32);
+    //     QPainter painter(&textImg);
+
+    //     QFont font("Microsoft YaHei");
+    //     painter.setPen(Qt::black);
+    //     painter.fillRect(QRect(0,0,1000,300),Qt::white);
+    //     QString str = "PCB\\313×121.5×1.6mm,FR4,94V-0,\\铅喷锡板,顶层油墨塞孔,亚光黑油白字\\MOD007_V5_HE-TMR(5088-1033_DFN4-16K)-3M-ARGB-V0.1-Gerber-20260302";
+    //     drawTextAutoWrapAndScale(&painter,QRect(0,0,1000,300),str,font);
+    //     textImg.save("D:\\textImage.png");
+    // }
 
     bool hasPrinter = QPrinterInfo::availablePrinters().size() > 0;
 
@@ -419,14 +483,36 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
             m_pLabelView->AddText(strName300 + strText300, "value300");
             m_pLabelView->AddText(strName301 + strText301, "value301");
-            m_pLabelView->AddText(strName302 + strText302, "value302");
             m_pLabelView->AddText(strName303 + strText303, "value303");
             m_pLabelView->AddText(strName304 + strText304, "value304");
             m_pLabelView->AddText(strName305 + strText305, "value305");
             m_pLabelView->AddText(strName306 + strText306, "value306");
-            m_pLabelView->AddText(strName307 , "value307");
+            m_pLabelView->AddText(strName307.trimmed() , "value307");
             m_pLabelView->AddText(strText307, "Qpass");
             m_pLabelView->AddImageQR(strText303,"QrCode303");
+            if(strText302.length()>40)
+            {
+                m_pLabelView->AddText(strName302.trimmed() , "value302");
+                QImage textImg(420,124,QImage::Format_RGB32);
+                QPainter painter(&textImg);
+
+                QFont font("Microsoft YaHei");
+                painter.setPen(Qt::black);
+                painter.fillRect(QRect(0,0,420,124),Qt::white);
+                QString str = strText302;//"PCB\\313×121.5×1.6mm,FR4,94V-0,\\铅喷锡板,顶层油墨塞孔,亚光黑油白字\\MOD007_V5_HE-TMR(5088-1033_DFN4-16K)-3M-ARGB-V0.1-Gerber-20260302";
+                drawTextAutoWrapAndScale(&painter,QRect(0,0,420,124),str,font);
+                m_pLabelView->AddImage(textImg,"longText");
+                m_pLabelView->SetItemScale("longText",1);
+            }
+            else
+            {
+                m_pLabelView->AddText(strName302 + strText302, "value302");
+                QImage textImg(420,124,QImage::Format_RGB32);
+                QPainter painter(&textImg);
+                painter.fillRect(QRect(0,0,420,124),Qt::white);
+                m_pLabelView->AddImage(textImg,"longText");
+                m_pLabelView->SetItemScale("longText",0.1);
+            }
 
             m_pLabelView->AddLine(true,"LineH0");
             m_pLabelView->AddLine(true,"LineH1");
@@ -440,7 +526,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
             m_pLabelView->AddLine(false,"LineV0");
             m_pLabelView->AddLine(false,"LineV1");
-            m_pLabelView->AddLine(false,"LineV2");/**/
+            m_pLabelView->AddLine(false,"LineV2");
 
             m_pSet->setValue("name300",strName300);
             m_pSet->setValue("name301",strName301);
