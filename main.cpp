@@ -6,6 +6,7 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
     QApplication a(argc, argv);
     QString strStyle=R"(
 
@@ -42,13 +43,19 @@ int main(int argc, char *argv[])
     )";
 
     a.setStyleSheet(strStyle );
-    QLocale::setDefault( QLocale(QLocale::Chinese, QLocale::China) );
-    QTranslator translator;
-    if( translator.load( "qt_zh_CN.qm", QLibraryInfo::path( QLibraryInfo::TranslationsPath ) ) )
-    {
-        a.installTranslator( &translator );
-    }
 
+    QLocale::setDefault( QLocale(QLocale::Chinese, QLocale::China) );
+    QTranslator translatorA;
+    QTranslator translatorB;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    translatorA.load("qt_zh_CN.qm",     QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+    translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#else
+    translatorA.load("qt_zh_CN.qm",     QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
+    a.installTranslator(&translatorA);
+    a.installTranslator(&translatorB);
     MainWindow w;
     w.show();
     return a.exec();
