@@ -147,6 +147,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             {
                 QFont font1;
                 font1.setFamily(obj["font"].toString());
+                font1.setFamily("微软雅黑");
                 font1.setStyleName(obj["style"].toString());
                 font1.setBold( obj["bold"].toBool());
                 font1.setPointSize(obj["size"].toInt());
@@ -163,7 +164,6 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             float scale = obj["scale"].toDouble();
             QString type_in = obj["type_in"].toString();
             QString imageData = obj["imageData"].toString();
-
 
             // if(scale <= 0.1)
             //     scale = 0.5;

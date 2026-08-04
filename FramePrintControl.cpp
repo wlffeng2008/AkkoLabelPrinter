@@ -169,7 +169,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     ui->lineEdit300->setText(m_pSet->value("text300","16").toString());
     ui->lineEdit301->setText(m_pSet->value("text301","16").toString());
-    ui->lineEdit302->setText(m_pSet->value("text302","16").toString());
+    ui->textEdit302->setText(m_pSet->value("text302","16").toString());
     ui->lineEdit303->setText(m_pSet->value("text303","16").toString());
     ui->spinBoxCount->setValue(m_pSet->value("count304","1").toInt());
     ui->spinBoxUnit->setValue(m_pSet->value("text308","1").toInt());
@@ -180,7 +180,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->label301->setText(m_pSet->value("name301","采购订单号").toString().replace("：","").trimmed() + "：");
     ui->label302->setText(m_pSet->value("name302","品名/规格").toString().replace("：","").trimmed() + "：");
     ui->label303->setText(m_pSet->value("name303","物料编码").toString().replace("：","").trimmed() + "：");
-    ui->label304->setText(m_pSet->value("name304","数量").toString().replace("：","").trimmed() + "：");
+    ui->label304->setText(m_pSet->value("name304","数　　量").toString().replace("：","").trimmed() + "：");
     ui->label305->setText(m_pSet->value("name305","生产日期").toString().replace("：","").trimmed() + "：");
     ui->label306->setText(m_pSet->value("name306","交货日期").toString().replace("：","").trimmed() + "：");
     ui->label307->setText(m_pSet->value("name307","检验结果").toString().replace("：","").trimmed() + "：");
@@ -435,7 +435,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         connect(ui->lineEdit301,&QLineEdit::textChanged,this,[=]{
             ui->pushButtonGenLabel->click();
         });
-        connect(ui->lineEdit302,&QLineEdit::textChanged,this,[=]{
+        connect(ui->textEdit302,&QTextEdit::textChanged,this,[=]{
             ui->pushButtonGenLabel->click();
         });
         connect(ui->lineEdit303,&QLineEdit::textChanged,this,[=]{
@@ -447,7 +447,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         connect(ui->radioButton1,&QRadioButton::clicked,this,[=]{
             ui->pushButtonGenLabel->click();
         });
-
+        //ui->textEdit302->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
 
             QString strName300 = ui->label300->text().trimmed();
@@ -456,7 +456,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strName301 = ui->label301->text().trimmed();
             QString strText301 = ui->lineEdit301->text().trimmed();
             QString strName302 = ui->label302->text().trimmed();
-            QString strText302 = ui->lineEdit302->text().trimmed();
+            QString strText302 = ui->textEdit302->toPlainText().trimmed();
             QString strName303 = ui->label303->text().trimmed();
             QString strText303 = ui->lineEdit303->text().trimmed();
 
@@ -468,7 +468,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strName306 = ui->label306->text().trimmed();
             QString strText306 = QString("%1").arg(ui->dateTimeEdit1->dateTime().toString("yyyy-MM-dd"));
             QString strName307 = ui->label307->text().trimmed();
-            QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"  NG  ");
+            QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"　NG　");
 
             QString strText308 = QString("%1").arg(ui->spinBoxUnit->value());
 

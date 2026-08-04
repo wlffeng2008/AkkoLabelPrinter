@@ -780,77 +780,20 @@
         <x>12</x>
         <y>52</y>
         <width>344</width>
-        <height>370</height>
+        <height>395</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout" rowminimumheight="40,40,40,40,40,40,40,40">
        <property name="horizontalSpacing">
         <number>10</number>
        </property>
-       <item row="7" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
-         <property name="spacing">
-          <number>20</number>
-         </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-         </property>
-         <item alignment="Qt::AlignmentFlag::AlignLeft">
-          <widget class="QRadioButton" name="radioButton0">
-           <property name="text">
-            <string>PASS</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignmentFlag::AlignLeft">
-          <widget class="QRadioButton" name="radioButton1">
-           <property name="text">
-            <string>NG</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit302">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>24</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label302">
+       <item row="6" column="0">
+        <widget class="QLabel" name="label306">
          <property name="text">
-          <string>品名/规格：</string>
+          <string>交货日期：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="lineEdit303">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>24</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit300">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>24</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -884,18 +827,28 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label306">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label303">
          <property name="text">
-          <string>交货日期：</string>
+          <string>物料编码：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit301">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label302">
+         <property name="text">
+          <string>品名/规格：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEdit300">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -904,30 +857,60 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEdit303">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QDateTimeEdit" name="dateTimeEdit0">
+           <property name="minimumSize">
+            <size>
+             <width>130</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="dateTime">
+            <datetime>
+             <hour>0</hour>
+             <minute>0</minute>
+             <second>0</second>
+             <year>2025</year>
+             <month>1</month>
+             <day>1</day>
+            </datetime>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonToday0">
+           <property name="text">
+            <string>&lt;--- 今日</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label301">
          <property name="text">
           <string>采购订单号：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label300">
-         <property name="text">
-          <string>厂商：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label303">
-         <property name="text">
-          <string>物料编码：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -993,45 +976,25 @@
          </item>
         </layout>
        </item>
-       <item row="5" column="1">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>20</number>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit301">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>24</height>
+          </size>
          </property>
-         <item>
-          <widget class="QDateTimeEdit" name="dateTimeEdit0">
-           <property name="minimumSize">
-            <size>
-             <width>130</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="dateTime">
-            <datetime>
-             <hour>0</hour>
-             <minute>0</minute>
-             <second>0</second>
-             <year>2025</year>
-             <month>1</month>
-             <day>1</day>
-            </datetime>
-           </property>
-           <property name="displayFormat">
-            <string>yyyy-MM-dd</string>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButtonToday0">
-           <property name="text">
-            <string>&lt;--- 今日</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label300">
+         <property name="text">
+          <string>厂商：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
        </item>
        <item row="6" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -1083,13 +1046,43 @@
          </item>
         </layout>
        </item>
+       <item row="7" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+         <property name="spacing">
+          <number>20</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+         </property>
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
+          <widget class="QRadioButton" name="radioButton0">
+           <property name="text">
+            <string>PASS</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
+          <widget class="QRadioButton" name="radioButton1">
+           <property name="text">
+            <string>NG</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="1">
+        <widget class="QTextEdit" name="textEdit302"/>
+       </item>
       </layout>
      </widget>
      <widget class="QPushButton" name="pushButtonGenLabel">
       <property name="geometry">
        <rect>
         <x>94</x>
-        <y>438</y>
+        <y>460</y>
         <width>135</width>
         <height>35</height>
        </rect>

@@ -31,7 +31,7 @@ static QImage genQrCode(const std::string &strText,const std::string&strFile="/1
         if (nRet == 0)
             nRet = ::ZBarcode_Print(symbol,0); //antate angle 旋转角度
 
-        qDebug() << "genQrCode" << nRet << strFile;
+        // qDebug() << "genQrCode" << nRet << strFile;
 
         ::ZBarcode_Delete(symbol);
 
@@ -47,7 +47,7 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     , ui(new Ui::FrameLabelView)
 {
     ui->setupUi(this);
-    s_font.setFamily("方正兰亭黒_GBK");
+    s_font.setFamily("微软雅黑");
     s_font.setPointSize(9);
 
     m_pView = ui->graphicsView;
