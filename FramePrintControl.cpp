@@ -57,7 +57,7 @@ void drawTextAutoWrapAndScale(QPainter* painter, const QRect& rect, const QStrin
         return;
 
     const int minFontSize = 1;
-    const int maxFontSize = 200;
+    const int maxFontSize = 18;
     int bestFontSize = minFontSize;
 
     // 二分搜索合适字号
@@ -490,7 +490,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddText(strName307.trimmed() , "value307");
             m_pLabelView->AddText(strText307, "Qpass");
             m_pLabelView->AddImageQR(strText303,"QrCode303");
-            if(strText302.length()>40)
+            if(strText302.length()>32)
             {
                 m_pLabelView->AddText(strName302.trimmed() , "value302");
                 QImage textImg(420,124,QImage::Format_RGB32);
