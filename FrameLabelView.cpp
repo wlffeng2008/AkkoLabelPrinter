@@ -175,6 +175,11 @@ void FrameLabelView::Save()
     CLabelSave::saveSceneWithImages(m_pScene,m_strTemlate);
 }
 
+void FrameLabelView::SetPrintMatrix(int nRows,int nCols)
+{
+    m_pView->setPrintMatrix(nRows,nCols);
+}
+
 void FrameLabelView::Preview()
 {
     QRectF rc(0,0,m_pView->size().width(),m_pView->size().height());

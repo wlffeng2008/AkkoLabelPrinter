@@ -306,7 +306,9 @@ public:
     void Save();
     void Preview();
     void Print();
+    void SetPrintMatrix(int nRows=1,int nCols=1);
     void Delete();
+
 
     bool Remove(const QString&strName);
 

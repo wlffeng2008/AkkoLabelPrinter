@@ -114,6 +114,8 @@ private:
     DialogLabelEdit *m_labelEdit = nullptr;
     void ShowSN();
 
+    void Calculate();
+
     QString m_strTemplFile;
     void LoadTemplate(const QString&strFile);
 
