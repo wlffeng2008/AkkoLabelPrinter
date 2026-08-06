@@ -17,6 +17,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPrintPreviewDialog>
 
 // 检测是否存在【实体打印机】
 bool hasRealPhysicalPrinter()
@@ -110,7 +111,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->setupUi(this);
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
     QDir D(strCfgPath);
-    if(!D.exists()) D.mkdir(strCfgPath);
+    if(!D.exists())
+        D.mkdir(strCfgPath);
 
     m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
 
@@ -122,18 +124,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_strTemplFile = strCfgPath + strTemp;//m_pSet->value("lastTemplFile", strCfgPath + strTemp).toString();
 
     ui->checkBoxDouble->setChecked(true);
-
-    // {
-    //     QImage textImg(1000,300,QImage::Format_RGB32);
-    //     QPainter painter(&textImg);
-
-    //     QFont font("Microsoft YaHei");
-    //     painter.setPen(Qt::black);
-    //     painter.fillRect(QRect(0,0,1000,300),Qt::white);
-    //     QString str = "PCB\\313×121.5×1.6mm,FR4,94V-0,\\铅喷锡板,顶层油墨塞孔,亚光黑油白字\\MOD007_V5_HE-TMR(5088-1033_DFN4-16K)-3M-ARGB-V0.1-Gerber-20260302";
-    //     drawTextAutoWrapAndScale(&painter,QRect(0,0,1000,300),str,font);
-    //     textImg.save("D:\\textImage.png");
-    // }
 
     bool hasPrinter = QPrinterInfo::availablePrinters().size() > 0;
 
@@ -187,6 +177,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     ui->lineEditPaperW->setText(m_pSet->value("PaperW","60").toString());
     ui->lineEditPaperH->setText(m_pSet->value("PaperH","40").toString());
+    ui->spinBoxPrintCol->setValue(m_pSet->value("PrintCol",1).toInt());
+    ui->spinBoxPrintRow->setValue(m_pSet->value("PrintRow",1).toInt());
 
     connect(ui->pushButtonCreate,&QPushButton::clicked,this,[=]{
         QString strSN = ui->textEditAll->toPlainText().trimmed();
@@ -331,11 +323,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
         static int autoGet = 0;
         QTimer *pTMGet = new QTimer(this);
-        connect(ui->checkBoxAutoGet,&QCheckBox::checkStateChanged,this,[=](Qt::CheckState state){
+        connect(ui->checkBoxAutoGet,&QCheckBox::toggled,this,[=](bool checked){
             pTMGet->stop();
             ui->progressBarGet->setRange(0,ui->lineEditIntrval->text().toInt());
             autoGet = 0;
-            bool checked = ui->checkBoxAutoGet->isChecked();
             if(checked) pTMGet->start(1000);
         });
 
@@ -447,7 +438,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         connect(ui->radioButton1,&QRadioButton::clicked,this,[=]{
             ui->pushButtonGenLabel->click();
         });
-        //ui->textEdit302->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+        connect(ui->radioButton2,&QRadioButton::clicked,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+
         connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
 
             QString strName300 = ui->label300->text().trimmed();
@@ -468,7 +462,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strName306 = ui->label306->text().trimmed();
             QString strText306 = QString("%1").arg(ui->dateTimeEdit1->dateTime().toString("yyyy-MM-dd"));
             QString strName307 = ui->label307->text().trimmed();
-            QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"　NG　");
+            QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"  NG  ");
+            if(ui->radioButton2->isChecked()) strText307 = "签章";
 
             QString strText308 = QString("%1").arg(ui->spinBoxUnit->value());
 
@@ -487,32 +482,37 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddText(strName304 + strText304, "value304");
             m_pLabelView->AddText(strName305 + strText305, "value305");
             m_pLabelView->AddText(strName306 + strText306, "value306");
-            m_pLabelView->AddText(strName307.trimmed() , "value307");
+            m_pLabelView->AddText(strName307.trimmed() , "value307");            
             m_pLabelView->AddText(strText307, "Qpass");
             m_pLabelView->AddImageQR(strText303,"QrCode303");
-            if(strText302.length()>32)
+            if(strText302.length()>24)
             {
                 m_pLabelView->AddText(strName302.trimmed() , "value302");
-                QImage textImg(420,124,QImage::Format_RGB32);
+
+                QImage textImg(400,120,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
+                painter.fillRect(textImg.rect(),Qt::NoBrush);
 
                 QFont font("Microsoft YaHei");
                 painter.setPen(Qt::black);
-                painter.fillRect(QRect(0,0,420,124),Qt::white);
-                QString str = strText302;//"PCB\\313×121.5×1.6mm,FR4,94V-0,\\铅喷锡板,顶层油墨塞孔,亚光黑油白字\\MOD007_V5_HE-TMR(5088-1033_DFN4-16K)-3M-ARGB-V0.1-Gerber-20260302";
-                drawTextAutoWrapAndScale(&painter,QRect(0,0,420,124),str,font);
+                QString str = strText302;
+                drawTextAutoWrapAndScale(&painter,textImg.rect(),str,font);
                 m_pLabelView->AddImage(textImg,"longText");
                 m_pLabelView->SetItemScale("longText",1);
             }
             else
             {
                 m_pLabelView->AddText(strName302 + strText302, "value302");
-                QImage textImg(420,124,QImage::Format_RGB32);
+                QImage textImg(4,4,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
-                painter.fillRect(QRect(0,0,420,124),Qt::white);
+                painter.fillRect(QRect(0,0,4,4),Qt::white);
                 m_pLabelView->AddImage(textImg,"longText");
                 m_pLabelView->SetItemScale("longText",0.1);
             }
+
+            QString strExt = " ";
+            if(ui->radioButton2->isChecked()) strExt = "(不可遮盖二维码)";
+            m_pLabelView->AddText(strExt , "value308");
 
             m_pLabelView->AddLine(true,"LineH0");
             m_pLabelView->AddLine(true,"LineH1");
@@ -551,24 +551,21 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             });
         });
 
-        connect(ui->spinBoxCount,&QSpinBox::valueChanged,this,[=](int value){
-            int nUnit = ui->spinBoxUnit->value();
-            if(nUnit <= 0)
-                return;
-            int nPrintCount = value / nUnit;
-            if(value % nUnit) nPrintCount ++;
-            ui->spinBoxPrintCount->setValue(nPrintCount);
+        connect(ui->spinBoxCount,&QSpinBox::textChanged,this,[=](const QString&){
+            Calculate();
             ui->pushButtonGenLabel->click();
         });
 
-        connect(ui->spinBoxUnit,&QSpinBox::valueChanged,this,[=](int value){
-            int nUnit = value;
-            if(nUnit <= 0)
-                return;
-            int nPrintCount = ui->spinBoxCount->value() / nUnit;
-            if(ui->spinBoxCount->value() % nUnit) nPrintCount ++;
-            ui->spinBoxPrintCount->setValue(nPrintCount);
+        connect(ui->spinBoxUnit,&QSpinBox::textChanged,this,[=](const QString&){
+            Calculate();
             ui->pushButtonGenLabel->click();
+        });
+
+        connect(ui->spinBoxPrintCol,&QSpinBox::textChanged,this,[=](const QString&){
+            Calculate();
+        });
+        connect(ui->spinBoxPrintRow,&QSpinBox::textChanged,this,[=](const QString&){
+            Calculate();
         });
 
         m_http = new HttpHandler(this);
@@ -694,6 +691,22 @@ void FramePrintControl::ShowSN()
         ui->pushButtonCreate->click();
 }
 
+void FramePrintControl::Calculate()
+{
+    int nCols = ui->spinBoxPrintCol->value();
+    int nRows = ui->spinBoxPrintRow->value();
+    int nUnit = ui->spinBoxUnit->value() * nCols * nRows;
+    int nCount = ui->spinBoxCount->value();
+    if(nUnit <= 0) return;
+    int nPrintCount = nCount / nUnit;
+    if(nCount % nUnit) nPrintCount ++;
+
+    ui->spinBoxPrintCount->setValue(nPrintCount);
+
+    m_pSet->setValue("PrintCol",nCols);
+    m_pSet->setValue("PrintRow",nRows);
+}
+
 FramePrintControl::~FramePrintControl()
 {
     delete ui;
@@ -720,11 +733,167 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
 
 void FramePrintControl::on_pushButtonPreview_clicked()
 {
-    m_pLabelView->Preview();
+    int nCols = ui->spinBoxPrintCol->value();
+    int nRows = ui->spinBoxPrintRow->value();
+    if(nCols < 1) nCols = 1;
+    if(nRows < 1) nRows = 1;
+    m_pLabelView->SetPrintMatrix(nRows,nCols);
+
+    if(ui->stackedWidget->currentIndex() == 2)
+    {
+        int nUnit = ui->spinBoxUnit->value();
+        int nProCount = ui->spinBoxCount->value();
+        int nLabelCount = nProCount/ nUnit;
+        int nLast = nProCount % nUnit;
+        if(nLast) nLabelCount++;
+        if(nLast == 0) nLast = nUnit;
+
+        int index = 0;
+        bool finish = false;
+        int nPages = nLabelCount/(nCols * nRows);
+        if(nLabelCount % (nCols * nRows))
+            nPages++;
+
+        int nW = m_pLabelView->size().width();
+        int nH = m_pLabelView->size().height();
+        QPixmap pixmap2(nW * nCols, nH * nRows);
+        pixmap2.fill(Qt::white);
+        for(int page=0; page<nPages; page++)
+        {
+            if(finish) break;
+            pixmap2.fill(Qt::white);
+            QPainter painter2(&pixmap2);
+            for(int row=0; row<nRows; row++)
+            {
+                if(finish) break;
+
+                for(int col=0; col<nCols; col++)
+                {
+                    index++;
+                    if(index>nLabelCount)
+                    {
+                        finish = true;
+                        break;
+                    }
+
+                    QString strName304 = ui->label304->text().trimmed();
+                    QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
+                    strName304.replace("：","");
+                    int ship = nUnit;
+                    if(index == nLabelCount) ship = nLast;
+                    QString strCount = QString("%1　　%2 (本箱：%3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
+                    //qDebug() << strCount;
+
+                    m_pLabelView->AddText(strCount, "value304");
+                    m_pLabelView->update();
+
+                    QPixmap pixmap = m_pLabelView->toPixmap();
+                    painter2.drawPixmap(col*nW,row*nH,nW,nH,pixmap);
+                }
+            }
+        }
+
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::NativeFormat);
+
+        QPrintPreviewDialog previewDialog(&printer, this);
+        connect(&previewDialog, &QPrintPreviewDialog::paintRequested, this, [=](QPrinter *printer) {
+            QPainter painter(printer);
+            QRect rect = painter.viewport();
+            QSize size = pixmap2.size();
+            size.scale(rect.size(), Qt::KeepAspectRatio);  // 保持比例缩放
+            painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+            painter.setWindow(pixmap2.rect());
+            painter.drawPixmap(0, 0, pixmap2);
+        });
+
+        previewDialog.exec();
+
+        return;
+    }
+
+    m_pLabelView->Preview();    
+
 }
 
 void FramePrintControl::on_pushButtonPrint_clicked()
 {
+    int nCols = ui->spinBoxPrintCol->value();
+    int nRows = ui->spinBoxPrintRow->value();
+    m_pLabelView->SetPrintMatrix(nRows,nCols);
+    if(ui->stackedWidget->currentIndex() == 2)
+    {
+        //int nPrintCount = ui->spinBoxPrintCount->value();
+        //for(int p=0; p<nPrintCount; p++)
+        {
+            int nUnit = ui->spinBoxUnit->value();
+            int nProCount = ui->spinBoxCount->value();
+            int nLabelCount = nProCount/ nUnit;
+            int nLast = nProCount % nUnit;
+            if(nLast) nLabelCount++;
+            if(nLast == 0) nLast = nUnit;
+
+            int index = 0;
+            bool finish = false;
+            int nPages = nLabelCount/(nCols * nRows);
+            if(nLabelCount % (nCols * nRows))
+                nPages++;
+
+            int nW = m_pLabelView->size().width();
+            int nH = m_pLabelView->size().height();
+            QPixmap pixmap2(nW * nCols, nH * nRows);
+            pixmap2.fill(Qt::white);
+            for(int page=0; page<nPages; page++)
+            {
+                if(finish) break;
+                pixmap2.fill(Qt::white);
+                QPainter painter2(&pixmap2);
+                for(int row=0; row<nRows; row++)
+                {
+                    if(finish) break;
+
+                    for(int col=0; col<nCols; col++)
+                    {
+                        index++;
+                        if(index > nLabelCount)
+                        {
+                            finish = true;
+                            break;
+                        }
+
+                        QString strName304 = ui->label304->text().trimmed();
+                        QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
+                        strName304.replace("：","");
+                        int ship = nUnit;
+                        if(index == nLabelCount) ship = nLast;
+                        QString strCount = QString("%1　　%2 (本箱：%3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
+                        //qDebug() << strCount;
+
+                        m_pLabelView->AddText(strCount, "value304");
+                        m_pLabelView->update();
+
+                        QPixmap pixmap = m_pLabelView->toPixmap();
+                        painter2.drawPixmap(col*nW,row*nH,nW,nH,pixmap);
+                    }
+                }
+            }
+
+            {
+                QPrinter printer(QPrinter::HighResolution);
+                printer.setOutputFormat(QPrinter::NativeFormat);
+
+                QPainter painter(&printer);
+                QRect rect = painter.viewport();
+                QSize size = pixmap2.size();
+                size.scale(rect.size(), Qt::KeepAspectRatio);
+                painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+                painter.setWindow(pixmap2.rect());
+                painter.drawPixmap(0, 0, pixmap2);
+            }
+        }
+        return;
+    }
+
     int nCount = ui->spinBoxPrintCount->value();
     for(int i=0; i<nCount; i++)
         m_pLabelView->Print();

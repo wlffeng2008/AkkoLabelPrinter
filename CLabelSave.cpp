@@ -61,7 +61,10 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
             textObject["x"] = textItem->pos().x();
             textObject["y"] = textItem->pos().y();
             textObject["scale"] = textItem->scale();
-            textObject["type_in"] = textItem->data( 0 ).toString();
+            textObject["type_in0"] = textItem->data( 0 ).toInt();
+            textObject["type_in1"] = textItem->data( 1 ).toInt();
+            textObject["type_in2"] = textItem->data( 2 ).toInt();
+            textObject["type_in3"] = textItem->data( 3 ).toInt();
             itemsArray.append(textObject);
         }
         else if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
@@ -72,7 +75,10 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
             pixmapObject["x"] = pixmapItem->pos().x();
             pixmapObject["y"] = pixmapItem->pos().y();
             pixmapObject["scale"] = pixmapItem->scale();
-            pixmapObject["type_in"] = pixmapItem->data( 0 ).toString();
+            pixmapObject["type_in0"] = pixmapItem->data( 0 ).toInt();
+            pixmapObject["type_in1"] = pixmapItem->data( 1 ).toInt();
+            pixmapObject["type_in2"] = pixmapItem->data( 2 ).toInt();
+            pixmapObject["type_in3"] = pixmapItem->data( 3 ).toInt();
 
             QImage image = pixmapItem->pixmap().toImage();
             QByteArray imageData = encodeImage(image);
@@ -134,14 +140,20 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             float x = obj["x"].toDouble();
             float y = obj["y"].toDouble();
             float scale = obj["scale"].toDouble();
-            QString type_in = obj["type_in"].toString();
+            int type_in0 = obj["type_in0"].toInt();
+            int type_in1 = obj["type_in1"].toInt();
+            int type_in2 = obj["type_in2"].toInt();
+            int type_in3 = obj["type_in3"].toInt();
 
             text.replace("：","　　");
 
             CustomTextItem *textItem = new CustomTextItem( text );
             textItem->setPos(x, y);
             textItem->setScale( scale );
-            textItem->setData( 0, type_in );
+            textItem->setData( 0, type_in0 );
+            textItem->setData( 1, type_in1 );
+            textItem->setData( 2, type_in2 );
+            textItem->setData( 3, type_in3 );
             textItem->setName( name );
             if(obj.contains("font"))
             {
@@ -162,20 +174,17 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             float x = obj["x"].toDouble();
             float y = obj["y"].toDouble();
             float scale = obj["scale"].toDouble();
-            QString type_in = obj["type_in"].toString();
+            int type_in0 = obj["type_in0"].toInt();
+            int type_in1 = obj["type_in1"].toInt();
+            int type_in2 = obj["type_in2"].toInt();
+            int type_in3 = obj["type_in3"].toInt();
             QString imageData = obj["imageData"].toString();
 
-            // if(scale <= 0.1)
-            //     scale = 0.5;
-            if(x<0)
-                x=0 ;
-            if(y<0)
-                y=0 ;
-
-            if(x > nW-10)
-                x = nW-10 ;
-            if(y > nH-10)
-                y = nH-10 ;
+            if(scale <= 0.05) scale = 0.5;
+            if(x < 0) x=0 ;
+            if(y < 0) y=0 ;
+            if(x > nW-10) x = nW-10 ;
+            if(y > nH-10) y = nH-10 ;
 
             //qDebug() << name << x << y  << scale  << nW << nH;
 
@@ -183,7 +192,10 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             CustomPixmapItem *pixmapItem = new CustomPixmapItem(QPixmap::fromImage(image));
             pixmapItem->setPos(x, y);
             pixmapItem->setScale( scale );
-            pixmapItem->setData( 0, type_in );
+            pixmapItem->setData( 0, type_in0 );
+            pixmapItem->setData( 1, type_in1 );
+            pixmapItem->setData( 2, type_in2 );
+            pixmapItem->setData( 3, type_in3 );
             pixmapItem->setName( name );
 
             scene->addItem(pixmapItem);

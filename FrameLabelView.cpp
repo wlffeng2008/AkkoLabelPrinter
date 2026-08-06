@@ -51,7 +51,6 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     s_font.setPointSize(9);
 
     m_pView = ui->graphicsView;
-
     m_pScene = new CustomScene(this);
 
     m_pView->setScene(m_pScene);
@@ -62,21 +61,13 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     m_pView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     connect( m_pScene, &CustomScene::itemtemSelected, this, [=](){
-        //emit onItemSelected(nullptr);
-        qDebug() << "itemtemSelected";
+        emit onItemSelected(nullptr);
     });
 }
 
 FrameLabelView::~FrameLabelView()
 {
     delete ui;
-}
-
-void FrameLabelView::resizeEvent(QResizeEvent *event)
-{
-    // SetPaperSize(600,600);
-
-    QFrame::resizeEvent(event);
 }
 
 void FrameLabelView::SetPaperSize(qreal width, qreal height)
@@ -175,16 +166,19 @@ void FrameLabelView::Save()
     CLabelSave::saveSceneWithImages(m_pScene,m_strTemlate);
 }
 
+void FrameLabelView::SetPrintMatrix(int nRows,int nCols)
+{
+    m_pView->setPrintMatrix(nRows,nCols);
+}
+
 void FrameLabelView::Preview()
 {
-    QRectF rc(0,0,m_pView->size().width(),m_pView->size().height());
-    m_pView->printPreviewAndPrint(rc);
+    m_pView->preview();
 }
 
 void FrameLabelView::Print()
 {
-    QRectF rc(0,0,m_pView->size().width(),m_pView->size().height());
-    m_pView->print(rc);
+    m_pView->print();
 }
 
 void FrameLabelView::AddText(const QString&strText, const QString&strName)
@@ -206,10 +200,10 @@ void FrameLabelView::AddText(const QString&strText, const QString&strName)
     textItem->setPlainText(strText);
 }
 
-void FrameLabelView::AddImage(const QImage & image, const QString&strName)
+void*FrameLabelView::AddImage(const QImage&image, const QString&strName)
 {
     if(image.isNull())
-        return ;
+        return nullptr;
     CustomPixmapItem* imgItem = m_pScene->getPixmapItem(strName);
     if(!imgItem)
     {
@@ -223,6 +217,7 @@ void FrameLabelView::AddImage(const QImage & image, const QString&strName)
         } );
     }
     imgItem->setPixmap(QPixmap::fromImage(image));
+    return imgItem;
 }
 
 void FrameLabelView::AddImageFile(const QString&strFile, const QString&strName)
@@ -244,16 +239,13 @@ void FrameLabelView::AddImageQR(const QString&strQrText, const QString&strName)
 
 void FrameLabelView::AddLine(bool horizontal,const QString&strName)
 {
-    //CustomPixmapItem* imgItem = m_pScene->getPixmapItem(strName);
-    //if(!imgItem)
-    //    return;
-
     QImage image(QSize(1000,4),QImage::Format_RGB32);
     if(!horizontal)
         image = QImage(QSize(4,1000),QImage::Format_RGB32);
     QPainter painter(&image);
     painter.fillRect(image.rect(),Qt::black);
-    AddImage(image,strName);
+    CustomPixmapItem* imgItem = (CustomPixmapItem*)AddImage(image,strName);
+    imgItem->setData(0, (horizontal ? 1 : 2));
 }
 
 void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
@@ -268,7 +260,6 @@ void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
     AddImage(image.copy(rcCut),strName);
 }
 
-
 void FrameLabelView::SetItemPos(const QString&strName,int x,int y)
 {
     m_pScene->SetItemPos(strName, x, y);
@@ -279,9 +270,14 @@ void FrameLabelView::SetItemScale(const QString&strName,float scale)
     m_pScene->SetItemScale(strName,scale);
 }
 
+QPixmap FrameLabelView::toPixmap()
+{
+   return m_pView->toPixmap();
+}
+
 void FrameLabelView::Delete()
 {
-    QList<QGraphicsItem *> items = m_pScene->selectedItems();
+    QList<QGraphicsItem *>items = m_pScene->selectedItems();
     for( QGraphicsItem *item : std::as_const(items))
     {
         m_pScene->removeItem( item );
@@ -307,9 +303,11 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
     {
         if( item->isSelected() || bCtrlPress)
         {
-            QPointF pos = item->pos();
-            qreal fscale = item->scale();
+            QPointF pos   = item->pos();
+            qreal fscale  = item->scale();
             qreal fscaleN = item->scale();
+
+            int data = item->data(0xCC).toInt();
 
             int x = pos.x();
             int y = pos.y();

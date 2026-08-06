@@ -190,7 +190,6 @@ private:
 class CustomTextItem : public QGraphicsTextItem
 {
      Q_OBJECT
-
 signals:
     void sigRectChanged_(QObject *sender);
 public:
@@ -217,7 +216,6 @@ protected:
         base.handleMousePressEvent(event);        
         setSelected(true);
         emit sigRectChanged_(this);
-        qDebug() << m_strName;
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -228,7 +226,6 @@ protected:
         base.handleMouseReleaseEvent(event);
         setSelected(true);
         emit sigRectChanged_(this);
-        qDebug() << m_strName;
     }
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
@@ -311,12 +308,11 @@ public:
     }
 
     QString m_strName;
-    bool m_bShowRect = false;
 
     void setName(const QString&strName) { m_strName = strName; }
     QString getName(){ return m_strName; }
 
-    void setItemRect(const QRectF rectNew){  base.setItemRect( rectNew ); }
+    void setItemRect(const QRectF rectNew){ base.setItemRect( rectNew ); }
     QRectF getItemRect(){  return base.getItemCurRect(); }
 
 protected:
@@ -326,7 +322,6 @@ protected:
         base.handleMousePressEvent(event);
         setSelected(true);
         emit sigRectChanged_(this);
-        qDebug() << m_strName  << getItemRect();
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -337,7 +332,6 @@ protected:
         base.handleMouseReleaseEvent(event);
         setSelected(true);
         emit sigRectChanged_(this);
-        qDebug() << m_strName << getItemRect();
     }
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
@@ -348,9 +342,31 @@ protected:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         //QGraphicsPixmapItem::paint(painter, option, widget);
-        QPixmap pix = pixmap();
         QRectF A = boundingRect();
-        painter->drawImage(A,pix.toImage());
+
+        int m_nLineType = data(0).toInt();
+        if(m_nLineType != 0)
+        {
+            QRect rc = A.toRect();
+            painter->setPen(QPen(Qt::black,3));
+
+            if(m_nLineType == 1)
+            {
+                rc.adjust(0,1,0,0);
+                painter->drawLine(rc.topLeft(),rc.topRight());
+            }
+
+            if(m_nLineType == 2)
+            {
+                rc.adjust(1,0,0,0);
+                painter->drawLine(rc.topLeft(),rc.bottomLeft());
+            }
+        }
+        else
+        {
+            QPixmap pix = pixmap();
+            painter->drawImage(A,pix.toImage());
+        }
         if(isSelected())
         {
             painter->setPen(QPen(Qt::red,1,Qt::DashLine));
