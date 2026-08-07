@@ -488,22 +488,36 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             if(strText302.length()>24)
             {
                 m_pLabelView->AddText(strName302.trimmed() , "value302");
+<<<<<<< HEAD
 
                 QImage textImg(400,120,QImage::Format_ARGB32);
+=======
+                QImage textImg(400,120,QImage::Format_RGB32);
+>>>>>>> 7da5d8ae6359f4962182853428be9a70c8395930
                 QPainter painter(&textImg);
                 painter.fillRect(textImg.rect(),Qt::NoBrush);
 
                 QFont font("Microsoft YaHei");
                 painter.setPen(Qt::black);
+<<<<<<< HEAD
                 QString str = strText302;
                 drawTextAutoWrapAndScale(&painter,textImg.rect(),str,font);
+=======
+                painter.fillRect(QRect(0,0,400,120),Qt::white);
+                QString str = strText302;
+                drawTextAutoWrapAndScale(&painter,QRect(0,0,400,120),str,font);
+>>>>>>> 7da5d8ae6359f4962182853428be9a70c8395930
                 m_pLabelView->AddImage(textImg,"longText");
                 m_pLabelView->SetItemScale("longText",1);
             }
             else
             {
                 m_pLabelView->AddText(strName302 + strText302, "value302");
+<<<<<<< HEAD
                 QImage textImg(4,4,QImage::Format_ARGB32);
+=======
+                QImage textImg(4,4,QImage::Format_RGB32);
+>>>>>>> 7da5d8ae6359f4962182853428be9a70c8395930
                 QPainter painter(&textImg);
                 painter.fillRect(QRect(0,0,4,4),Qt::white);
                 m_pLabelView->AddImage(textImg,"longText");
@@ -693,9 +707,15 @@ void FramePrintControl::ShowSN()
 
 void FramePrintControl::Calculate()
 {
+<<<<<<< HEAD
     int nCols = ui->spinBoxPrintCol->value();
     int nRows = ui->spinBoxPrintRow->value();
     int nUnit = ui->spinBoxUnit->value() * nCols * nRows;
+=======
+    int nCol = ui->spinBoxPrintCol->value();
+    int nRow = ui->spinBoxPrintRow->value();
+    int nUnit = ui->spinBoxUnit->value() * nCol * nRow;
+>>>>>>> 7da5d8ae6359f4962182853428be9a70c8395930
     int nCount = ui->spinBoxCount->value();
     if(nUnit <= 0) return;
     int nPrintCount = nCount / nUnit;
@@ -703,8 +723,13 @@ void FramePrintControl::Calculate()
 
     ui->spinBoxPrintCount->setValue(nPrintCount);
 
+<<<<<<< HEAD
     m_pSet->setValue("PrintCol",nCols);
     m_pSet->setValue("PrintRow",nRows);
+=======
+    m_pSet->setValue("PrintCol",nCol);
+    m_pSet->setValue("PrintRow",nRow);
+>>>>>>> 7da5d8ae6359f4962182853428be9a70c8395930
 }
 
 FramePrintControl::~FramePrintControl()
@@ -733,6 +758,7 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
 
 void FramePrintControl::on_pushButtonPreview_clicked()
 {
+<<<<<<< HEAD
     int nCols = ui->spinBoxPrintCol->value();
     int nRows = ui->spinBoxPrintRow->value();
     if(nCols < 1) nCols = 1;
@@ -813,7 +839,6 @@ void FramePrintControl::on_pushButtonPreview_clicked()
     }
 
     m_pLabelView->Preview();    
-
 }
 
 void FramePrintControl::on_pushButtonPrint_clicked()
