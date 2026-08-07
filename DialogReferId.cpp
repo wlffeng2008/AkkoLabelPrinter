@@ -26,8 +26,8 @@ DialogReferId::DialogReferId(QWidget *parent)
     QStringList strFlags = referSet.value("referflags").toStringList();
     if(strIds.isEmpty())
     {
-        strIds = {"4030147376716972","3352829052847833"};
-        strFlags ={"1","1"};
+        strIds = QStringList{"4030147376716972","3352829052847833"};
+        strFlags = QStringList{"1","1"};
     }
     for(int i=0; i<strIds.count(); i++)
     {

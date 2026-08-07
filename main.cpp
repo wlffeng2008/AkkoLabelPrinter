@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
     translatorA.load("qt_zh_CN.qm",     QLibraryInfo::path(QLibraryInfo::TranslationsPath));
     translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::path(QLibraryInfo::TranslationsPath));
 #else
-    translatorA.load("qt_zh_CN.qm",     QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    translatorB.load("qtbase_zh_CN.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    translatorA.load("qt_zh_TW.qm",     QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    translatorB.load("qtbase_zh_TW.qm", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 #endif
     a.installTranslator(&translatorA);
     a.installTranslator(&translatorB);

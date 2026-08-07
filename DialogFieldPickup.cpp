@@ -41,7 +41,7 @@ DialogFieldPickup::DialogFieldPickup(QWidget *parent)
     };
 
     QStringList flags = fieldSet.value("flags").toStringList();
-    if(flags.isEmpty()) flags = {"1","1","1","1","1","1","1"};
+    if(flags.isEmpty()) flags = QStringList{"1","1","1","1","1","1","1"};
     for(int i=0; i<fileds.count(); i++)
     {
         QStandardItem *item0 = new QStandardItem(fileds[i]);

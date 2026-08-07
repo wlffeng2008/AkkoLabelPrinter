@@ -115,7 +115,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         D.mkdir(strCfgPath);
 
     m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
-
+    m_pSet->setIniCodec("UTF-8");
     int nFunc = 2;
     ui->stackedWidget->setCurrentIndex(nFunc);
 
@@ -781,7 +781,7 @@ void FramePrintControl::on_pushButtonPreview_clicked()
                     strName304.replace("：","");
                     int ship = nUnit;
                     if(index == nLabelCount) ship = nLast;
-                    QString strCount = QString("%1　　%2 (本箱：%3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
+                    QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
                     //qDebug() << strCount;
 
                     m_pLabelView->AddText(strCount, "value304");
@@ -865,7 +865,7 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                         strName304.replace("：","");
                         int ship = nUnit;
                         if(index == nLabelCount) ship = nLast;
-                        QString strCount = QString("%1　　%2 (本箱：%3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
+                        QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
                         //qDebug() << strCount;
 
                         m_pLabelView->AddText(strCount, "value304");
