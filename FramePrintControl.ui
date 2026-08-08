@@ -62,7 +62,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -108,7 +107,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -186,7 +184,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -225,7 +222,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -261,7 +257,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -316,7 +311,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -352,7 +346,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -388,7 +381,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -408,7 +400,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -428,7 +419,6 @@
         <property name="font">
          <font>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -477,13 +467,13 @@
          </rect>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
+         <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
+         <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
         </property>
         <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectItems</enum>
+         <enum>QAbstractItemView::SelectionBehavior::SelectItems</enum>
         </property>
        </widget>
        <widget class="QLabel" name="label_7">
@@ -547,7 +537,6 @@
         <property name="font">
          <font>
           <pointsize>9</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -596,7 +585,6 @@
         <property name="font">
          <font>
           <pointsize>9</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -704,9 +692,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>12</y>
-          <width>374</width>
-          <height>395</height>
+          <y>6</y>
+          <width>381</width>
+          <height>397</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout" rowminimumheight="40,40,40,40,40,40,40,40">
@@ -725,7 +713,7 @@
             <string>交货日期：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -735,7 +723,7 @@
             <string>数量：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -745,7 +733,7 @@
             <string>供方检验结果：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -755,7 +743,7 @@
             <string>生产日期：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -765,7 +753,7 @@
             <string>物料编码：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -775,7 +763,7 @@
             <string>品名/规格：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -802,14 +790,20 @@
          <item row="5" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <property name="spacing">
-            <number>20</number>
+            <number>80</number>
            </property>
-           <item>
+           <item alignment="Qt::AlignmentFlag::AlignLeft">
             <widget class="QDateTimeEdit" name="dateTimeEdit0">
              <property name="minimumSize">
               <size>
-               <width>130</width>
+               <width>100</width>
                <height>24</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
               </size>
              </property>
              <property name="dateTime">
@@ -848,14 +842,14 @@
             <string>采购订单号：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
          <item row="4" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <property name="spacing">
-            <number>10</number>
+            <number>5</number>
            </property>
            <item>
             <widget class="QSpinBox" name="spinBoxCount">
@@ -879,7 +873,7 @@
            <item>
             <spacer name="horizontalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -892,7 +886,10 @@
            <item>
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>单箱容量：</string>
+              <string>单箱容量:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -930,21 +927,27 @@
             <string>厂商：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
          <item row="6" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <property name="spacing">
-            <number>20</number>
+            <number>80</number>
            </property>
            <item>
             <widget class="QDateTimeEdit" name="dateTimeEdit1">
              <property name="minimumSize">
               <size>
-               <width>130</width>
+               <width>100</width>
                <height>24</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
               </size>
              </property>
              <property name="dateTime">
@@ -993,7 +996,7 @@
             <number>12</number>
            </property>
            <property name="sizeConstraint">
-            <enum>QLayout::SetDefaultConstraint</enum>
+            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
            </property>
            <item>
             <widget class="QRadioButton" name="radioButton0">
@@ -1022,16 +1025,23 @@
           </layout>
          </item>
          <item row="2" column="1">
-          <widget class="QTextEdit" name="textEdit302"/>
+          <widget class="QTextEdit" name="textEdit302">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>72</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
        <widget class="QPushButton" name="pushButtonGenLabel">
         <property name="geometry">
          <rect>
-          <x>94</x>
-          <y>420</y>
-          <width>135</width>
+          <x>96</x>
+          <y>406</y>
+          <width>106</width>
           <height>35</height>
          </rect>
         </property>
@@ -1042,6 +1052,131 @@
          <string>更新标签</string>
         </property>
        </widget>
+       <widget class="QCheckBox" name="checkBoxWritePdf">
+        <property name="geometry">
+         <rect>
+          <x>96</x>
+          <y>494</y>
+          <width>124</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>打印到PDF文件</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label307_2">
+        <property name="geometry">
+         <rect>
+          <x>12</x>
+          <y>454</y>
+          <width>84</width>
+          <height>40</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>PDF文件：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEditPdfFile">
+        <property name="geometry">
+         <rect>
+          <x>94</x>
+          <y>464</y>
+          <width>270</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>请设置一个PDF文件名</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButtonOpenPdf">
+        <property name="geometry">
+         <rect>
+          <x>222</x>
+          <y>492</y>
+          <width>58</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>查看</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButtonSetPdf">
+        <property name="geometry">
+         <rect>
+          <x>284</x>
+          <y>492</y>
+          <width>79</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>更新文件名</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="labelPrinter">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>530</y>
+          <width>84</width>
+          <height>40</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>打印机选择：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBoxPrinter">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>542</y>
+          <width>181</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButtonPrinter">
+        <property name="geometry">
+         <rect>
+          <x>286</x>
+          <y>540</y>
+          <width>79</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>更新打印机</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -1049,7 +1184,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1,5,1">
      <property name="spacing">
-      <number>10</number>
+      <number>5</number>
      </property>
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1077,7 +1212,6 @@
          <property name="font">
           <font>
            <pointsize>9</pointsize>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -1110,7 +1244,6 @@
          <property name="font">
           <font>
            <pointsize>9</pointsize>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>

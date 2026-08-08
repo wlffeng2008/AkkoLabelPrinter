@@ -19,22 +19,18 @@
 #include <QJsonObject>
 #include <QPrintPreviewDialog>
 
-// 检测是否存在【实体打印机】
 bool hasRealPhysicalPrinter()
 {
-    // 获取系统所有打印机
-    QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
-
-    // 虚拟打印机关键字（过滤掉）
     QStringList virtualKeywords = {
         "PDF", "XPS", "OneNote", "Microsoft Print", "Fax", "图片传真"
     };
 
+    QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+
     foreach (QPrinterInfo info, printers) {
         QString name = info.printerName();
-        qDebug() << name ;
+        qDebug() << name;
 
-        // 排除虚拟打印机
         bool isVirtual = false;
         foreach (QString key, virtualKeywords) {
             if (name.contains(key, Qt::CaseInsensitive)) {
@@ -44,11 +40,9 @@ bool hasRealPhysicalPrinter()
         }
         if (isVirtual) continue;
 
-        // 剩下的 = 实体打印机
         return true;
     }
 
-    // 没找到实体打印机
     return false;
 }
 
@@ -110,12 +104,18 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 {
     ui->setupUi(this);
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
-    QDir D(strCfgPath);
-    if(!D.exists())
-        D.mkdir(strCfgPath);
+    QString strPutPath = QApplication::applicationDirPath() + "/output";
+    QDir CfgD(strCfgPath);
+    if(!CfgD.exists()) CfgD.mkdir(strCfgPath);
+    QDir OutD(strPutPath);
+    if(!OutD.exists()) OutD.mkdir(strPutPath);
 
     m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    qDebug() << QT_VERSION;
+#else
     m_pSet->setIniCodec("UTF-8");
+#endif
     int nFunc = 2;
     ui->stackedWidget->setCurrentIndex(nFunc);
 
@@ -125,20 +125,16 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     ui->checkBoxDouble->setChecked(true);
 
-    bool hasPrinter = QPrinterInfo::availablePrinters().size() > 0;
-
-    if (hasPrinter) {
-        qDebug() << "系统已连接打印机";
-    } else {
-        qDebug() << "系统没有任何打印机";
-    }
-    qDebug() << QPrinterInfo::defaultPrinter();
-
-    if (hasRealPhysicalPrinter()) {
-        qDebug() << "✅ 找到实体打印机，可以打印";
-    } else {
-        qDebug() << "❌ 未连接实体打印机";
-    }
+    connect(ui->pushButtonPrinter,&QPushButton::clicked,this,[=]{
+        ui->comboBoxPrinter->clear();
+        ui->comboBoxPrinter->addItem("系统默认打印机");
+        QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+        foreach (QPrinterInfo info, printers) {
+            QString name = info.printerName();
+            ui->comboBoxPrinter->addItem(name);
+        }
+    });
+    ui->pushButtonPrinter->click();
 
     m_recList   = new DialogRecList(this);
     m_referId   = new DialogReferId(this);
@@ -157,14 +153,23 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->checkBoxCheckLen->setChecked(m_pSet->value("checkLen",true).toBool());
     ui->checkBoxGen128->setChecked(m_pSet->value("gen128",true).toBool());
 
-    ui->lineEdit300->setText(m_pSet->value("text300","16").toString());
-    ui->lineEdit301->setText(m_pSet->value("text301","16").toString());
-    ui->textEdit302->setText(m_pSet->value("text302","16").toString());
-    ui->lineEdit303->setText(m_pSet->value("text303","16").toString());
-    ui->spinBoxCount->setValue(m_pSet->value("count304","1").toInt());
-    ui->spinBoxUnit->setValue(m_pSet->value("text308","1").toInt());
+    ui->lineEdit300->setText(m_pSet->value("text300","深圳大牛科技有限公司").toString());
+    ui->lineEdit301->setText(m_pSet->value("text301","BUY-12345678").toString());
+    ui->textEdit302->setText(m_pSet->value("text302","QWERT-ABC-OPT").toString());
+    ui->lineEdit303->setText(m_pSet->value("text303","MT-1234-5678").toString());
+    ui->spinBoxCount->setValue(m_pSet->value("count304","100").toInt());
+    ui->spinBoxUnit->setValue(m_pSet->value("text308","10").toInt());
     ui->dateTimeEdit0->setDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit1->setDateTime(QDateTime::currentDateTime());
+    QString strLast = m_pSet->value("lastPdf").toString().trimmed();
+    ui->lineEditPdfFile->setText(strLast);
+    connect(ui->pushButtonSetPdf,&QPushButton::clicked,this,[=]{
+        QString strPdf = strPutPath + QString("/出货标签-%1.pdf").arg(QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss"));
+        ui->lineEditPdfFile->setText(strPdf);
+    });
+
+    if(strLast.isEmpty())
+        ui->pushButtonSetPdf->click();
 
     ui->label300->setText(m_pSet->value("name300","厂商名称").toString().replace("：","").trimmed() + "：");
     ui->label301->setText(m_pSet->value("name301","采购订单号").toString().replace("：","").trimmed() + "：");
@@ -443,7 +448,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         });
 
         connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
-
             QString strName300 = ui->label300->text().trimmed();
             QString strText300 = ui->lineEdit300->text().trimmed();
 
@@ -542,6 +546,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pSet->setValue("text302",strText302);
             m_pSet->setValue("text303",strText303);
             m_pSet->setValue("text308",strText308);
+            m_pSet->setValue("count304",ui->spinBoxCount->value());
 
             QTimer::singleShot(300,this,[=]{
                 if(ui->checkBoxAutoPrint->isChecked() || ui->checkBoxAutoOut->isChecked())
@@ -741,70 +746,76 @@ void FramePrintControl::on_pushButtonPreview_clicked()
 
     if(ui->stackedWidget->currentIndex() == 2)
     {
-        int nUnit = ui->spinBoxUnit->value();
-        int nProCount = ui->spinBoxCount->value();
-        int nLabelCount = nProCount/ nUnit;
-        int nLast = nProCount % nUnit;
-        if(nLast) nLabelCount++;
-        if(nLast == 0) nLast = nUnit;
-
-        int index = 0;
-        bool finish = false;
-        int nPages = nLabelCount/(nCols * nRows);
-        if(nLabelCount % (nCols * nRows))
-            nPages++;
-
-        int nW = m_pLabelView->size().width();
-        int nH = m_pLabelView->size().height();
-        QPixmap pixmap2(nW * nCols, nH * nRows);
-        pixmap2.fill(Qt::white);
-        for(int page=0; page<nPages; page++)
-        {
-            if(finish) break;
-            pixmap2.fill(Qt::white);
-            QPainter painter2(&pixmap2);
-            for(int row=0; row<nRows; row++)
-            {
-                if(finish) break;
-
-                for(int col=0; col<nCols; col++)
-                {
-                    index++;
-                    if(index>nLabelCount)
-                    {
-                        finish = true;
-                        break;
-                    }
-
-                    QString strName304 = ui->label304->text().trimmed();
-                    QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
-                    strName304.replace("：","");
-                    int ship = nUnit;
-                    if(index == nLabelCount) ship = nLast;
-                    QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
-                    //qDebug() << strCount;
-
-                    m_pLabelView->AddText(strCount, "value304");
-                    m_pLabelView->update();
-
-                    QPixmap pixmap = m_pLabelView->toPixmap();
-                    painter2.drawPixmap(col*nW,row*nH,nW,nH,pixmap);
-                }
-            }
-        }
-
         QPrinter printer(QPrinter::HighResolution);
         printer.setOutputFormat(QPrinter::NativeFormat);
+        if(ui->comboBoxPrinter->currentIndex() != 0)
+        {
+            printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
+        }
 
         QPrintPreviewDialog previewDialog(&printer, this);
         connect(&previewDialog, &QPrintPreviewDialog::paintRequested, this, [=](QPrinter *printer) {
+
+            int nW = m_pLabelView->size().width();
+            int nH = m_pLabelView->size().height();
+            QPixmap pagePixmap((nW * nCols), nH * nRows);
+
             QPainter painter(printer);
             QRect rect = painter.viewport();
-            QSize size = pixmap2.size();
-            size.scale(rect.size(), Qt::KeepAspectRatio);  // 保持比例缩放
+            QSize size = pagePixmap.size();
+            size.scale(rect.size(), Qt::KeepAspectRatio);
             painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-            painter.setWindow(pixmap2.rect());
-            painter.drawPixmap(0, 0, pixmap2);
+            painter.setWindow(pagePixmap.rect());
+
+            int nUnit = ui->spinBoxUnit->value();
+            int nProCount = ui->spinBoxCount->value();
+            int nLabelCount = nProCount/ nUnit;
+            int nLast = nProCount % nUnit;
+            if(nLast) nLabelCount++;
+            if(nLast == 0) nLast = nUnit;
+
+            int index = 0;
+            bool finish = false;
+            int nPages = nLabelCount/(nCols * nRows);
+            if(nLabelCount % (nCols * nRows))
+                nPages++;
+            for(int page=0; page<nPages; page++)
+            {
+                if(finish) break;
+                pagePixmap.fill(Qt::white);
+                QPainter painter2(&pagePixmap);
+                for(int row=0; row<nRows; row++)
+                {
+                    if(finish) break;
+
+                    for(int col=0; col<nCols; col++)
+                    {
+                        index++;
+                        if(index>nLabelCount)
+                        {
+                            finish = true;
+                            break;
+                        }
+
+                        QString strName304 = ui->label304->text().trimmed();
+                        QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
+                        strName304.replace("：","");
+                        int ship = nUnit;
+                        if(index == nLabelCount) ship = nLast;
+                        QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
+
+                        m_pLabelView->AddText(strCount, "value304");
+                        m_pLabelView->update();
+
+                        QPixmap pixmap = m_pLabelView->toPixmap();
+                        painter2.drawPixmap(col*nW,row*nH,nW,nH,pixmap);
+                    }
+                }
+                painter.drawPixmap(0, 0, pagePixmap);
+
+                if(page < nPages-1)
+                    printer->newPage();
+            }
         });
 
         previewDialog.exec();
@@ -832,21 +843,48 @@ void FramePrintControl::on_pushButtonPrint_clicked()
             if(nLast) nLabelCount++;
             if(nLast == 0) nLast = nUnit;
 
-            int index = 0;
-            bool finish = false;
             int nPages = nLabelCount/(nCols * nRows);
             if(nLabelCount % (nCols * nRows))
                 nPages++;
 
             int nW = m_pLabelView->size().width();
             int nH = m_pLabelView->size().height();
-            QPixmap pixmap2(nW * nCols, nH * nRows);
-            pixmap2.fill(Qt::white);
+            QPixmap pagePixmap(nW * nCols, nH * nRows);
+            pagePixmap.fill(Qt::white);
+
+            QString strPdf = ui->lineEditPdfFile->text().trimmed();
+
+            QPrinter printer(QPrinter::HighResolution);
+            if(ui->comboBoxPrinter->currentIndex() != 0)
+            {
+                printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
+            }
+            if(ui->checkBoxWritePdf->isChecked())
+            {
+                m_pSet->setValue("lastPdf",strPdf);
+                printer.setOutputFormat(QPrinter::PdfFormat);
+                printer.setOutputFileName(strPdf);
+                printer.setPageSize(QPageSize::A4);
+            }
+            else
+            {
+                printer.setOutputFormat(QPrinter::NativeFormat);
+            }
+
+            QPainter painter(&printer);
+            QRect rect = painter.viewport();
+            QSize size = pagePixmap.size();
+            size.scale(rect.size(), Qt::KeepAspectRatio);
+            painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+            painter.setWindow(pagePixmap.rect());
+
+            int index = 0;
+            bool finish = false;
             for(int page=0; page<nPages; page++)
             {
                 if(finish) break;
-                pixmap2.fill(Qt::white);
-                QPainter painter2(&pixmap2);
+                pagePixmap.fill(Qt::white);
+                QPainter painter2(&pagePixmap);
                 for(int row=0; row<nRows; row++)
                 {
                     if(finish) break;
@@ -866,7 +904,6 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                         int ship = nUnit;
                         if(index == nLabelCount) ship = nLast;
                         QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
-                        //qDebug() << strCount;
 
                         m_pLabelView->AddText(strCount, "value304");
                         m_pLabelView->update();
@@ -875,19 +912,17 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                         painter2.drawPixmap(col*nW,row*nH,nW,nH,pixmap);
                     }
                 }
+
+                painter.drawPixmap(0, 0, pagePixmap);
+                if(page < nPages-1)
+                    printer.newPage();
             }
 
+            if(ui->checkBoxWritePdf->isChecked())
             {
-                QPrinter printer(QPrinter::HighResolution);
-                printer.setOutputFormat(QPrinter::NativeFormat);
+                QMessageBox::information(this,"温馨提示","标签已输入到PDF文件：\n" + strPdf);
 
-                QPainter painter(&printer);
-                QRect rect = painter.viewport();
-                QSize size = pixmap2.size();
-                size.scale(rect.size(), Qt::KeepAspectRatio);
-                painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-                painter.setWindow(pixmap2.rect());
-                painter.drawPixmap(0, 0, pixmap2);
+                //ui->pushButtonSetPdf->click();
             }
         }
         return;
