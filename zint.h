@@ -1,7 +1,7 @@
 /*  zint.h - definitions for libzint */
 /*
     libzint - the open source barcode library
-    Copyright (C) 2009-2024 Robin Stuart <rstuart114@gmail.com>
+    Copyright (C) 2009-2025 Robin Stuart <rstuart114@gmail.com>
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions
@@ -31,8 +31,13 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
 /*
- * For version, see "zintconfig.h"
- * For documentation, see "../docs/manual.txt"
+ * Version: 2.16.0 (see "zintconfig.h")
+ *
+ * For documentation, see "../docs/manual.txt" or "../docs/manual.html" or the
+ * PDF manual for 2.16.0 at
+ * https://sourceforge.net/projects/zint/files/zint/2.16.0/manual.pdf/download
+ * or online at
+ * https://zint.org.uk/manual/
  */
 
 #ifndef ZINT_H
@@ -92,6 +97,13 @@ extern "C" {
         char id[32];        /* Optional ID to distinguish sequence, ASCII, NUL-terminated unless max 32 long */
     };
 
+    /* Segment for use with API `ZBarcode_Encode_Segs()` and `content_segs` */
+    struct zint_seg {
+        unsigned char *source; /* Data to encode */
+        int length;         /* Length of `source`. If 0 or negative, `source` must be NUL-terminated */
+        int eci;            /* Extended Channel Interpretation */
+    };
+
     /* Main symbol structure */
     struct zint_symbol {
         int symbology;      /* Symbol to use (see BARCODE_XXX below) */
@@ -120,12 +132,11 @@ extern "C" {
         struct zint_structapp structapp; /* Structured Append info. Default structapp.count 0 (none) */
         int warn_level;     /* Affects error/warning value returned by Zint API (see WARN_XXX below) */
         int debug;          /* Debugging flags */
-        unsigned char text[200]; /* Human Readable Text (HRT) (if any), UTF-8, NUL-terminated (output only) */
+        unsigned char text[256]; /* Human Readable Text (HRT) (if any), UTF-8, NUL-terminated (output only) */
+        int text_length;    /* Length of text in bytes (output only) */
         int rows;           /* Number of rows used by the symbol (output only) */
         int width;          /* Width of the generated symbol (output only) */
-        unsigned char encoded_data[200][144]; /* Encoded data (output only). Allows for rows of 1152 modules */
-        float row_height[200]; /* Heights of rows (output only). Allows for 200 row DotCode */
-        char errtxt[100];   /* Error message if an error or warning occurs, NUL-terminated (output only) */
+        char errtxt[160];   /* Error message if an error or warning occurs, NUL-terminated (output only) */
         unsigned char *bitmap; /* Stored bitmap image (raster output only) */
         int bitmap_width;   /* Width of bitmap image (raster output only) */
         int bitmap_height;  /* Height of bitmap image (raster output only) */
@@ -133,13 +144,10 @@ extern "C" {
         struct zint_vector *vector; /* Pointer to vector header (vector output only) */
         unsigned char *memfile; /* Pointer to in-memory file buffer if BARCODE_MEMORY_FILE (output only) */
         int memfile_size;   /* Length of in-memory file buffer (output only) */
-    };
-
-    /* Segment for use with `ZBarcode_Encode_Segs()` below */
-    struct zint_seg {
-        unsigned char *source; /* Data to encode */
-        int length;         /* Length of `source`. If 0, `source` must be NUL-terminated */
-        int eci;            /* Extended Channel Interpretation */
+        struct zint_seg *content_segs; /* Pointer to array of content segs if BARCODE_CONTENT_SEGS (output only) */
+        int content_seg_count; /* Number of `content_segs` (output only) */
+        unsigned char encoded_data[200][144]; /* Encoded data (output only). Allows for rows of 1152 modules */
+        float row_height[200]; /* Heights of rows (output only). Allows for 200 row DotCode */
     };
 
 /* Symbologies (`symbol->symbology`) */
@@ -153,8 +161,12 @@ extern "C" {
 #define BARCODE_C25IND          7   /* 2 of 5 Industrial */
 #define BARCODE_CODE39          8   /* Code 39 */
 #define BARCODE_EXCODE39        9   /* Extended Code 39 */
-#define BARCODE_EANX            13  /* EAN (European Article Number) */
-#define BARCODE_EANX_CHK        14  /* EAN + Check Digit */
+#define BARCODE_EAN8            10  /* EAN-8 (European Article Number) GTIN-8 */
+#define BARCODE_EAN_2ADDON      11  /* EAN/UPC 2-digit add-on (standalone) */
+#define BARCODE_EAN_5ADDON      12  /* EAN/UPC 5-digit add-on (standalone) */
+#define BARCODE_EANX            13  /* Legacy */
+#define BARCODE_EANX_CHK        14  /* Legacy */
+#define BARCODE_EAN13           15  /* EAN-13 (European Article Number) GTIN-13 */
 #define BARCODE_GS1_128         16  /* GS1-128 */
 #define BARCODE_EAN128          16  /* Legacy */
 #define BARCODE_CODABAR         18  /* Codabar */
@@ -173,9 +185,9 @@ extern "C" {
 #define BARCODE_RSS_EXP         31  /* Legacy */
 #define BARCODE_TELEPEN         32  /* Telepen Alpha */
 #define BARCODE_UPCA            34  /* UPC-A */
-#define BARCODE_UPCA_CHK        35  /* UPC-A + Check Digit */
+#define BARCODE_UPCA_CHK        35  /* UPC-A including check digit */
 #define BARCODE_UPCE            37  /* UPC-E */
-#define BARCODE_UPCE_CHK        38  /* UPC-E + Check Digit */
+#define BARCODE_UPCE_CHK        38  /* UPC-E including check digit */
 #define BARCODE_POSTNET         40  /* USPS (U.S. Postal Service) POSTNET */
 #define BARCODE_MSI_PLESSEY     47  /* MSI Plessey */
 #define BARCODE_FIM             49  /* Facing Identification Mark */
@@ -248,7 +260,7 @@ extern "C" {
     /* Zint specific */
 #define BARCODE_AZRUNE          128 /* Aztec Runes */
 #define BARCODE_CODE32          129 /* Code 32 */
-#define BARCODE_EANX_CC         130 /* EAN Composite */
+#define BARCODE_EANX_CC         130 /* Legacy */
 #define BARCODE_GS1_128_CC      131 /* GS1-128 Composite */
 #define BARCODE_EAN128_CC       131 /* Legacy */
 #define BARCODE_DBAR_OMN_CC     132 /* GS1 DataBar Omnidirectional Composite */
@@ -272,7 +284,10 @@ extern "C" {
 #define BARCODE_ULTRA           144 /* Ultracode */
 #define BARCODE_RMQR            145 /* Rectangular Micro QR Code (rMQR) */
 #define BARCODE_BC412           146 /* IBM BC412 (SEMI T1-95) */
-#define BARCODE_LAST            146 /* Max barcode number marker, not barcode */
+#define BARCODE_DXFILMEDGE      147 /* DX Film Edge Barcode on 35mm and APS films */
+#define BARCODE_EAN8_CC         148 /* EAN-8 Composite */
+#define BARCODE_EAN13_CC        149 /* EAN-13 Composite */
+#define BARCODE_LAST            149 /* Max barcode number marker, not barcode */
 
 /* Output options (`symbol->output_options`) */
 #define BARCODE_BIND_TOP        0x00001 /* Boundary bar above the symbol only (not below), does not affect stacking */
@@ -295,6 +310,7 @@ extern "C" {
 #define EANUPC_GUARD_WHITESPACE 0x04000 /* Add quiet zone indicators ("<"/">") to HRT whitespace (EAN/UPC) */
 #define EMBED_VECTOR_FONT       0x08000 /* Embed font in vector output - currently only for SVG output */
 #define BARCODE_MEMORY_FILE     0x10000 /* Write output to in-memory buffer `memfile` instead of to `outfile` */
+#define BARCODE_CONTENT_SEGS    0x20000 /* Write data encoded to content segment buffers `content_segs` */
 
 /* Input data types (`symbol->input_mode`) */
 #define DATA_MODE               0       /* Binary */
@@ -307,8 +323,9 @@ extern "C" {
 #define HEIGHTPERROW_MODE       0x0040  /* Interpret `height` as per-row rather than as overall height */
 #define FAST_MODE               0x0080  /* Use faster if less optimal encodation or other shortcuts if available */
                                         /* Note: affects DATAMATRIX, MICROPDF417, PDF417, QRCODE & UPNQR only */
-#define EXTRA_ESCAPE_MODE       0x0100  /* Process special symbology-specific escape sequences */
+#define EXTRA_ESCAPE_MODE       0x0100  /* Process special symbology-specific escape sequences as well as others */
                                         /* Note: currently Code 128 only */
+#define GS1SYNTAXENGINE_MODE    0x0200  /* Use the GS1 Syntax Engine (if available) to strictly validate GS1 input */
 
 /* Data Matrix specific options (`symbol->option_3`) */
 #define DM_SQUARE               100     /* Only consider square versions on automatic symbol size selection */
@@ -359,6 +376,7 @@ extern "C" {
 #define ZINT_CAP_MASK               0x0800  /* Is mask selectable? */
 #define ZINT_CAP_STRUCTAPP          0x1000  /* Supports Structured Append? */
 #define ZINT_CAP_COMPLIANT_HEIGHT   0x2000  /* Has compliant height? */
+#define ZINT_CAP_BINDABLE           0x4000  /* Can set row separators? */
 
 /* The largest amount of data that can be encoded is 4350 4-byte UTF-8 chars in Han Xin Code */
 #define ZINT_MAX_DATA_LEN       17400
@@ -383,10 +401,10 @@ extern "C" {
 #  define ZINT_EXTERN extern
 #endif
 
-    /* Create and initialize a symbol structure */
+    /* Create a symbol structure and set fields to default values */
     ZINT_EXTERN struct zint_symbol *ZBarcode_Create(void);
 
-    /* Free any output buffers that may have been created and initialize output fields */
+    /* Free any output buffers that may have been created and zeroize output fields */
     ZINT_EXTERN void ZBarcode_Clear(struct zint_symbol *symbol);
 
     /* Free any output buffers that may have been created and reset all fields to defaults */
@@ -396,7 +414,7 @@ extern "C" {
     ZINT_EXTERN void ZBarcode_Delete(struct zint_symbol *symbol);
 
 
-    /* Encode a barcode. If `length` is 0, `source` must be NUL-terminated */
+    /* Encode a barcode. If `length` is 0 or negative, `source` must be NUL-terminated */
     ZINT_EXTERN int ZBarcode_Encode(struct zint_symbol *symbol, const unsigned char *source, int length);
 
     /* Encode a barcode with multiple ECI segments */
@@ -479,8 +497,23 @@ extern "C" {
                         const char *filetype);
 
 
+    /* Convert UTF-8 `source` of length `length` to `eci`-encoded `dest`, setting `p_dest_length` to length of `dest`
+       on output. If `length` is 0 or negative, `source` must be NUL-terminated. Returns 0 on success, else
+       ZINT_ERROR_INVALID_OPTION or ZINT_ERROR_INVALID_DATA. Compatible with libzueci `zueci_utf8_to_eci()` */
+    ZINT_EXTERN int ZBarcode_UTF8_To_ECI(int eci, const unsigned char *source, int length, unsigned char dest[],
+                        int *p_dest_length);
+
+    /* Calculate sufficient length needed to convert UTF-8 `source` of length `length` from UTF-8 to `eci`, and place
+       in `p_dest_length`. If `length` is 0 or negative, `source` must be NUL-terminated. Returns 0 on success, else
+       ZINT_ERROR_INVALID_OPTION or ZINT_ERROR_INVALID_DATA. Compatible with libzueci `zueci_dest_len_eci()` */
+    ZINT_EXTERN int ZBarcode_Dest_Len_ECI(int eci, const unsigned char *source, int length, int *p_dest_length);
+
+
     /* Whether Zint built without PNG support */
     ZINT_EXTERN int ZBarcode_NoPng(void);
+
+    /* Whether Zint built with GS1 Syntax Engine support */
+    ZINT_EXTERN int ZBarcode_HaveGS1SyntaxEngine(void);
 
     /* Return the version of Zint linked to */
     ZINT_EXTERN int ZBarcode_Version(void);

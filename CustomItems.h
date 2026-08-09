@@ -239,6 +239,9 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
 
         QPen pen = QPen(Qt::red,1,Qt::DashLine);
+        QFont font = painter->font();
+        font.setBold(true);
+        painter->setFont(font);
         painter->setPen(pen);
         QGraphicsTextItem::paint(painter, option, widget);
         QRectF A = boundingRect();

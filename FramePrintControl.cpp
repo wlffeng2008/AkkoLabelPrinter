@@ -12,6 +12,8 @@
 #include <QFile>
 #include <QPrinterInfo>
 #include <QDateTime>
+#include <QProcess>
+#include <QDesktopServices>
 #include <QMessageBox>
 
 #include <QJsonArray>
@@ -447,6 +449,11 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             ui->pushButtonGenLabel->click();
         });
 
+        connect(ui->pushButtonOpenPdf,&QPushButton::clicked,this,[=]{
+            //QProcess::startDetached("open", QStringList() << ui->lineEditPdfFile->text());
+            //QProcess::startDetached(ui->lineEditPdfFile->text(), QStringList() << "");
+            QDesktopServices::openUrl(QUrl::fromLocalFile(ui->lineEditPdfFile->text()));
+        });
         connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
             QString strName300 = ui->label300->text().trimmed();
             QString strText300 = ui->lineEdit300->text().trimmed();
@@ -864,7 +871,7 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                 m_pSet->setValue("lastPdf",strPdf);
                 printer.setOutputFormat(QPrinter::PdfFormat);
                 printer.setOutputFileName(strPdf);
-                printer.setPageSize(QPageSize::A4);
+                //printer.setPageSize(QPageSize::A4);
             }
             else
             {
