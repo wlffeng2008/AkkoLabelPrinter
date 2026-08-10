@@ -467,13 +467,13 @@
          </rect>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::FocusPolicy::NoFocus</enum>
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="selectionMode">
-         <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
+         <enum>QAbstractItemView::NoSelection</enum>
         </property>
         <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectionBehavior::SelectItems</enum>
+         <enum>QAbstractItemView::SelectItems</enum>
         </property>
        </widget>
        <widget class="QLabel" name="label_7">
@@ -691,9 +691,9 @@
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>4</x>
           <y>6</y>
-          <width>381</width>
+          <width>370</width>
           <height>397</height>
          </rect>
         </property>
@@ -713,7 +713,7 @@
             <string>交货日期：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -723,7 +723,7 @@
             <string>数量：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -733,7 +733,7 @@
             <string>供方检验结果：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -743,7 +743,7 @@
             <string>生产日期：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -753,7 +753,7 @@
             <string>物料编码：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -763,7 +763,7 @@
             <string>品名/规格：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -792,7 +792,7 @@
            <property name="spacing">
             <number>80</number>
            </property>
-           <item alignment="Qt::AlignmentFlag::AlignLeft">
+           <item alignment="Qt::AlignLeft">
             <widget class="QDateTimeEdit" name="dateTimeEdit0">
              <property name="minimumSize">
               <size>
@@ -842,7 +842,7 @@
             <string>采购订单号：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -863,7 +863,7 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>100000</number>
+              <number>100000000</number>
              </property>
              <property name="value">
               <number>1</number>
@@ -873,7 +873,7 @@
            <item>
             <spacer name="horizontalSpacer">
              <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
+              <enum>Qt::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -889,7 +889,7 @@
               <string>单箱容量:</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -901,8 +901,11 @@
                <height>24</height>
               </size>
              </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
-              <number>100000</number>
+              <number>100000000</number>
              </property>
              <property name="value">
               <number>1</number>
@@ -927,7 +930,7 @@
             <string>厂商：</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -996,7 +999,7 @@
             <number>12</number>
            </property>
            <property name="sizeConstraint">
-            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+            <enum>QLayout::SetDefaultConstraint</enum>
            </property>
            <item>
             <widget class="QRadioButton" name="radioButton0">
@@ -1078,7 +1081,7 @@
          <string>PDF文件：</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLineEdit" name="lineEditPdfFile">
@@ -1122,7 +1125,7 @@
        <widget class="QPushButton" name="pushButtonSetPdf">
         <property name="geometry">
          <rect>
-          <x>284</x>
+          <x>286</x>
           <y>492</y>
           <width>79</width>
           <height>25</height>
@@ -1148,7 +1151,7 @@
          <string>打印机选择：</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QComboBox" name="comboBoxPrinter">
