@@ -13,6 +13,7 @@
 #include <QPrinterInfo>
 #include <QDateTime>
 #include <QProcess>
+#include <QMarginsF>
 #include <QDesktopServices>
 #include <QMessageBox>
 
@@ -499,8 +500,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             if(strText302.length()>24)
             {
                 m_pLabelView->AddText(strName302.trimmed() , "value302");
-                QImage textImg(400,120,QImage::Format_ARGB32);
+                QImage textImg(460,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
+
+                painter.fillRect(textImg.rect(),Qt::white);
                 painter.fillRect(textImg.rect(),Qt::NoBrush);
 
                 QFont font("Microsoft YaHei");
@@ -774,6 +777,8 @@ void FramePrintControl::on_pushButtonPreview_clicked()
             painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
             painter.setWindow(pagePixmap.rect());
 
+            //printer->setPageMargins(QMarginsF(5,5,5,5));
+
             int nUnit = ui->spinBoxUnit->value();
             int nProCount = ui->spinBoxCount->value();
             int nLabelCount = nProCount/ nUnit;
@@ -871,12 +876,13 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                 m_pSet->setValue("lastPdf",strPdf);
                 printer.setOutputFormat(QPrinter::PdfFormat);
                 printer.setOutputFileName(strPdf);
-                //printer.setPageSize(QPageSize::A4);
+                printer.setPageSize(QPageSize(QPageSize::A4));
             }
             else
             {
                 printer.setOutputFormat(QPrinter::NativeFormat);
             }
+            //printer.setPageMargins(QMarginsF(5,5,5,5));
 
             QPainter painter(&printer);
             QRect rect = painter.viewport();
