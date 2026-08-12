@@ -5,8 +5,10 @@
 #include "DialogReferId.h"
 #include "DialogFieldPickup.h"
 #include "DialogLabelEdit.h"
+#include "DialogReject.h"
 
 #include <QFrame>
+#include <QPrinter>
 #include <QStandardItemModel>
 #include <QHeaderView>
 #include <QJsonArray>
@@ -112,6 +114,7 @@ private:
     DialogReferId *m_referId = nullptr;
     DialogFieldPickup *m_fieldList = nullptr;
     DialogLabelEdit *m_labelEdit = nullptr;
+    DialogReject *m_rejectDlg = nullptr;
     void ShowSN();
 
     void Calculate();
@@ -127,6 +130,8 @@ private:
     QJsonArray m_jArr;
     int m_nSelected = -1;
     QStandardItemModel *m_pModel = nullptr;
+
+    void doPrint(QPrinter *printer);
 };
 
 #endif // FRAMEPRINTCONTROL_H
