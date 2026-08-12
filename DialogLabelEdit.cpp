@@ -9,6 +9,7 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
 
     m_pModel = new QStandardItemModel(this);
     m_pModel->setHorizontalHeaderLabels(QString("标签名称,x,y,w,h,Scale").split(','));
+    ui->tableView->setModel(m_pModel);
 }
 
 DialogLabelEdit::~DialogLabelEdit()

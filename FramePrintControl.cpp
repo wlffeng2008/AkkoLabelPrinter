@@ -813,7 +813,6 @@ void FramePrintControl::doPrint(QPrinter *printer)
 
             for(int col=0; col<nCols; col++)
             {
-
                 if(ui->checkBoxReject->isChecked())
                 {
                     QStringList vals = m_rejectDlg->getItemData(rejectitems[index]);
@@ -958,68 +957,6 @@ void FramePrintControl::on_pushButtonPrint_clicked()
                 printer.setOutputFormat(QPrinter::NativeFormat);
             }
             doPrint(&printer);
-
-            // int nUnit = ui->spinBoxUnit->value();
-            // int nProCount = ui->spinBoxCount->value();
-            // int nLabelCount = nProCount/ nUnit;
-            // int nLast = nProCount % nUnit;
-            // if(nLast) nLabelCount++;
-            // if(nLast == 0) nLast = nUnit;
-
-            // int nPages = nLabelCount/(nCols * nRows);
-            // if(nLabelCount % (nCols * nRows))
-            //     nPages++;
-
-            // int nW = m_pLabelView->size().width();
-            // int nH = m_pLabelView->size().height();
-            // QPixmap pagePixmap(nW * nCols, nH * nRows);
-            // pagePixmap.fill(Qt::white);
-            // QPainter painter(&printer);
-            // QRect rect = painter.viewport();
-            // QSize size = pagePixmap.size();
-            // size.scale(rect.size(), Qt::KeepAspectRatio);
-            // painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-            // painter.setWindow(pagePixmap.rect());
-
-            // int index = 0;
-            // bool finish = false;
-            // for(int page=0; page<nPages; page++)
-            // {
-            //     if(finish) break;
-            //     pagePixmap.fill(Qt::white);
-            //     QPainter painter2(&pagePixmap);
-            //     for(int row=0; row<nRows; row++)
-            //     {
-            //         if(finish) break;
-
-            //         for(int col=0; col<nCols; col++)
-            //         {
-            //             index++;
-            //             if(index > nLabelCount)
-            //             {
-            //                 finish = true;
-            //                 break;
-            //             }
-
-            //             QString strName304 = ui->label304->text().trimmed();
-            //             QString strText304 = QString("%1").arg(ui->spinBoxCount->value());
-            //             strName304.replace("：","");
-            //             int ship = nUnit;
-            //             if(index == nLabelCount) ship = nLast;
-            //             QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index).arg(nLabelCount);
-
-            //             m_pLabelView->AddText(strCount, "value304");
-            //             m_pLabelView->update();
-
-            //             QPixmap pixmap = m_pLabelView->toPixmap();
-            //             painter2.drawPixmap(col*nW+2,row*nH,nW,nH,pixmap);
-            //         }
-            //     }
-
-            //     painter.drawPixmap(0, 0, pagePixmap);
-            //     if(page < nPages-1)
-            //         printer.newPage();
-            // }
 
             if(ui->checkBoxWritePdf->isChecked())
             {
