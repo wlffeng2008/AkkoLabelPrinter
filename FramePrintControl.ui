@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Frame</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0,0">
    <item>
     <widget class="QGroupBox" name="groupBox2">
      <property name="title">
@@ -37,7 +37,7 @@
         <x>2</x>
         <y>18</y>
         <width>378</width>
-        <height>572</height>
+        <height>473</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -56,7 +56,7 @@
           <x>4</x>
           <y>134</y>
           <width>368</width>
-          <height>431</height>
+          <height>339</height>
          </rect>
         </property>
         <property name="font">
@@ -463,7 +463,7 @@
           <x>54</x>
           <y>113</y>
           <width>318</width>
-          <height>425</height>
+          <height>331</height>
          </rect>
         </property>
         <property name="focusPolicy">
@@ -480,7 +480,7 @@
         <property name="geometry">
          <rect>
           <x>2</x>
-          <y>552</y>
+          <y>458</y>
           <width>44</width>
           <height>15</height>
          </rect>
@@ -493,7 +493,7 @@
         <property name="geometry">
          <rect>
           <x>54</x>
-          <y>548</y>
+          <y>454</y>
           <width>170</width>
           <height>21</height>
          </rect>
@@ -503,7 +503,7 @@
         <property name="geometry">
          <rect>
           <x>306</x>
-          <y>546</y>
+          <y>452</y>
           <width>66</width>
           <height>24</height>
          </rect>
@@ -595,7 +595,7 @@
        <widget class="QCheckBox" name="checkBoxAutoOut">
         <property name="geometry">
          <rect>
-          <x>252</x>
+          <x>290</x>
           <y>86</y>
           <width>80</width>
           <height>19</height>
@@ -609,7 +609,7 @@
         <property name="geometry">
          <rect>
           <x>234</x>
-          <y>546</y>
+          <y>452</y>
           <width>66</width>
           <height>24</height>
          </rect>
@@ -692,12 +692,12 @@
         <property name="geometry">
          <rect>
           <x>4</x>
-          <y>6</y>
+          <y>2</y>
           <width>376</width>
-          <height>436</height>
+          <height>421</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout" rowminimumheight="40,40,40,40,40,40,40,40,0">
+        <layout class="QGridLayout" name="gridLayout" rowminimumheight="32,32,40,32,32,32,32,32,32">
          <property name="leftMargin">
           <number>10</number>
          </property>
@@ -750,7 +750,7 @@
          <item row="6" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <property name="spacing">
-            <number>50</number>
+            <number>70</number>
            </property>
            <item>
             <widget class="QDateTimeEdit" name="dateTimeEdit1">
@@ -949,7 +949,7 @@
          <item row="5" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <property name="spacing">
-            <number>50</number>
+            <number>70</number>
            </property>
            <item>
             <widget class="QDateTimeEdit" name="dateTimeEdit0">
@@ -1018,7 +1018,13 @@
            <property name="minimumSize">
             <size>
              <width>100</width>
-             <height>32</height>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>28</height>
             </size>
            </property>
            <property name="cursor">
@@ -1035,7 +1041,7 @@
         <property name="geometry">
          <rect>
           <x>104</x>
-          <y>450</y>
+          <y>434</y>
           <width>86</width>
           <height>22</height>
          </rect>
@@ -1047,11 +1053,17 @@
        <widget class="QPushButton" name="pushButtonReject">
         <property name="geometry">
          <rect>
-          <x>226</x>
-          <y>446</y>
-          <width>145</width>
-          <height>32</height>
+          <x>190</x>
+          <y>432</y>
+          <width>101</width>
+          <height>28</height>
          </rect>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>28</height>
+         </size>
         </property>
         <property name="cursor">
          <cursorShape>PointingHandCursor</cursorShape>
@@ -1060,136 +1072,134 @@
          <string>退单数据配置</string>
         </property>
        </widget>
-       <widget class="QWidget" name="">
-        <property name="geometry">
-         <rect>
-          <x>4</x>
-          <y>480</y>
-          <width>373</width>
-          <height>88</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label307_2">
-           <property name="text">
-            <string>PDF文件：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEditPdfFile">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>24</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="placeholderText">
-            <string>请设置一个PDF文件名</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <item>
-            <widget class="QCheckBox" name="checkBoxWritePdf">
-             <property name="text">
-              <string>打印到PDF文件</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonOpenPdf">
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="text">
-              <string>查看</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonSetPdf">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="text">
-              <string>更新文件名</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelPrinter">
-           <property name="text">
-            <string>打印机选择：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
-           <item>
-            <widget class="QComboBox" name="comboBoxPrinter">
-             <property name="maximumSize">
-              <size>
-               <width>205</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonPrinter">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="text">
-              <string>更新打印机</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
       </widget>
      </widget>
     </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label307_2">
+       <property name="text">
+        <string>PDF文件：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEditPdfFile">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>请设置一个PDF文件名</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="checkBoxWritePdf">
+         <property name="text">
+          <string>打印到PDF文件</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonOpenPdf">
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="text">
+          <string>查看</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonSetPdf">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="text">
+          <string>更新文件名</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelPrinter">
+       <property name="text">
+        <string>打印机选择：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="comboBoxPrinter">
+         <property name="maximumSize">
+          <size>
+           <width>205</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonPrinter">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>80</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="text">
+          <string>更新打印机</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1,5,1">
@@ -1271,10 +1281,16 @@
        </property>
        <item>
         <widget class="QPushButton" name="pushButtonLabelMng">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>24</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>60</width>
-           <height>16777215</height>
+           <height>24</height>
           </size>
          </property>
          <property name="cursor">
@@ -1287,10 +1303,16 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonSetPaper">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>24</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>60</width>
-           <height>16777215</height>
+           <height>24</height>
           </size>
          </property>
          <property name="cursor">
@@ -1432,26 +1454,38 @@
        </property>
        <item>
         <widget class="QPushButton" name="pushButtonPreview">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>24</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>60</width>
-           <height>16777215</height>
+           <height>24</height>
           </size>
          </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="text">
-          <string>打印预览</string>
+          <string>预览</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonPrint">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>24</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>60</width>
-           <height>16777215</height>
+           <height>24</height>
           </size>
          </property>
          <property name="cursor">

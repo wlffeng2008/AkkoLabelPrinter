@@ -146,6 +146,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_rejectDlg = new DialogReject(this);
 
     ui->lineEditUrl->hide();
+    ui->pushButtonGenLabel->setFixedSize(100,28);
 
     ui->lineEditLimit->setText(m_pSet->value("limitCount","40").toString());
     ui->lineEditCode0->setText(m_pSet->value("Code0","BJ").toString());
