@@ -60,6 +60,8 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
 
             textObject["x"] = textItem->pos().x();
             textObject["y"] = textItem->pos().y();
+            textObject["w"] = textItem->getItemRect().width();
+            textObject["h"] = textItem->getItemRect().height();
             textObject["scale"] = textItem->scale();
             textObject["type_in0"] = textItem->data( 0 ).toInt();
             textObject["type_in1"] = textItem->data( 1 ).toInt();
@@ -74,6 +76,8 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
             pixmapObject["type"] = "pixmap";
             pixmapObject["x"] = pixmapItem->pos().x();
             pixmapObject["y"] = pixmapItem->pos().y();
+            pixmapObject["w"] = pixmapItem->getItemRect().width();
+            pixmapObject["h"] = pixmapItem->getItemRect().height();
             pixmapObject["scale"] = pixmapItem->scale();
             pixmapObject["type_in0"] = pixmapItem->data( 0 ).toInt();
             pixmapObject["type_in1"] = pixmapItem->data( 1 ).toInt();
@@ -128,7 +132,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
     int nW = scene->width();
     int nH = scene->height();
 
-    for( const QJsonValue &value : itemsArray )
+    for( const QJsonValue &value : std::as_const(itemsArray) )
     {
         QJsonObject obj = value.toObject();
         QString type = obj["type"].toString();
@@ -163,10 +167,10 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
                 font1.setStyleName(obj["style"].toString());
                 font1.setBold( obj["bold"].toBool());
                 font1.setPointSize(obj["size"].toInt());
-                textItem->setFont(font1) ;
+                textItem->setFont(font1);
             }
             if(name== "QPass")
-            textItem->m_bShowRect = true ;
+                textItem->m_bShowRect = true;
             scene->addItem(textItem);
         }
         else if (type == "pixmap")

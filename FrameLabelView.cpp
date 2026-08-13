@@ -60,8 +60,8 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     m_pView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     m_pView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    connect( m_pScene, &CustomScene::itemtemSelected, this, [=](){
-        emit onItemSelected(nullptr);
+    connect( m_pScene, &CustomScene::itemtemSelected, this, [=](QGraphicsItem *item){
+        emit onItemSelected(item);
     });
 }
 
@@ -129,25 +129,8 @@ void FrameLabelView::Load(const QString&srtFile)
     if(srtFile.isEmpty())
         return;
 
-    emit onItemSelected(nullptr);
-
     CLabelSave::loadSceneWithImages(m_pScene,srtFile);
 
-    for (auto item : m_pScene->items())
-    {
-        if (auto textItem = dynamic_cast<CustomTextItem*>(item))
-        {
-            connect( textItem, &CustomTextItem::sigRectChanged_, [this](QObject *pSender){
-                emit onItemSelected(pSender);
-            } );
-        }
-        else if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
-        {
-            connect( pixmapItem, &CustomPixmapItem::sigRectChanged_, [this](QObject *pSender){
-                emit onItemSelected(pSender);
-            } );
-        }
-    }
     emit onItemLoaded();
 }
 
@@ -192,11 +175,8 @@ void FrameLabelView::AddText(const QString&strText, const QString&strName)
         textItem->setName(strName);
 
         textItem->setFont(s_font);
-
-        connect(textItem, &CustomTextItem::sigRectChanged_, this, [=](QObject *pSender){
-            emit onItemSelected(pSender);
-        } );
     }
+    m_pScene->clearSelection();
     textItem->setPlainText(strText);
 }
 
@@ -204,6 +184,7 @@ void*FrameLabelView::AddImage(const QImage&image, const QString&strName)
 {
     if(image.isNull())
         return nullptr;
+    m_pScene->clearSelection();
     CustomPixmapItem* imgItem = m_pScene->getPixmapItem(strName);
     if(!imgItem)
     {
@@ -211,10 +192,6 @@ void*FrameLabelView::AddImage(const QImage&image, const QString&strName)
         m_pScene->addItem(imgItem);
         imgItem->setPos(10, 40);
         imgItem->setName(strName);
-
-        connect(imgItem, &CustomPixmapItem::sigRectChanged_, this, [=](QObject *pSender){
-            emit onItemSelected(pSender);
-        } );
     }
     imgItem->setPixmap(QPixmap::fromImage(image));
     return imgItem;

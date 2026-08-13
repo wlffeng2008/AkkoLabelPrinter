@@ -49,7 +49,7 @@ bool hasRealPhysicalPrinter()
     return false;
 }
 
-void drawTextAutoWrapAndScale(QPainter* painter, const QRect& rect, const QString& text, QFont baseFont, Qt::Alignment alignment = Qt::AlignCenter)
+void drawTextAutoWrapAndScale(QPainter* painter, const QRect& rect, const QString& text, QFont baseFont, Qt::Alignment alignment = Qt::AlignLeft|Qt::AlignTop)
 {
     if (!painter || rect.isEmpty() || text.isEmpty())
         return;
@@ -147,6 +147,11 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     ui->lineEditUrl->hide();
     ui->pushButtonGenLabel->setFixedSize(100,28);
+
+    connect(ui->textEdit302,&QTextEdit::textChanged,this,[=]{
+        QString strInfo=QString("长度：%1 字节").arg(ui->textEdit302->toPlainText().trimmed().toLocal8Bit().size());
+        ui->labelNameLen->setText(strInfo);
+    });
 
     ui->lineEditLimit->setText(m_pSet->value("limitCount","40").toString());
     ui->lineEditCode0->setText(m_pSet->value("Code0","BJ").toString());
@@ -519,10 +524,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddText(strName307.trimmed() , "value307");
             m_pLabelView->AddText(strText307, "Qpass");
             m_pLabelView->AddImageQR(strText303,"QrCode303");
-            if(strText302.length()>24)
+            if(strText302.toLocal8Bit().size()>32)
             {
                 m_pLabelView->AddText(strName302.trimmed() , "value302");
-                QImage textImg(460,104,QImage::Format_ARGB32);
+                QImage textImg(500,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
 
                 painter.fillRect(textImg.rect(),Qt::white);
@@ -840,10 +845,10 @@ void FramePrintControl::doPrint(QPrinter *printer)
                     m_pLabelView->AddText(strName304 + strText304, "value304");
                     m_pLabelView->AddText(strName305 + strText305, "value305");
                     m_pLabelView->AddImageQR(strText302,"QrCode303");
-                    if(strText301.length()>24)
+                    if(strText301.toLocal8Bit().size()>32)
                     {
                         m_pLabelView->AddText(strName301.trimmed() , "value301");
-                        QImage textImg(460,104,QImage::Format_ARGB32);
+                        QImage textImg(500,104,QImage::Format_ARGB32);
                         QPainter painter(&textImg);
 
                         painter.fillRect(textImg.rect(),Qt::white);

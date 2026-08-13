@@ -66,7 +66,7 @@ public:
         else
         {
             moving = true;
-            m_item->setCursor(Qt::ClosedHandCursor);  // Change cursor for moving
+            m_item->setCursor(Qt::SizeAllCursor);  // Change cursor for moving
             event->accept();
         }
         //emitRectSig();
@@ -124,7 +124,7 @@ public:
         }
         else
         {
-            m_item->setCursor(Qt::ArrowCursor);  // Normal cursor
+            m_item->setCursor(Qt::PointingHandCursor);  // Normal cursor
         }
     }
 
@@ -132,10 +132,7 @@ public:
     {
         if(m_item)
         {
-            if(rectNew.topLeft() != m_item->pos())
-            {
-                m_item->setPos(rectNew.topLeft());
-            }
+            m_item->setPos(rectNew.topLeft());
 
             QRectF origRect = m_item->boundingRect();
 
@@ -160,10 +157,6 @@ public:
             else if(h_last != h_new && w_last != w_new)
             {
                 newScale = newScaleMax;
-            }
-            else
-            {
-                return;
             }
 
             m_item->setScale(newScale);
@@ -213,9 +206,9 @@ protected:
     CustomBaseItem base;  // Instance of Resizable to handle resizing
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        base.handleMousePressEvent(event);        
-        setSelected(true);
-        emit sigRectChanged_(this);
+        base.handleMousePressEvent(event);
+        //setSelected(true);
+        //emit sigRectChanged_(this);
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -224,7 +217,7 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
-        setSelected(true);
+        //setSelected(true);
         emit sigRectChanged_(this);
     }
 
@@ -323,8 +316,8 @@ protected:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMousePressEvent(event);
-        setSelected(true);
-        emit sigRectChanged_(this);
+        //setSelected(true);
+        //emit sigRectChanged_(this);
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -333,7 +326,7 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
-        setSelected(true);
+        //setSelected(true);
         emit sigRectChanged_(this);
     }
 
@@ -370,9 +363,10 @@ protected:
             QPixmap pix = pixmap();
             painter->drawImage(A,pix.toImage());
         }
+
         if(isSelected())
         {
-            painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+            painter->setPen(QPen(Qt::red,2,Qt::DashLine));
             painter->drawRect(A);
         }
     }

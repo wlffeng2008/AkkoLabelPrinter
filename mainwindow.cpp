@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QString strTitle = QString("简易标签打印 - V1.26 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
+    QString strTitle = QString("简易标签打印 - V1.28 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
     setWindowTitle( strTitle );
     QTimer::singleShot(200,this,[=]{ ui->frameR->BindLabelView(ui->frameL) ;});
 
@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
         show() ;
     }) ;
 
-
     QTimer *pTimerFlash = new QTimer(this);
     connect(pTimerFlash,&QTimer::timeout,this,[=]{
         static int nCount = 0;
@@ -58,11 +57,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    ui->frameL->Save();
     if(QMessageBox::question(this, "提示", "确定要退出标签打印程序吗？") != QMessageBox::Yes)
     {
         event->ignore();
         return;
     }
-    ui->frameL->Save();
     QMainWindow::closeEvent(event);
 }

@@ -18,6 +18,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QPrintPreviewDialog>
+#include <QTimer>
 
 class CustomScene : public QGraphicsScene
 {
@@ -29,8 +30,8 @@ public:
             QList<QGraphicsItem *> items = this->selectedItems();
             for( int i = 0; i < items.size(); i++ )
             {
-                if( m_pLastItem != items[i] )
-                    items[i]->setSelected(false);
+                //if( m_pLastItem != items[i] )
+                //    items[i]->setSelected(false);
             }
         });
     }
@@ -132,7 +133,7 @@ public:
         if(pixmapItem)
         {
             QPoint pt = pixmapItem->pos().toPoint();
-            textItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));;
+            textItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));
             return true;
         }
         return false;
@@ -186,20 +187,25 @@ public:
     }
 
 signals:
-    void itemtemSelected();
+    void itemtemSelected(QGraphicsItem *item);
 
 protected:
-    void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
     {
         QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
-        if( !item )
+        if( item )
         {
-            clearSelection();
-            emit itemtemSelected();
-            pView_->viewport()->repaint();
+            QTimer::singleShot(20,this,[=]{
+                item->setSelected(!item->isSelected());
+                pView_->update();
+                pView_->viewport()->repaint();
+            });
         }
-        m_pLastItem = item ;
-        QGraphicsScene::mousePressEvent(event);
+        m_pLastItem = item;
+        emit itemtemSelected(item);
+        event->accept();
+
+        //QGraphicsScene::mouseReleaseEvent(event);
     }
 
 private:
@@ -336,7 +342,7 @@ public:
     void SetFont(QFont&font);
 
 signals:
-    void onItemSelected(QObject *pSender);
+    void onItemSelected(QGraphicsItem *item);
     void onItemLoaded();
 
 protected:
