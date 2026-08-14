@@ -125,6 +125,9 @@ void FrameLabelView::SetFont(QFont&font)
 
 void FrameLabelView::Load(const QString&srtFile)
 {
+    if(!m_strTemlate.isEmpty())
+        Save();
+
     m_strTemlate = srtFile;
     if(srtFile.isEmpty())
         return;
@@ -166,6 +169,8 @@ void FrameLabelView::Print()
 
 void FrameLabelView::AddText(const QString&strText, const QString&strName)
 {
+    m_pScene->clearSelection();
+
     CustomTextItem* textItem = m_pScene->getTextItem(strName);
     if(!textItem)
     {
@@ -176,7 +181,6 @@ void FrameLabelView::AddText(const QString&strText, const QString&strName)
 
         textItem->setFont(s_font);
     }
-    m_pScene->clearSelection();
     textItem->setPlainText(strText);
 }
 
@@ -184,7 +188,9 @@ void*FrameLabelView::AddImage(const QImage&image, const QString&strName)
 {
     if(image.isNull())
         return nullptr;
+
     m_pScene->clearSelection();
+
     CustomPixmapItem* imgItem = m_pScene->getPixmapItem(strName);
     if(!imgItem)
     {
@@ -216,9 +222,9 @@ void FrameLabelView::AddImageQR(const QString&strQrText, const QString&strName)
 
 void FrameLabelView::AddLine(bool horizontal,const QString&strName)
 {
-    QImage image(QSize(1000,4),QImage::Format_RGB32);
+    QImage image(QSize(736,2),QImage::Format_RGB32);
     if(!horizontal)
-        image = QImage(QSize(4,1000),QImage::Format_RGB32);
+        image = QImage(QSize(2,720),QImage::Format_RGB32);
     QPainter painter(&image);
     painter.fillRect(image.rect(),Qt::black);
     CustomPixmapItem* imgItem = (CustomPixmapItem*)AddImage(image,strName);
@@ -247,6 +253,10 @@ void FrameLabelView::SetItemScale(const QString&strName,float scale)
     m_pScene->SetItemScale(strName,scale);
 }
 
+QList<QGraphicsItem *> FrameLabelView::GetItems(){
+    return m_pScene->items();
+}
+
 QPixmap FrameLabelView::toPixmap()
 {
    return m_pView->toPixmap();
@@ -261,6 +271,7 @@ void FrameLabelView::Delete()
         delete item;
     }
     Save();
+    emit onItemLoaded();
 }
 
 bool FrameLabelView::Remove(const QString&strName)
@@ -276,6 +287,9 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
     m_bCtrlPress = bCtrlPress;
     m_bShiftPress = (event->modifiers() & Qt::ShiftModifier);
 
+    int nw = size().width()-4;
+    int nh = size().height()-4;
+
     for( auto item : m_pScene->items() )
     {
         if( item->isSelected() || bCtrlPress)
@@ -284,43 +298,40 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
             qreal fscale  = item->scale();
             qreal fscaleN = item->scale();
 
-            int data = item->data(0xCC).toInt();
+            int ox = pos.x();
+            int oy = pos.y();
+            int nx = ox;
+            int ny = oy;
 
-            int x = pos.x();
-            int y = pos.y();
-            int nx = x;
-            int ny = y;
+            int step = 4;
+            if(m_bShiftPress) step = 1;
 
-            int step = 5;
-            if(m_bShiftPress)
-                step = 1;
+            if(nKey == Qt::Key_Left)  nx -= step;
+            if(nKey == Qt::Key_Right) nx += step;
 
-            if(nKey == Qt::Key_Left)
-                nx -= step;
-            if(nKey == Qt::Key_Right)
-                nx += step;
-
-            if(nKey == Qt::Key_Up)
-                ny -= step;
-            if(nKey  == Qt::Key_Down)
-                ny += step;
+            if(nKey == Qt::Key_Up)    ny -= step;
+            if(nKey == Qt::Key_Down)  ny += step;
 
             if(nKey == Qt::Key_Minus)
             {
-                fscaleN *= 0.95;
+                fscaleN -= 0.05;
                 if(m_bShiftPress) fscaleN = 1.0;
             }
 
             if(nKey == Qt::Key_Equal)
             {
-                fscaleN *= 1.05;
+                fscaleN += 0.05;
                 if(m_bShiftPress) fscaleN = 1.0;
             }
 
-            if(nx<0) nx = 0;
-            if(ny<0) ny = 0;
+            if(nx < 0) nx = 0;
+            if(ny < 0) ny = 0;
+            if(nx > nw)nx = nw;
+            if(ny > nh)ny = nh;
 
-            if(nx != x || ny != y)
+            if(fscaleN<0.05) fscaleN =  0.05;
+
+            if(nx != ox || ny != oy)
                 item->setPos(nx,ny);
 
             if(fscaleN != fscale)

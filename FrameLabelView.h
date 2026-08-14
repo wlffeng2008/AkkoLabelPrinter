@@ -195,8 +195,8 @@ protected:
         QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
         if( item )
         {
+            item->setSelected(!item->isSelected());
             QTimer::singleShot(20,this,[=]{
-                item->setSelected(!item->isSelected());
                 pView_->update();
                 pView_->viewport()->repaint();
             });
@@ -337,6 +337,8 @@ public:
     void GetItem(const QString&strName,int &x,int &y,float &scale);
 
     void SetPaperSize(qreal width,qreal height);
+
+    QList<QGraphicsItem *>GetItems() ;
 
     QFont GetFont();
     void SetFont(QFont&font);

@@ -17,8 +17,6 @@
 class CustomBaseItem : public QObject
 {
     Q_OBJECT
-signals:
-    void sigRectChanged(QObject *sender);
 
 public:
     explicit CustomBaseItem(QGraphicsItem *itemIn) : m_item(itemIn)
@@ -28,11 +26,6 @@ public:
             m_item->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsFocusable);
             m_item->setAcceptHoverEvents(true);
         }
-    }
-
-    void emitRectSig()
-    {
-        emit sigRectChanged(this);
     }
 
     QRectF getItemCurRect()
@@ -165,6 +158,9 @@ public:
         }
     }
 
+signals:
+    void itemChanged();
+
 private:
     QGraphicsItem *m_item=nullptr;
     bool resizing=false;
@@ -177,6 +173,10 @@ private:
         return ( qAbs(pos.x() - rect.right()) < threshold ||
                 qAbs(pos.y() - rect.bottom()) < threshold );
     }
+    void emitRectSig()
+    {
+        emit itemChanged();
+    }
 };
 
 
@@ -184,13 +184,13 @@ class CustomTextItem : public QGraphicsTextItem
 {
      Q_OBJECT
 signals:
-    void sigRectChanged_(QObject *sender);
+    void sigRectChanged();
 public:
     CustomTextItem(const QString &text, QGraphicsTextItem *parentGraph = nullptr)
         : QGraphicsTextItem(text, parentGraph), base(this)
     {
-        connect( &base, &CustomBaseItem::sigRectChanged, [=](QObject *sender){
-            emit sigRectChanged_(this);
+        connect( &base, &CustomBaseItem::itemChanged, [=](){
+            emit sigRectChanged();
         } );
     }
 
@@ -208,7 +208,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMousePressEvent(event);
         //setSelected(true);
-        //emit sigRectChanged_(this);
+        //emit sigRectChanged();
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -218,7 +218,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
         //setSelected(true);
-        emit sigRectChanged_(this);
+        emit sigRectChanged();
     }
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
@@ -284,22 +284,22 @@ class CustomPixmapItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 signals:
-    void sigRectChanged_(QObject *sender);
+    void sigRectChanged();
 
 public:
     CustomPixmapItem(const QPixmap &pixmap, QGraphicsItem *parent = nullptr)
         : QObject(), QGraphicsPixmapItem( pixmap, parent ), base(this)
     {
-        connect( &base, &CustomBaseItem::sigRectChanged, this, [=](QObject *sender){
-            emit sigRectChanged_(this);
+        connect( &base, &CustomBaseItem::itemChanged, this, [=](){
+            emit sigRectChanged();
         } );
     }
 
     CustomPixmapItem(QGraphicsItem *parent = nullptr)
         : QGraphicsPixmapItem(parent), base(this)
     {
-        connect( &base, &CustomBaseItem::sigRectChanged, this, [=](QObject *sender){
-            emit sigRectChanged_(this);
+        connect( &base, &CustomBaseItem::itemChanged, this, [=](){
+            emit sigRectChanged();
         } );
     }
 
@@ -317,7 +317,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMousePressEvent(event);
         //setSelected(true);
-        //emit sigRectChanged_(this);
+        //emit sigRectChanged();
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -327,7 +327,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
         //setSelected(true);
-        emit sigRectChanged_(this);
+        emit sigRectChanged();
     }
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {

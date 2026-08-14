@@ -767,9 +767,23 @@ void FramePrintControl::LoadTemplate(const QString&strFile)
 void FramePrintControl::BindLabelView(FrameLabelView *pView)
 {
     m_pLabelView = pView;
+    m_labelEdit->BindLabelView(pView);
     ui->pushButtonSetPaper->click();
     QTimer::singleShot(100,this,[=]{
         LoadTemplate(m_strTemplFile);
+    });
+    connect(pView,&FrameLabelView::onItemSelected,this,[=](QGraphicsItem *item){
+        if (auto textItem = dynamic_cast<CustomTextItem*>(item))
+        {
+            qDebug() << textItem->getItemRect();
+            return;
+        }
+
+        if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
+        {
+            qDebug() << pixmapItem->getItemRect();
+            return;
+        }
     });
 }
 
