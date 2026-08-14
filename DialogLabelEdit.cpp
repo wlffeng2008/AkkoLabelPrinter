@@ -27,11 +27,11 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
     pHeader->setSectionResizeMode(7,QHeaderView::Fixed);
     pHeader->resizeSection(7,300);
 
-    SideValueDelegate *pDele0 = new SideValueDelegate(this);
-    SideValueDelegate *pDele1 = new SideValueDelegate(this);
-    SideValueDelegate *pDele2 = new SideValueDelegate(this);
-    SideValueDelegate *pDele3 = new SideValueDelegate(this);
-    SideValueDelegate *pDele4 = new SideValueDelegate(this);
+    pDele0 = new SideValueDelegate(this);
+    pDele1 = new SideValueDelegate(this);
+    pDele2 = new SideValueDelegate(this);
+    pDele3 = new SideValueDelegate(this);
+    pDele4 = new SideValueDelegate(this);
     pDele0->setTableView(ui->tableView) ;
     pDele1->setTableView(ui->tableView) ;
     pDele2->setTableView(ui->tableView) ;
@@ -229,6 +229,12 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
 
 void DialogLabelEdit::LoadLabels()
 {
+    pDele0->resetText();
+    pDele1->resetText();
+    pDele2->resetText();
+    pDele3->resetText();
+    pDele4->resetText();
+
     m_bLoading = true;
     m_pModel->removeRows(0,m_pModel->rowCount());
     QList<QGraphicsItem *> items = this->m_pView->GetItems();

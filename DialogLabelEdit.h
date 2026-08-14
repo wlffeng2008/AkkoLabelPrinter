@@ -48,7 +48,7 @@ public:
     void setHexMode(bool set=true){ m_bHexMode = set ;}
     void setIntStep(int step){ m_nStep = step ;}
     void setFloatMode(bool set,float step=0.05){m_bFloatMode=set; m_fStep = step;};
-
+    void resetText(){_texts.clear();}
 
 protected:
     QMap<int,QString> _texts;
@@ -224,6 +224,12 @@ private:
     bool m_bLoading=false;
     void AppendRow(QGraphicsItem *item);
     void LoadLabels();
+
+    SideValueDelegate *pDele0;
+    SideValueDelegate *pDele1;
+    SideValueDelegate *pDele2;
+    SideValueDelegate *pDele3;
+    SideValueDelegate *pDele4;
 };
 
 #endif // DIALOGLABELEDIT_H
