@@ -26,14 +26,6 @@ class CustomScene : public QGraphicsScene
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
-        connect(this, &QGraphicsScene::selectionChanged, [=](){
-            QList<QGraphicsItem *> items = this->selectedItems();
-            for( int i = 0; i < items.size(); i++ )
-            {
-                //if( m_pLastItem != items[i] )
-                //    items[i]->setSelected(false);
-            }
-        });
     }
 
     void setView(QGraphicsView *pView) { pView_ = pView ;}
@@ -71,10 +63,10 @@ public:
         QStringList names;
         for (auto item : items())
         {
+            if (auto textItem = dynamic_cast<CustomTextItem*>(item))
+                names.push_back(textItem->m_strName.trimmed());
             if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
-            {
                 names.push_back(pixmapItem->m_strName.trimmed());
-            }
         }
         return names;
     }
@@ -185,30 +177,70 @@ public:
         }
         return false;
     }
+    bool isDraging(){return m_pLastItem != nullptr;}
 
 signals:
-    void itemtemSelected(QGraphicsItem *item);
+    void itemSelected(QGraphicsItem *item);
+    void itemChanged(QGraphicsItem *item);
+    void dragDrop();
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
     {
-        QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
-        if( item )
+        if( m_pLastItem )
         {
-            item->setSelected(!item->isSelected());
-            QTimer::singleShot(20,this,[=]{
-                pView_->update();
-                pView_->viewport()->repaint();
-            });
+            qDebug() << "mouseReleaseEvent" << m_bDraging;
+            if(m_bDraging)
+            {
+                emit itemChanged(m_pLastItem);
+            }
         }
-        m_pLastItem = item;
-        emit itemtemSelected(item);
-        event->accept();
 
-        //QGraphicsScene::mouseReleaseEvent(event);
+        m_bDraging  = false;
+
+        QGraphicsScene::mouseReleaseEvent(event);
+    }
+    void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
+    {
+        m_bDraging = true;
+        m_clkPt = event->scenePos();
+        QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
+        m_pLastItem = item;
+        if( !item )
+        {
+            clearSelection();
+        }
+        else
+        {
+            item->setSelected(true);
+            emit itemSelected(item);
+        }
+
+        QGraphicsScene::mousePressEvent(event);
+    }
+
+    void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) override
+    {
+        if(m_bDraging)
+        {
+            QRectF rcFrame(m_clkPt,event->scenePos());
+            for (auto item : items())
+            {
+                // ✅ item局部包围盒 → 转换到scene全局坐标
+                QRectF itemSceneRect = item->mapToScene(item->boundingRect()).boundingRect();
+
+                // ✅ 矩形相交：只要有重叠就选中，标准框选
+                bool bHit = rcFrame.intersects(itemSceneRect);
+                item->setSelected(bHit);
+            }
+        }
+
+        QGraphicsScene::mouseMoveEvent(event);
     }
 
 private:
+    QPointF m_clkPt;
+    bool m_bDraging  = false;
     QGraphicsView *pView_ = nullptr;
     QGraphicsItem *m_pLastItem=nullptr;
 };
@@ -258,6 +290,51 @@ public:
         QPainter painter(&pixmap);
         scene()->render(&painter, QRectF(pixmap.rect()), this->rect());
         return pixmap;
+    }
+protected:
+    QPointF m_clkPt0;
+    QPointF m_clkPt1;
+    bool m_bDraging = false;
+
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        update();
+        QGraphicsView::mousePressEvent(event);
+        if(!((CustomScene *)scene())->isDraging())
+        {
+            m_clkPt0 = event->pos();
+            m_clkPt1 = event->pos();
+            m_bDraging=true;
+        }
+    }
+    void mouseMoveEvent(QMouseEvent *event) override
+    {
+        QGraphicsView::mouseMoveEvent(event);
+
+        if(m_bDraging)
+        {
+            m_clkPt1 = event->pos();
+            update();
+        }
+    }
+    void mouseReleaseEvent(QMouseEvent *event) override
+    {
+        m_clkPt0 = event->pos();
+        m_clkPt1 = event->pos();
+        QGraphicsView::mouseReleaseEvent(event);
+        m_bDraging=false;
+        update();
+
+    }
+    void drawForeground(QPainter *painter, const QRectF &rect) override
+    {
+        QGraphicsView::drawForeground(painter, rect);
+
+        if(m_bDraging)
+        {
+            QRectF drawRect(m_clkPt0,m_clkPt1);
+            painter->fillRect(drawRect, QColor(0,0,255,100)); //半透明蓝色
+        }
     }
 
 private:
@@ -322,6 +399,7 @@ public:
     void SetPrintMatrix(int nRows=1,int nCols=1);
     void Delete();
     bool Remove(const QString&strName);
+    void Clear();
 
     QPixmap toPixmap();
 
@@ -345,6 +423,7 @@ public:
 
 signals:
     void onItemSelected(QGraphicsItem *item);
+    void onItemChanged(QGraphicsItem *item);
     void onItemLoaded();
 
 protected:

@@ -775,13 +775,13 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
     connect(pView,&FrameLabelView::onItemSelected,this,[=](QGraphicsItem *item){
         if (auto textItem = dynamic_cast<CustomTextItem*>(item))
         {
-            qDebug() << textItem->getItemRect();
+            //qDebug() << textItem->getItemRect();
             return;
         }
 
         if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
         {
-            qDebug() << pixmapItem->getItemRect();
+            //qDebug() << pixmapItem->getItemRect();
             return;
         }
     });

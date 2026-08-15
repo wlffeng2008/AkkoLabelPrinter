@@ -163,7 +163,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             {
                 QFont font1;
                 font1.setFamily(obj["font"].toString());
-                font1.setFamily("微软雅黑");
+                //font1.setFamily("微软雅黑");
                 font1.setStyleName(obj["style"].toString());
                 font1.setBold( obj["bold"].toBool());
                 font1.setPointSize(obj["size"].toInt());

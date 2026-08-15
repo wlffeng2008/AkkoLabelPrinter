@@ -60,8 +60,21 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     m_pView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     m_pView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    connect( m_pScene, &CustomScene::itemtemSelected, this, [=](QGraphicsItem *item){
+    connect( m_pScene, &CustomScene::itemSelected, this, [=](QGraphicsItem *item){
         emit onItemSelected(item);
+    });
+    connect( m_pScene, &CustomScene::itemChanged, this, [=](QGraphicsItem *item){
+        emit onItemChanged(item);
+    });
+
+    QTimer *pDragTM = new QTimer(this);
+    connect(pDragTM,&QTimer::timeout,this,[=]{
+        pDragTM->stop();
+        emit onItemLoaded();
+    });
+    connect( m_pScene, &CustomScene::dragDrop, this, [=](){
+        pDragTM->stop();
+        pDragTM->start(500);
     });
 }
 
@@ -122,6 +135,8 @@ void FrameLabelView::SetFont(QFont&font)
         }
     }
 }
+
+
 
 void FrameLabelView::Load(const QString&srtFile)
 {
@@ -253,7 +268,8 @@ void FrameLabelView::SetItemScale(const QString&strName,float scale)
     m_pScene->SetItemScale(strName,scale);
 }
 
-QList<QGraphicsItem *> FrameLabelView::GetItems(){
+QList<QGraphicsItem *> FrameLabelView::GetItems()
+{
     return m_pScene->items();
 }
 
@@ -274,6 +290,15 @@ void FrameLabelView::Delete()
     emit onItemLoaded();
 }
 
+
+void FrameLabelView::Clear()
+{
+    m_pScene->clear();
+    Save();
+    emit onItemLoaded();
+}
+
+
 bool FrameLabelView::Remove(const QString&strName)
 {
     return m_pScene->Remove(strName);
@@ -287,13 +312,15 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
     m_bCtrlPress = bCtrlPress;
     m_bShiftPress = (event->modifiers() & Qt::ShiftModifier);
 
+
     int nw = size().width()-4;
     int nh = size().height()-4;
 
     for( auto item : m_pScene->items() )
     {
-        if( item->isSelected() || bCtrlPress)
+        if( item->isSelected() || bCtrlPress )
         {
+            // qDebug() << "FrameLabelView::keyReleaseEvent" << m_bShiftPress << nKey << Qt::hex << nKey;
             QPointF pos   = item->pos();
             qreal fscale  = item->scale();
             qreal fscaleN = item->scale();
@@ -312,17 +339,11 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
             if(nKey == Qt::Key_Up)    ny -= step;
             if(nKey == Qt::Key_Down)  ny += step;
 
-            if(nKey == Qt::Key_Minus)
-            {
-                fscaleN -= 0.05;
-                if(m_bShiftPress) fscaleN = 1.0;
-            }
+            if(nKey == Qt::Key_Minus) fscaleN -= 0.05;
+            if(nKey == Qt::Key_Equal) fscaleN += 0.05;
 
-            if(nKey == Qt::Key_Equal)
-            {
-                fscaleN += 0.05;
-                if(m_bShiftPress) fscaleN = 1.0;
-            }
+            if(nKey == Qt::Key_Underscore)fscaleN = 1.0;
+            if(nKey == Qt::Key_Plus)      fscaleN = 1.0;
 
             if(nx < 0) nx = 0;
             if(ny < 0) ny = 0;
