@@ -12,6 +12,8 @@
 
 #include <QSpinBox>
 #include <QDoubleSpinBox>
+#include <QDateTimeEdit>
+#include <QComboBox>
 #include <QStyledItemDelegate>
 
 
@@ -32,6 +34,70 @@ protected:
             return QString("%1").arg(value, 0, 16).toUpper();
 
         return QString("%1").arg(value, 0, 10).toUpper();
+    }
+};
+
+class DateTimeDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+public:
+    DateTimeDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent)
+    {
+    }
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override {
+        Q_UNUSED(option)
+        Q_UNUSED(index)
+        QDateTimeEdit *pDTEdit = new QDateTimeEdit(parent);
+        pDTEdit->setDisplayFormat("yyyy-MM-dd");
+        return pDTEdit;
+    }
+
+    void setEditorData(QWidget *editor, const QModelIndex &index) const override {
+        QString strValue = index.model()->data(index, Qt::EditRole).toString();
+        QDateTimeEdit *pDTEdit = static_cast<QDateTimeEdit*>(editor);
+        QLocale enUs(QLocale::English, QLocale::UnitedStates);
+        QDate dt0 = enUs.toDate(strValue, "yyyy-MM-dd");;
+        pDTEdit->setDate(dt0);
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override {
+        QDateTimeEdit *pDTEdit = static_cast<QDateTimeEdit*>(editor);
+        QString value = pDTEdit->date().toString("yyyy-MM-dd");
+        model->setData(index, value, Qt::EditRole);
+    }
+};
+
+class ComboBoxDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+public:
+    ComboBoxDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent)
+    {
+    }
+
+    void setItems(const QStringList&strItems){_strItems=strItems;}
+    QStringList _strItems{"PASS","NG","签章"};
+protected:
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override {
+        Q_UNUSED(option)
+        Q_UNUSED(index)
+        QComboBox *pComb = new QComboBox(parent);
+        pComb->addItems(_strItems);
+        return pComb;
+    }
+
+    void setEditorData(QWidget *editor, const QModelIndex &index) const override {
+        QString strValue = index.model()->data(index, Qt::EditRole).toString();
+        QComboBox *pComb = static_cast<QComboBox*>(editor);
+        int idx = pComb->findText(strValue);
+        if (idx >= 0)
+        {
+            pComb->setCurrentIndex(idx);
+        }
+    }
+
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override {
+        QComboBox *pComb = static_cast<QComboBox*>(editor);
+        QString value = pComb->currentText();
+        model->setData(index, value, Qt::EditRole);
     }
 };
 

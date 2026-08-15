@@ -144,6 +144,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_fieldList = new DialogFieldPickup(this);
     m_labelEdit = new DialogLabelEdit(this);
     m_rejectDlg = new DialogReject(this);
+    m_sellDlg   = new DialogSell(this);
 
     ui->lineEditUrl->hide();
     ui->pushButtonGenLabel->setFixedSize(100,28);
@@ -480,9 +481,40 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_rejectDlg->show();
         });
 
+        connect(m_sellDlg,&DialogSell::itemChanged,this,[=](int index){
+            m_bSetting = true;
+            QStringList vals=m_sellDlg->getItemData(index);
+            ui->lineEdit300->setText(vals[0]);
+            ui->lineEdit301->setText(vals[1]);
+            ui->textEdit302->setText(vals[2]);
+            ui->lineEdit303->setText(vals[3]);
+            ui->spinBoxCount->setValue(vals[4].toInt());
+            ui->spinBoxUnit->setValue(vals[5].toInt());
+
+            QLocale enUs(QLocale::English, QLocale::UnitedStates);
+
+            QDate dt0 = enUs.toDate(vals[6], "yyyy-MM-dd");
+            ui->dateTimeEdit0->setDate(dt0);
+            QDate dt1 = enUs.toDate(vals[7], "yyyy-MM-dd");
+            ui->dateTimeEdit1->setDate(dt1);
+            if(vals[8].startsWith("PASS",Qt::CaseInsensitive))
+                ui->radioButton0->setChecked(true);
+            else if(vals[8].startsWith("NG",Qt::CaseInsensitive))
+                ui->radioButton1->setChecked(true);
+            else
+                ui->radioButton2->setChecked(true);
+            m_bSetting = false;
+            ui->pushButtonGenLabel->click();
+        });
+
+        connect(ui->pushButtonSellData,&QPushButton::clicked,this,[=]{
+            m_sellDlg->show();
+        });
+
         connect(ui->pushButtonGenLabel,&QPushButton::clicked,this,[=]{
-            if(ui->checkBoxReject->isChecked())
-                return;
+            if(m_bSetting) return;
+            if(ui->checkBoxReject->isChecked()) return;
+
             QString strName300 = ui->label300->text().trimmed();
             QString strText300 = ui->lineEdit300->text().trimmed();
 
@@ -526,48 +558,46 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddImageQR(strText303,"QrCode303");
             if(strText302.toLocal8Bit().size()>32)
             {
-                m_pLabelView->AddText(strName302.trimmed() , "value302");
                 QImage textImg(500,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
-
-                painter.fillRect(textImg.rect(),Qt::white);
                 painter.fillRect(textImg.rect(),Qt::NoBrush);
 
                 QFont font("Microsoft YaHei");
                 painter.setPen(Qt::black);
-                QString str = strText302;
-                drawTextAutoWrapAndScale(&painter,textImg.rect(),str,font);
+                drawTextAutoWrapAndScale(&painter,textImg.rect(),strText302,font);
+
                 m_pLabelView->AddImage(textImg,"longText");
                 m_pLabelView->SetItemScale("longText",1);
+                m_pLabelView->AddText(strName302.trimmed(), "value302");
             }
             else
             {
-                m_pLabelView->AddText(strName302 + strText302, "value302");
                 QImage textImg(4,4,QImage::Format_ARGB32);
-
                 QPainter painter(&textImg);
-                painter.fillRect(QRect(0,0,4,4),Qt::white);
+                painter.fillRect(textImg.rect(),Qt::white);
+
                 m_pLabelView->AddImage(textImg,"longText");
                 m_pLabelView->SetItemScale("longText",0.1);
+                m_pLabelView->AddText(strName302 + strText302, "value302");
             }
 
             QString strExt = " ";
             if(ui->radioButton2->isChecked()) strExt = "(不可遮盖二维码)";
-            m_pLabelView->AddText(strExt , "value308");
+            m_pLabelView->AddText(strExt, "value308");
 
-            m_pLabelView->AddLine(true,"LineH0");
-            m_pLabelView->AddLine(true,"LineH1");
-            m_pLabelView->AddLine(true,"LineH2");
-            m_pLabelView->AddLine(true,"LineH3");
-            m_pLabelView->AddLine(true,"LineH4");
-            m_pLabelView->AddLine(true,"LineH5");
-            m_pLabelView->AddLine(true,"LineH6");
-            m_pLabelView->AddLine(true,"LineH7");
-            m_pLabelView->AddLine(true,"LineH8");
+            // m_pLabelView->AddLine(true,"LineH0");
+            // m_pLabelView->AddLine(true,"LineH1");
+            // m_pLabelView->AddLine(true,"LineH2");
+            // m_pLabelView->AddLine(true,"LineH3");
+            // m_pLabelView->AddLine(true,"LineH4");
+            // m_pLabelView->AddLine(true,"LineH5");
+            // m_pLabelView->AddLine(true,"LineH6");
+            // m_pLabelView->AddLine(true,"LineH7");
+            // m_pLabelView->AddLine(true,"LineH8");
 
-            m_pLabelView->AddLine(false,"LineV0");
-            m_pLabelView->AddLine(false,"LineV1");
-            m_pLabelView->AddLine(false,"LineV2");
+            // m_pLabelView->AddLine(false,"LineV0");
+            // m_pLabelView->AddLine(false,"LineV1");
+            // m_pLabelView->AddLine(false,"LineV2");
 
             m_pSet->setValue("name300",strName300);
             m_pSet->setValue("name301",strName301);
@@ -775,13 +805,13 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
     connect(pView,&FrameLabelView::onItemSelected,this,[=](QGraphicsItem *item){
         if (auto textItem = dynamic_cast<CustomTextItem*>(item))
         {
-            qDebug() << textItem->getItemRect();
+            //qDebug() << textItem->getItemRect();
             return;
         }
 
         if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
         {
-            qDebug() << pixmapItem->getItemRect();
+            //qDebug() << pixmapItem->getItemRect();
             return;
         }
     });

@@ -1,5 +1,6 @@
 #include "CLabelSave.h"
 #include "CustomItems.h"
+
 #include <QGraphicsTextItem>
 #include <QGraphicsPixmapItem>
 #include <QJsonArray>
@@ -43,16 +44,16 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
 {
     QJsonArray itemsArray;
 
-    for (auto item : scene->items())// 遍历场景中的所有对象
+    for (auto item : scene->items())
     {
         if (auto textItem = dynamic_cast<CustomTextItem*>(item))
         {
-            QFont tf = textItem->font() ;
             QJsonObject textObject;
             textObject["name"] = textItem->getName();
             textObject["type"] = "text";
             textObject["text"] = textItem->toPlainText();
 
+            QFont tf = textItem->font();
             textObject["font"] = tf.family();
             textObject["style"] = tf.styleName();
             textObject["bold"] = tf.bold();
@@ -63,6 +64,7 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
             textObject["w"] = textItem->getItemRect().width();
             textObject["h"] = textItem->getItemRect().height();
             textObject["scale"] = textItem->scale();
+            textObject["zvalue"]   = textItem->zValue();
             textObject["type_in0"] = textItem->data( 0 ).toInt();
             textObject["type_in1"] = textItem->data( 1 ).toInt();
             textObject["type_in2"] = textItem->data( 2 ).toInt();
@@ -79,6 +81,7 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
             pixmapObject["w"] = pixmapItem->getItemRect().width();
             pixmapObject["h"] = pixmapItem->getItemRect().height();
             pixmapObject["scale"] = pixmapItem->scale();
+            pixmapObject["zvalue"]   = pixmapItem->zValue();
             pixmapObject["type_in0"] = pixmapItem->data( 0 ).toInt();
             pixmapObject["type_in1"] = pixmapItem->data( 1 ).toInt();
             pixmapObject["type_in2"] = pixmapItem->data( 2 ).toInt();
@@ -93,17 +96,15 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
     }
 
     // 保存到 JSON 文件
-    QJsonObject sceneObject;
-
-    sceneObject["items"] = itemsArray;
-
     QFile file( filePath );
     if( file.open( QIODevice::WriteOnly ) )
     {
+        QJsonObject sceneObject;
+        sceneObject["items"] = itemsArray;
         QJsonDocument doc( sceneObject );
         if( file.write( doc.toJson() ) < 0 )
         {
-            qDebug() << "Label template data write error.";
+            qDebug() << "Label template data write error." << filePath;
             file.close();
             return false;
         }
@@ -144,16 +145,24 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             float x = obj["x"].toDouble();
             float y = obj["y"].toDouble();
             float scale = obj["scale"].toDouble();
+            int zvalue = obj["zvalue"].toInt();
             int type_in0 = obj["type_in0"].toInt();
             int type_in1 = obj["type_in1"].toInt();
             int type_in2 = obj["type_in2"].toInt();
             int type_in3 = obj["type_in3"].toInt();
+
+            if(scale <= 0.05) scale = 0.5;
+            if(x < 0) x = 0;
+            if(y < 0) y = 0;
+            if(x > nW-10) x = nW-10 ;
+            if(y > nH-10) y = nH-10 ;
 
             text.replace("：","　　");
 
             CustomTextItem *textItem = new CustomTextItem( text );
             textItem->setPos(x, y);
             textItem->setScale( scale );
+            textItem->setZValue( zvalue );
             textItem->setData( 0, type_in0 );
             textItem->setData( 1, type_in1 );
             textItem->setData( 2, type_in2 );
@@ -163,13 +172,13 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             {
                 QFont font1;
                 font1.setFamily(obj["font"].toString());
-                font1.setFamily("微软雅黑");
+                //font1.setFamily("微软雅黑");
                 font1.setStyleName(obj["style"].toString());
                 font1.setBold( obj["bold"].toBool());
                 font1.setPointSize(obj["size"].toInt());
                 textItem->setFont(font1);
             }
-            if(name== "QPass")
+            if(name == "QPass")
                 textItem->m_bShowRect = true;
             scene->addItem(textItem);
         }
@@ -178,6 +187,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             float x = obj["x"].toDouble();
             float y = obj["y"].toDouble();
             float scale = obj["scale"].toDouble();
+            int zvalue = obj["zvalue"].toInt();
             int type_in0 = obj["type_in0"].toInt();
             int type_in1 = obj["type_in1"].toInt();
             int type_in2 = obj["type_in2"].toInt();
@@ -185,17 +195,16 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             QString imageData = obj["imageData"].toString();
 
             if(scale <= 0.05) scale = 0.5;
-            if(x < 0) x=0 ;
-            if(y < 0) y=0 ;
+            if(x < 0) x = 0;
+            if(y < 0) y = 0;
             if(x > nW-10) x = nW-10 ;
             if(y > nH-10) y = nH-10 ;
-
-            //qDebug() << name << x << y  << scale  << nW << nH;
 
             QImage image = decodeImage(imageData);
             CustomPixmapItem *pixmapItem = new CustomPixmapItem(QPixmap::fromImage(image));
             pixmapItem->setPos(x, y);
             pixmapItem->setScale( scale );
+            pixmapItem->setZValue( zvalue );
             pixmapItem->setData( 0, type_in0 );
             pixmapItem->setData( 1, type_in1 );
             pixmapItem->setData( 2, type_in2 );

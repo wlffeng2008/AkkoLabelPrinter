@@ -6,6 +6,7 @@
 #include "DialogFieldPickup.h"
 #include "DialogLabelEdit.h"
 #include "DialogReject.h"
+#include "DialogSell.h"
 
 #include <QFrame>
 #include <QPrinter>
@@ -115,6 +116,7 @@ private:
     DialogFieldPickup *m_fieldList = nullptr;
     DialogLabelEdit *m_labelEdit = nullptr;
     DialogReject *m_rejectDlg = nullptr;
+    DialogSell *m_sellDlg = nullptr;
     void ShowSN();
 
     void Calculate();
@@ -131,6 +133,7 @@ private:
     int m_nSelected = -1;
     QStandardItemModel *m_pModel = nullptr;
 
+    bool m_bSetting = false;
     void doPrint(QPrinter *printer);
 };
 

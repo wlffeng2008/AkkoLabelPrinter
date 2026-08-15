@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
         QPushButton:focus{background-color: #30B0EF;}
         QPushButton:hover{background-color: #C0B0BF;}
-        QPushButton {background-color: #3030EF; border-radius: 6px; color:white; border:1px solid gray; min-width: 54px; min-height: 24px; padding-left:2px;padding-right:2px;}
+        QPushButton {background-color: #3030EF; border-radius: 6px; color:white; border:1px solid gray;max-width: 100px; min-width: 54px; min-height: 24px; padding-left:2px;padding-right:2px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
         QTableView{ border: 1px solid gray; background-color: rgb(226, 240, 255) ; gridline-color: gray;}

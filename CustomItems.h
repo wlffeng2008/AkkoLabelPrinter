@@ -316,8 +316,6 @@ protected:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMousePressEvent(event);
-        //setSelected(true);
-        //emit sigRectChanged();
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -326,7 +324,6 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
-        //setSelected(true);
         emit sigRectChanged();
     }
 
@@ -338,36 +335,22 @@ protected:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         //QGraphicsPixmapItem::paint(painter, option, widget);
-        QRectF A = boundingRect();
-
+        QRectF rect = boundingRect();
         int m_nLineType = data(0).toInt();
         if(m_nLineType != 0)
         {
-            QRect rc = A.toRect();
-            painter->setPen(QPen(Qt::black,3));
-
-            if(m_nLineType == 1)
-            {
-                rc.adjust(0,1,0,0);
-                painter->drawLine(rc.topLeft(),rc.topRight());
-            }
-
-            if(m_nLineType == 2)
-            {
-                rc.adjust(1,0,0,0);
-                painter->drawLine(rc.topLeft(),rc.bottomLeft());
-            }
+            painter->fillRect(rect,Qt::black);
         }
         else
         {
             QPixmap pix = pixmap();
-            painter->drawImage(A,pix.toImage());
+            painter->drawImage(rect,pix.toImage());
         }
 
         if(isSelected())
         {
-            painter->setPen(QPen(Qt::red,2,Qt::DashLine));
-            painter->drawRect(A);
+            painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+            painter->drawRect(rect);
         }
     }
 };

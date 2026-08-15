@@ -40,6 +40,7 @@ SOURCES += \
     DialogRecList.cpp \
     DialogReferId.cpp \
     DialogReject.cpp \
+    DialogSell.cpp \
     DialogSet.cpp \
     FrameLabelView.cpp \
     FramePrintControl.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     DialogRecList.h \
     DialogReferId.h \
     DialogReject.h \
+    DialogSell.h \
     DialogSet.h \
     FrameLabelView.h \
     FramePrintControl.h \
@@ -65,6 +67,7 @@ FORMS += \
     DialogRecList.ui \
     DialogReferId.ui \
     DialogReject.ui \
+    DialogSell.ui \
     DialogSet.ui \
     FrameLabelView.ui \
     FramePrintControl.ui \

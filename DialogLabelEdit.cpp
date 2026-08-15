@@ -13,7 +13,7 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     m_pModel = new QStandardItemModel(this);
-    m_pModel->setHorizontalHeaderLabels(QString("名称,类型,X,Y,W,H,Scale,内容").split(','));
+    m_pModel->setHorizontalHeaderLabels(QString("名称,类型,X,Y,W,H,Scale,内容(双击可修改)").split(','));
     ui->tableView->setModel(m_pModel);
 
     QHeaderView *pHeader = ui->tableView->horizontalHeader();
@@ -129,7 +129,6 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
         case 7:
             if(textItem)  textItem->setPlainText(strText);
             break;
-
         }
     });
 
@@ -175,7 +174,10 @@ void DialogLabelEdit::BindLabelView(FrameLabelView *pView)
     m_pView = pView;
 
     connect(pView,&FrameLabelView::onItemSelected,this,[=](QGraphicsItem *item){
-
+        AppendRow(item);
+    });
+    connect(pView,&FrameLabelView::onItemChanged,this,[=](QGraphicsItem *item){
+        AppendRow(item);
     });
     connect(pView,&FrameLabelView::onItemLoaded,this,[=](){
         LoadLabels();
@@ -206,8 +208,27 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
         strH = QString::asprintf("%d",pixmapItem->getItemRect().toRect().height());
         if(pixmapItem->data(0) == 1) strType = "水平线";
         if(pixmapItem->data(0) == 2) strType = "垂直线";
-        strData = "双击切换图片";
+        if(pixmapItem->data(0) == 0) strData = "双击切换图片";
         bEdit = false;
+    }
+
+    int count = m_pModel->rowCount();
+    for(int i=0; i<count; i++)
+    {
+        QGraphicsItem *pLabel = (QGraphicsItem *)m_pModel->item(i,0)->data().toInt();
+        if(pLabel == item)
+        {
+            m_pModel->item(i,0)->setText(strName);
+            m_pModel->item(i,1)->setText(strType);
+            m_pModel->item(i,2)->setText(strX);
+            m_pModel->item(i,3)->setText(strY);
+            m_pModel->item(i,4)->setText(strW);
+            m_pModel->item(i,5)->setText(strH);
+            m_pModel->item(i,6)->setText(strScale);
+            m_pModel->item(i,7)->setText(strData);
+            ui->tableView->selectRow(i);
+            return;
+        }
     }
 
     QStandardItem *item0 = new QStandardItem(strName);
@@ -225,10 +246,12 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
     item1->setEditable(false);
 
     m_pModel->appendRow({item0,item1,item2,item3,item4,item5,item6,item7});
+    ui->tableView->setRowHeight(m_pModel->rowCount()-1,24);
 }
 
 void DialogLabelEdit::LoadLabels()
 {
+    qDebug() << "DialogLabelEdit::LoadLabels()";
     pDele0->resetText();
     pDele1->resetText();
     pDele2->resetText();
@@ -236,13 +259,13 @@ void DialogLabelEdit::LoadLabels()
     pDele4->resetText();
 
     m_bLoading = true;
+    QTimer::singleShot(500,this,[=]{ m_bLoading = false;});
     m_pModel->removeRows(0,m_pModel->rowCount());
     QList<QGraphicsItem *> items = this->m_pView->GetItems();
     for( int i = 0; i < items.size(); i++ )
     {
         AppendRow(items[i]);
     }
-    QTimer::singleShot(100,this,[=]{ m_bLoading = false;});
 }
 
 DialogLabelEdit::~DialogLabelEdit()

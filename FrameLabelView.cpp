@@ -13,7 +13,7 @@
 #include <QStandardPaths>
 #include <QFileDialog>
 
-static QImage genQrCode(const std::string &strText,const std::string&strFile="/1234567Qr.bmp",int symbology=BARCODE_QRCODE,int showText=0,int nH=15)
+static QImage genQrCodeImage(const QString&strText,const QString&strFile="/1234567Qr.bmp",int symbology=BARCODE_QRCODE,int showText=0)
 {
     QImage imgBar;
     struct zint_symbol *symbol = ZBarcode_Create();
@@ -23,11 +23,13 @@ static QImage genQrCode(const std::string &strText,const std::string&strFile="/1
         symbol->symbology = symbology;
         symbol->show_hrt = showText; //可显示信息，如果设置为1，则需要设置text值
         //symbol->input_mode = UNICODE_MODE;
-        strcpy_s(symbol->outfile, strFile.c_str());
+        strcpy_s(symbol->outfile, strFile.toStdString().c_str());
 
-        const char *lpszText = strText.c_str();
-        int nLen = strlen(lpszText);
-        int nRet = ::ZBarcode_Encode(symbol,(const unsigned char *)lpszText,nLen); //编码
+        static char szQrText[2048]={0};
+        strcpy_s(szQrText, strText.toStdString().c_str());
+
+        int nLen = strlen(szQrText);
+        int nRet = ::ZBarcode_Encode(symbol,(const unsigned char *)szQrText,nLen); //编码
         if (nRet == 0)
             nRet = ::ZBarcode_Print(symbol,0); //antate angle 旋转角度
 
@@ -35,7 +37,7 @@ static QImage genQrCode(const std::string &strText,const std::string&strFile="/1
 
         ::ZBarcode_Delete(symbol);
 
-        imgBar.load(strFile.c_str());
+        imgBar.load(symbol->outfile);
     }
     return imgBar;
 }
@@ -60,8 +62,21 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     m_pView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     m_pView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    connect( m_pScene, &CustomScene::itemtemSelected, this, [=](QGraphicsItem *item){
+    connect( m_pScene, &CustomScene::itemSelected, this, [=](QGraphicsItem *item){
         emit onItemSelected(item);
+    });
+    connect( m_pScene, &CustomScene::itemChanged, this, [=](QGraphicsItem *item){
+        emit onItemChanged(item);
+    });
+
+    QTimer *pDragTM = new QTimer(this);
+    connect(pDragTM,&QTimer::timeout,this,[=]{
+        pDragTM->stop();
+        emit onItemLoaded();
+    });
+    connect( m_pScene, &CustomScene::dragDrop, this, [=](){
+        pDragTM->stop();
+        pDragTM->start(500);
     });
 }
 
@@ -122,6 +137,8 @@ void FrameLabelView::SetFont(QFont&font)
         }
     }
 }
+
+
 
 void FrameLabelView::Load(const QString&srtFile)
 {
@@ -216,19 +233,20 @@ void FrameLabelView::AddImageQR(const QString&strQrText, const QString&strName)
     if(!D.exists()) D.mkdir(localAppData);
     QString strFile = localAppData + QString("/qrcode2026.bmp");
     QFile::remove(strFile);
-    QImage image = genQrCode(strQrText.toStdString().c_str(),strFile.toStdString().c_str());
+    QImage image = genQrCodeImage(strQrText,strFile);
     AddImage(image,strName);
 }
 
 void FrameLabelView::AddLine(bool horizontal,const QString&strName)
 {
-    QImage image(QSize(736,2),QImage::Format_RGB32);
+    QImage image(QSize(741,2),QImage::Format_RGB32);
     if(!horizontal)
-        image = QImage(QSize(2,720),QImage::Format_RGB32);
+        image = QImage(QSize(2,727),QImage::Format_RGB32);
     QPainter painter(&image);
     painter.fillRect(image.rect(),Qt::black);
     CustomPixmapItem* imgItem = (CustomPixmapItem*)AddImage(image,strName);
     imgItem->setData(0, (horizontal ? 1 : 2));
+    imgItem->setZValue(9999);
 }
 
 void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
@@ -238,7 +256,7 @@ void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
     if(!D.exists()) D.mkdir(localAppData);
     QString strFile = localAppData + QString("/barcode2026.bmp");
     QFile::remove(strFile);
-    QImage image = genQrCode(strQrText.toStdString().c_str(),strFile.toStdString().c_str(),BARCODE_CODE128,0);
+    QImage image = ::genQrCodeImage(strQrText,strFile,BARCODE_CODE128,0);
     QRect rcCut(0,0,image.size().width(),image.size().height()*0.3);
     AddImage(image.copy(rcCut),strName);
 }
@@ -253,7 +271,8 @@ void FrameLabelView::SetItemScale(const QString&strName,float scale)
     m_pScene->SetItemScale(strName,scale);
 }
 
-QList<QGraphicsItem *> FrameLabelView::GetItems(){
+QList<QGraphicsItem *> FrameLabelView::GetItems()
+{
     return m_pScene->items();
 }
 
@@ -274,6 +293,15 @@ void FrameLabelView::Delete()
     emit onItemLoaded();
 }
 
+
+void FrameLabelView::Clear()
+{
+    m_pScene->clear();
+    Save();
+    emit onItemLoaded();
+}
+
+
 bool FrameLabelView::Remove(const QString&strName)
 {
     return m_pScene->Remove(strName);
@@ -287,13 +315,15 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
     m_bCtrlPress = bCtrlPress;
     m_bShiftPress = (event->modifiers() & Qt::ShiftModifier);
 
+
     int nw = size().width()-4;
     int nh = size().height()-4;
 
     for( auto item : m_pScene->items() )
     {
-        if( item->isSelected() || bCtrlPress)
+        if( item->isSelected() || bCtrlPress )
         {
+            // qDebug() << "FrameLabelView::keyReleaseEvent" << m_bShiftPress << nKey << Qt::hex << nKey;
             QPointF pos   = item->pos();
             qreal fscale  = item->scale();
             qreal fscaleN = item->scale();
@@ -312,17 +342,11 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
             if(nKey == Qt::Key_Up)    ny -= step;
             if(nKey == Qt::Key_Down)  ny += step;
 
-            if(nKey == Qt::Key_Minus)
-            {
-                fscaleN -= 0.05;
-                if(m_bShiftPress) fscaleN = 1.0;
-            }
+            if(nKey == Qt::Key_Minus) fscaleN -= 0.05;
+            if(nKey == Qt::Key_Equal) fscaleN += 0.05;
 
-            if(nKey == Qt::Key_Equal)
-            {
-                fscaleN += 0.05;
-                if(m_bShiftPress) fscaleN = 1.0;
-            }
+            if(nKey == Qt::Key_Underscore)fscaleN = 1.0;
+            if(nKey == Qt::Key_Plus)      fscaleN = 1.0;
 
             if(nx < 0) nx = 0;
             if(ny < 0) ny = 0;

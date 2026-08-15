@@ -1,6 +1,5 @@
-#include "DialogReject.h"
-#include "qdebug.h"
-#include "ui_DialogReject.h"
+#include "DialogSell.h"
+#include "ui_DialogSell.h"
 #include "DialogLabelEdit.h"
 
 #include <QTimer>
@@ -11,35 +10,43 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
 
-DialogReject::DialogReject(QWidget *parent)
+DialogSell::DialogSell(QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::DialogReject)
+    , ui(new Ui::DialogSell)
 {
     ui->setupUi(this);
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
-    m_strFile = QApplication::applicationDirPath() + "/config/rejectdata.csv";
+    m_strFile = QApplication::applicationDirPath() + "/config/selldata.csv";
 
     m_model = new QStandardItemModel(this);
-    m_model->setHorizontalHeaderLabels(QString("厂商名称,品名/规格,物料编码,数量,退料日期,线别,是否打印").split(','));
+    m_model->setHorizontalHeaderLabels(QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果").split(','));
     ui->tableView->setModel(m_model);
-
-    ui->tableView->setItemDelegateForColumn(3,new SideValueDelegate(this));
-    ui->tableView->setItemDelegateForColumn(4,new DateTimeDelegate(this));
-    ComboBoxDelegate *pSetDele = new ComboBoxDelegate(this);
-    pSetDele->setItems({"A线","B线","其它"});
-    ui->tableView->setItemDelegateForColumn(5,pSetDele);
-
     QHeaderView *pHeader = ui->tableView->horizontalHeader();
+
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
-    pHeader->resizeSection(0,180);
+    pHeader->resizeSection(0,170);
     pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
-    pHeader->resizeSection(1,300);
+    pHeader->resizeSection(1,140);
+    pHeader->setSectionResizeMode(2,QHeaderView::Fixed);
+    pHeader->resizeSection(2,280);
+    pHeader->setSectionResizeMode(3,QHeaderView::Fixed);
+    pHeader->resizeSection(3,140);
+    pHeader->setSectionResizeMode(8,QHeaderView::Fixed);
+    pHeader->resizeSection(8,90);
+
+    ui->tableView->setItemDelegateForColumn(5,new SideValueDelegate(this));
+    ui->tableView->setItemDelegateForColumn(4,new SideValueDelegate(this));
+    ui->tableView->setItemDelegateForColumn(6,new DateTimeDelegate(this));
+    ui->tableView->setItemDelegateForColumn(7,new DateTimeDelegate(this));
+    ui->tableView->setItemDelegateForColumn(8,new ComboBoxDelegate(this));
 
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
-        AddRow("请修改厂商名称","请修改品名/规格","100-456-9987","49",QDateTime::currentDateTime().toString("yyyy-MM-dd"),"A线");
+        QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+        AddRow("请修改厂商名称","请修改采购订单号","请修改品名/规格","100-456-9987","1000","100",strDate,strDate,"PASS");
     });
 
     connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
@@ -53,6 +60,7 @@ DialogReject::DialogReject(QWidget *parent)
 
     connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
         m_nCurItem = index.row();
+        emit itemChanged(m_nCurItem);
     });
 
     saveLoadData(false);
@@ -60,12 +68,12 @@ DialogReject::DialogReject(QWidget *parent)
         Q_UNUSED(item)
         if(m_bLoading) return;
         saveLoadData(true);
-        getPrintItems();
+        emit itemChanged(item->row());
     });
 }
 
 const QString strRepl("<--#$-->");
-void DialogReject::saveLoadData(bool save)
+void DialogSell::saveLoadData(bool save)
 {
     QFile DFile(m_strFile);
     int count = m_model->rowCount();
@@ -77,7 +85,7 @@ void DialogReject::saveLoadData(bool save)
             return;
         }
         QTextStream out(&DFile);
-        out << QString("厂商名称,品名/规格,物料编码,数量,退料日期,线别,是否打印\n").toUtf8();
+        out << QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果\n").toUtf8();
         for(int i=0; i<count; i++)
         {
             QString val0 = m_model->item(i,0)->text().replace(",",strRepl).trimmed();
@@ -86,8 +94,10 @@ void DialogReject::saveLoadData(bool save)
             QString val3 = m_model->item(i,3)->text().replace(",",strRepl).trimmed();
             QString val4 = m_model->item(i,4)->text().replace(",",strRepl).trimmed();
             QString val5 = m_model->item(i,5)->text().replace(",",strRepl).trimmed();
-            QString val6 = m_model->item(i,6)->checkState() == Qt::Checked ? "Y": "N";
-            QString line = QString("%1,%2,%3,%4,%5,%6,%7\n").arg(val0,val1,val2,val3,val4,val5,val6);
+            QString val6 = m_model->item(i,6)->text().replace(",",strRepl).trimmed();
+            QString val7 = m_model->item(i,7)->text().replace(",",strRepl).trimmed();
+            QString val8 = m_model->item(i,8)->text().replace(",",strRepl).trimmed();
+            QString line = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9\n").arg(val0,val1,val2,val3,val4,val5,val6,val7,val8);
             out << line;
         }
     }
@@ -112,14 +122,16 @@ void DialogReject::saveLoadData(bool save)
             QString val3 = vals[3].replace(strRepl,",").trimmed();
             QString val4 = vals[4].replace(strRepl,",").trimmed();
             QString val5 = vals[5].replace(strRepl,",").trimmed();
-            bool   val6  = (vals[6].replace(strRepl,",").trimmed() == "Y");
+            QString val6 = vals[6].replace(strRepl,",").trimmed();
+            QString val7 = vals[7].replace(strRepl,",").trimmed();
+            QString val8 = vals[8].replace(strRepl,",").trimmed();
 
-            AddRow(val0,val1,val2,val3,val4,val5,val6);
+            AddRow(val0,val1,val2,val3,val4,val5,val6,val7,val8);
         }
     }
 }
 
-void DialogReject::AddRow(const QString&val0,const QString&val1,const QString&val2,const QString&val3,const QString&val4,const QString&val5,bool toPrint)
+void DialogSell::AddRow(const QString&val0, const QString&val1, const QString&val2, const QString&val3, const QString&val4, const QString&val5, const QString &val6, const QString &val7, const QString &val8)
 {
     QStandardItem *item0 = new QStandardItem(val0);
     QStandardItem *item1 = new QStandardItem(val1);
@@ -127,33 +139,16 @@ void DialogReject::AddRow(const QString&val0,const QString&val1,const QString&va
     QStandardItem *item3 = new QStandardItem(val3);
     QStandardItem *item4 = new QStandardItem(val4);
     QStandardItem *item5 = new QStandardItem(val5);
-    QStandardItem *item6 = new QStandardItem("");
-    item6->setEditable(false);
-    item6->setCheckable(true);
-    if(toPrint)
-        item6->setCheckState(Qt::Checked);
+    QStandardItem *item6 = new QStandardItem(val6);
+    QStandardItem *item7 = new QStandardItem(val7);
+    QStandardItem *item8 = new QStandardItem(val8);
 
     m_bLoading=true;
     QTimer::singleShot(100,this,[=]{m_bLoading=false;});
-    m_model->appendRow({item0,item1,item2,item3,item4,item5,item6});
+    m_model->appendRow({item0,item1,item2,item3,item4,item5,item6,item7,item8});
 }
 
-QList<int>DialogReject::getPrintItems()
-{
-    QList<int>items;
-    int count = m_model->rowCount();
-    for(int i=0; i<count; i++)
-    {
-        if(m_model->item(i,6)->checkState() == Qt::Checked)
-        {
-            items.push_back(i);
-        }
-    }
-    ui->labelPrintCount->setText(QString::asprintf("打印数量: %d",items.count()));
-    return items;
-}
-
-QStringList DialogReject::getItemData(int item)
+QStringList DialogSell::getItemData(int item)
 {
     QString val0 = m_model->item(item,0)->text().trimmed();
     QString val1 = m_model->item(item,1)->text().trimmed();
@@ -161,10 +156,14 @@ QStringList DialogReject::getItemData(int item)
     QString val3 = m_model->item(item,3)->text().trimmed();
     QString val4 = m_model->item(item,4)->text().trimmed();
     QString val5 = m_model->item(item,5)->text().trimmed();
-    return QStringList{val0,val1,val2,val3,val4,val5};
+    QString val6 = m_model->item(item,6)->text().trimmed();
+    QString val7 = m_model->item(item,7)->text().trimmed();
+    QString val8 = m_model->item(item,8)->text().trimmed();
+
+    return QStringList{val0,val1,val2,val3,val4,val5,val6,val7,val8};
 }
 
-DialogReject::~DialogReject()
+DialogSell::~DialogSell()
 {
     delete ui;
 }
