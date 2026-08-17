@@ -89,7 +89,6 @@ protected:
             pComb->hide();
         });
         QTimer::singleShot(20,this,[=]{pComb->showPopup();});
-
         return pComb;
     }
 

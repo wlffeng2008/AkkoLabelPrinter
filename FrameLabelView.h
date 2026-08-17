@@ -27,6 +27,7 @@ class CustomScene : public QGraphicsScene
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
+        //connect(this, &QGraphicsScene::selectionChanged,[=]{qDebug() <<"QGraphicsScene::selectionChanged";});
     }
 
     void addItem(QGraphicsItem *item)
@@ -230,6 +231,7 @@ protected:
             //item->setSelected(true);
             emit itemSelected(item);
         }
+        qDebug() << "QGraphicsScene::mousePressEvent";
 
         QGraphicsScene::mousePressEvent(event);
     }
