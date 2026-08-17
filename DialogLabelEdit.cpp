@@ -174,10 +174,26 @@ void DialogLabelEdit::BindLabelView(FrameLabelView *pView)
     m_pView = pView;
 
     connect(pView,&FrameLabelView::onItemSelected,this,[=](QGraphicsItem *item){
+<<<<<<< HEAD
         AppendRow(item);
     });
     connect(pView,&FrameLabelView::onItemChanged,this,[=](QGraphicsItem *item){
         AppendRow(item);
+=======
+        int count = m_pModel->rowCount();
+        for(int i=0; i<count; i++)
+        {
+            QGraphicsItem *pLabel = (QGraphicsItem *)m_pModel->item(i,0)->data().toInt();
+            if(pLabel == item)
+            {
+                ui->tableView->selectRow(i);
+                auto textItem = dynamic_cast<CustomTextItem*>(pLabel);
+                auto pixmapItem = dynamic_cast<CustomPixmapItem*>(pLabel);
+                break;
+            }
+        }
+
+>>>>>>> 893dd5df230a8aa3ff46e393e63ea368cd1cf302
     });
     connect(pView,&FrameLabelView::onItemLoaded,this,[=](){
         LoadLabels();
