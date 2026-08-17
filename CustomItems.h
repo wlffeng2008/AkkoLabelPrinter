@@ -32,10 +32,6 @@ public:
     {
         QRectF rect = m_item->boundingRect();
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
         qreal scale = m_item->scale();
         if(scale <= 0.05)
             scale = 1;
@@ -44,19 +40,8 @@ public:
             scale = 1;
 
         //rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
-
-<<<<<<< HEAD
-=======
-=======
-            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
-                scale = 1;
-
-            rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
-        }
->>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
->>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
         return rect;
-    }
+    };
 
     void handleMousePressEvent(QGraphicsSceneMouseEvent *event)
     {
@@ -148,13 +133,8 @@ public:
         qreal newScale = 1;
         if(w_last == w_new && h_last != h_new)
         {
-<<<<<<< HEAD
             newScale = h_scale_new;
-=======
-<<<<<<< HEAD
-            newScale = h_scale_new;
-=======
->>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
+
             m_item->setPos(rectNew.topLeft());
 
             QRectF origRect = m_item->boundingRect();
@@ -181,24 +161,6 @@ public:
             {
                 newScale = newScaleMax;
             }
-<<<<<<< HEAD
-=======
-
-            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
-                newScale =1;
-            m_item->setScale(newScale);
-
-            emitRectSig();
->>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
-        }
-        else if(h_last == h_new && w_last != w_new)
-        {
-            newScale = w_scale_new;
-        }
-        else if(h_last != h_new && w_last != w_new)
-        {
-            newScale = newScaleMax;
->>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
         }
 
         if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
