@@ -11,6 +11,7 @@
 #include <QImage>
 #include <QGraphicsScene>
 #include <QDebug>
+#include "FrameLabelView.h"
 
 CLabelSave::CLabelSave()
 {
@@ -40,7 +41,7 @@ QByteArray CLabelSave::encodeImage( const QImage &image )
     return byteArray.toBase64();   // 将图片数据进行 Base64 编码
 }
 
-bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &filePath)
+bool CLabelSave::saveSceneWithImages(CustomScene *scene, const QString &filePath)
 {
     QJsonArray itemsArray;
 
@@ -114,7 +115,7 @@ bool CLabelSave::saveSceneWithImages(QGraphicsScene *scene, const QString &fileP
      return false;
 }
 
-bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &filePath)
+bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath)
 {
     QFile file( filePath );
     if ( !file.open( QIODevice::ReadOnly ) )
@@ -181,6 +182,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             if(name == "QPass")
                 textItem->m_bShowRect = true;
             scene->addItem(textItem);
+            //textItem->setScale(1);
         }
         else if (type == "pixmap")
         {

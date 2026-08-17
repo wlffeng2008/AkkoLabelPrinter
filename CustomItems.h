@@ -31,14 +31,16 @@ public:
     QRectF getItemCurRect()
     {
         QRectF rect = m_item->boundingRect();
-        if(m_item != nullptr)
-        {
-            qreal scale = m_item->scale();
-            if(scale <= 0.05)
-                scale = 1;
 
-            rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
-        }
+        qreal scale = m_item->scale();
+        if(scale <= 0.05)
+            scale = 1;
+
+        if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+            scale = 1;
+
+        //rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
+
         return rect;
     }
 
@@ -48,21 +50,22 @@ public:
         QPointF pos = event->pos();
         const qreal edgeThreshold = 2.0;
 
-        initialScenePos = event->scenePos();
-        initialRect = getItemCurRect();
+        if(!resizing || !moving)
+        {
+            initialScenePos = event->scenePos();
+            initialRect     = getItemCurRect();
+        }
 
         if(isNearEdge(pos, rect, edgeThreshold))
         {
             resizing = true;
-            event->accept();
         }
         else
         {
             moving = true;
-            m_item->setCursor(Qt::SizeAllCursor);  // Change cursor for moving
-            event->accept();
+            m_item->setCursor(Qt::SizeAllCursor);
         }
-        //emitRectSig();
+        event->accept();
     }
 
     void handleMouseMoveEvent( QGraphicsSceneMouseEvent *event )
@@ -73,7 +76,6 @@ public:
             qreal newWidth = initialRect.width() + delta.x();
             qreal newHeight = initialRect.height() + delta.y();
             m_item->setScale(qMax( newWidth / initialRect.width(), newHeight / initialRect.height()));  // Scaling logic
-            event->accept();
         }
         else if( moving )
         {
@@ -81,26 +83,19 @@ public:
             initialScenePos = event->scenePos();
             event->accept();
         }
+        event->accept();
 
         //emitRectSig();
     }
 
     void handleMouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        if (resizing)
-        {
-            resizing = false;
-            m_item->setCursor(Qt::ArrowCursor);  // Reset cursor
-            event->accept();
-        }
-        else if (moving)
-        {
-            moving = false;
-            m_item->setCursor(Qt::ArrowCursor);  // Reset cursor
-            m_item->setSelected(true);
-            m_item->setFocus();
-            event->accept();
-        }
+        m_item->setCursor(Qt::ArrowCursor);  // Reset cursor
+        m_item->setSelected(!m_item->isSelected());
+        m_item->setFocus();
+        moving = false;
+        resizing = false;
+        event->accept();
 
         emitRectSig();
     }
@@ -109,7 +104,7 @@ public:
     {
         QRectF rect = m_item->boundingRect();
         QPointF pos = event->pos();
-        const qreal edgeThreshold = 3.0;
+        const qreal edgeThreshold = 2.0;
 
         if (isNearEdge(pos, rect, edgeThreshold))
         {
@@ -123,39 +118,38 @@ public:
 
     void setItemRect(const QRectF &rectNew)
     {
-        if(m_item)
+        m_item->setPos(rectNew.topLeft());
+
+        QRectF origRect = m_item->boundingRect();
+
+        QRectF rect_last = getItemCurRect();
+        int w_last = rect_last.width();
+        int h_last = rect_last.height();
+        int w_new = rectNew.width();
+        int h_new = rectNew.height();
+
+        qreal newScaleMax = qMax( rectNew.width() / origRect.width(), rectNew.height() / origRect.height() );
+        qreal w_scale_new = rectNew.width() / origRect.width();
+        qreal h_scale_new = rectNew.height() / origRect.height();
+        qreal newScale = 1;
+        if(w_last == w_new && h_last != h_new)
         {
-            m_item->setPos(rectNew.topLeft());
-
-            QRectF origRect = m_item->boundingRect();
-
-            QRectF rect_last = getItemCurRect();
-            int w_last = rect_last.width();
-            int h_last = rect_last.height();
-            int w_new = rectNew.width();
-            int h_new = rectNew.height();
-
-            qreal newScaleMax = qMax( rectNew.width() / origRect.width(), rectNew.height() / origRect.height() );
-            qreal w_scale_new = rectNew.width() / origRect.width();
-            qreal h_scale_new = rectNew.height() / origRect.height();
-            qreal newScale = 1;
-            if(w_last == w_new && h_last != h_new)
-            {
-                newScale = h_scale_new;
-            }
-            else if(h_last == h_new && w_last != w_new)
-            {
-                newScale = w_scale_new;
-            }
-            else if(h_last != h_new && w_last != w_new)
-            {
-                newScale = newScaleMax;
-            }
-
-            m_item->setScale(newScale);
-
-            emitRectSig();
+            newScale = h_scale_new;
         }
+        else if(h_last == h_new && w_last != w_new)
+        {
+            newScale = w_scale_new;
+        }
+        else if(h_last != h_new && w_last != w_new)
+        {
+            newScale = newScaleMax;
+        }
+
+        if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+            newScale =1;
+        m_item->setScale(newScale);
+
+        emitRectSig();
     }
 
 signals:
@@ -170,8 +164,8 @@ private:
 
     bool isNearEdge(const QPointF &pos, const QRectF &rect, qreal threshold)
     {
-        return ( qAbs(pos.x() - rect.right()) < threshold ||
-                qAbs(pos.y() - rect.bottom()) < threshold );
+        return ( qAbs(pos.x() - rect.right())  < threshold ||
+                 qAbs(pos.y() - rect.bottom()) < threshold );
     }
     void emitRectSig()
     {
@@ -207,8 +201,6 @@ protected:
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMousePressEvent(event);
-        //setSelected(true);
-        //emit sigRectChanged();
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
@@ -217,7 +209,6 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
         base.handleMouseReleaseEvent(event);
-        //setSelected(true);
         emit sigRectChanged();
     }
 
@@ -237,20 +228,14 @@ protected:
         painter->setFont(font);
         painter->setPen(pen);
         QGraphicsTextItem::paint(painter, option, widget);
-        QRectF A = boundingRect();
-        if(isSelected())
-        {
-            //A.adjust(0,0,-1,-1);
-            //painter->drawRect(A);
-        }
 
         if(m_bShowRect)
         {
-            QPen pen = QPen(Qt::black);
+            QPen pen = QPen(Qt::black,2);
             painter->setPen(pen);
-            QRectF A =  boundingRect();
-            A.adjust(2,2,-2,-2);
-            painter->drawRect(A);
+            QRectF rect =  boundingRect();
+            rect.adjust(2,2,-2,-2);
+            painter->drawRect(rect);
         }
     }
 
@@ -295,14 +280,6 @@ public:
         } );
     }
 
-    CustomPixmapItem(QGraphicsItem *parent = nullptr)
-        : QGraphicsPixmapItem(parent), base(this)
-    {
-        connect( &base, &CustomBaseItem::itemChanged, this, [=](){
-            emit sigRectChanged();
-        } );
-    }
-
     QString m_strName;
 
     void setName(const QString&strName) { m_strName = strName; }
@@ -334,6 +311,8 @@ protected:
     QRectF boundingRect() const override { return QGraphicsPixmapItem::boundingRect(); }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
+        Q_UNUSED(option)
+        Q_UNUSED(widget)
         //QGraphicsPixmapItem::paint(painter, option, widget);
         QRectF rect = boundingRect();
         int m_nLineType = data(0).toInt();

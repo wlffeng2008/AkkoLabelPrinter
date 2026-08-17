@@ -61,6 +61,8 @@ DialogSell::DialogSell(QWidget *parent)
     connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
         m_nCurItem = index.row();
         emit itemChanged(m_nCurItem);
+        if(index.column() ==8)
+        ui->tableView->edit(index);
     });
 
     saveLoadData(false);

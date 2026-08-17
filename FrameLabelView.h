@@ -23,12 +23,23 @@
 class CustomScene : public QGraphicsScene
 {
     Q_OBJECT
+
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
     }
 
-    void setView(QGraphicsView *pView) { pView_ = pView ;}
+    void addItem(QGraphicsItem *item)
+    {
+        QGraphicsScene::addItem(item);
+        emit itemAdded(item);
+    }
+
+    void removeItem(QGraphicsItem *item)
+    {
+        emit itemDeleted(item);
+        QGraphicsScene::removeItem(item);
+    }
 
     CustomTextItem *getTextItem(const QString&strName)
     {
@@ -131,7 +142,8 @@ public:
         return false;
     }
 
-    bool SetItemScale(const QString&strName,float scale){
+    bool SetItemScale(const QString&strName,float scale)
+    {
         CustomTextItem *textItem = getTextItem(strName);
         if(textItem)
         {
@@ -149,7 +161,8 @@ public:
         return false;
     }
 
-    bool GetItem(const QString&strName,int &x,int &y,int &w, int&h,float &scale){
+    bool GetItem(const QString&strName,int &x,int &y,int &w, int&h,float &scale)
+    {
         CustomTextItem *textItem = getTextItem(strName);
         if(textItem)
         {
@@ -177,19 +190,20 @@ public:
         }
         return false;
     }
-    bool isDraging(){return m_pLastItem != nullptr;}
+
+    bool isDraging(){ return (m_pLastItem != nullptr); }
 
 signals:
     void itemSelected(QGraphicsItem *item);
     void itemChanged(QGraphicsItem *item);
-    void dragDrop();
+    void itemAdded(QGraphicsItem *item);
+    void itemDeleted(QGraphicsItem *item);
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
     {
         if( m_pLastItem )
         {
-            qDebug() << "mouseReleaseEvent" << m_bDraging;
             if(m_bDraging)
             {
                 emit itemChanged(m_pLastItem);
@@ -200,6 +214,7 @@ protected:
 
         QGraphicsScene::mouseReleaseEvent(event);
     }
+
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
     {
         m_bDraging = true;
@@ -212,7 +227,7 @@ protected:
         }
         else
         {
-            item->setSelected(true);
+            //item->setSelected(true);
             emit itemSelected(item);
         }
 
@@ -241,7 +256,6 @@ protected:
 private:
     QPointF m_clkPt;
     bool m_bDraging  = false;
-    QGraphicsView *pView_ = nullptr;
     QGraphicsItem *m_pLastItem=nullptr;
 };
 
@@ -291,6 +305,7 @@ public:
         scene()->render(&painter, QRectF(pixmap.rect()), this->rect());
         return pixmap;
     }
+
 protected:
     QPointF m_clkPt0;
     QPointF m_clkPt1;
@@ -298,15 +313,17 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override
     {
-        update();
         QGraphicsView::mousePressEvent(event);
+
         if(!((CustomScene *)scene())->isDraging())
         {
             m_clkPt0 = event->pos();
             m_clkPt1 = event->pos();
             m_bDraging=true;
         }
+        update();
     }
+
     void mouseMoveEvent(QMouseEvent *event) override
     {
         QGraphicsView::mouseMoveEvent(event);
@@ -317,15 +334,17 @@ protected:
             update();
         }
     }
+
     void mouseReleaseEvent(QMouseEvent *event) override
     {
+        QGraphicsView::mouseReleaseEvent(event);
         m_clkPt0 = event->pos();
         m_clkPt1 = event->pos();
-        QGraphicsView::mouseReleaseEvent(event);
         m_bDraging=false;
         update();
 
     }
+
     void drawForeground(QPainter *painter, const QRectF &rect) override
     {
         QGraphicsView::drawForeground(painter, rect);
@@ -424,6 +443,8 @@ public:
 signals:
     void onItemSelected(QGraphicsItem *item);
     void onItemChanged(QGraphicsItem *item);
+    void onItemAdded(QGraphicsItem *item);
+    void onItemDeleted(QGraphicsItem *item);
     void onItemLoaded();
 
 protected:

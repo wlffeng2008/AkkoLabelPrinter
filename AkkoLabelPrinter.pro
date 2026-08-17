@@ -16,7 +16,7 @@ QMAKE_TARGET_PRODUCT = LabelPrinter
 #版权所有
 QMAKE_TARGET_COPYRIGHT = "微信: 13537556177"
 #文件说明
-QMAKE_TARGET_DESCRIPTION = "LabelPrinter By QT6.11.1"
+QMAKE_TARGET_DESCRIPTION = "LabelPrinter By QT5.15.2"
 
 RC_LANG = 0x0004
 
@@ -25,6 +25,7 @@ QMAKE_PROJECT_DEPTH = 0
 CONFIG += c++17
 
 LIBS += -L$$PWD -lzint
+#LIBS += $$PWD/libzint-static.a
 
 DESTDIR = ../../bin
 
