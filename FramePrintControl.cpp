@@ -892,7 +892,7 @@ void FramePrintControl::doPrint(QPrinter *printer)
                     if(strText301.toLocal8Bit().size()>32)
                     {
                         m_pLabelView->AddText(strName301.trimmed() , "value301");
-                        QImage textImg(500,104,QImage::Format_ARGB32);
+                        QImage textImg(480,120,QImage::Format_ARGB32);
                         QPainter painter(&textImg);
 
                         painter.fillRect(textImg.rect(),Qt::white);
@@ -900,8 +900,7 @@ void FramePrintControl::doPrint(QPrinter *printer)
 
                         QFont font("Microsoft YaHei");
                         painter.setPen(Qt::black);
-                        QString str = strText301;
-                        drawTextAutoWrapAndScale(&painter,textImg.rect(),str,font);
+                        drawTextAutoWrapAndScale(&painter,textImg.rect(),strText301,font);
                         m_pLabelView->AddImage(textImg,"longText");
                         m_pLabelView->SetItemScale("longText",1);
                     }
@@ -911,7 +910,7 @@ void FramePrintControl::doPrint(QPrinter *printer)
                         QImage textImg(4,4,QImage::Format_ARGB32);
 
                         QPainter painter(&textImg);
-                        painter.fillRect(QRect(0,0,4,4),Qt::white);
+                        painter.fillRect(textImg.rect(),Qt::white);
                         m_pLabelView->AddImage(textImg,"longText");
                         m_pLabelView->SetItemScale("longText",0.1);
                     }
