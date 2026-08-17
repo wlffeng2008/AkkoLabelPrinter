@@ -27,6 +27,7 @@ class CustomScene : public QGraphicsScene
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
+        //connect(this, &QGraphicsScene::selectionChanged,[=]{qDebug() <<"QGraphicsScene::selectionChanged";});
     }
 
     void addItem(QGraphicsItem *item)
@@ -196,8 +197,11 @@ public:
 signals:
     void itemSelected(QGraphicsItem *item);
     void itemChanged(QGraphicsItem *item);
+<<<<<<< HEAD
     void itemAdded(QGraphicsItem *item);
     void itemDeleted(QGraphicsItem *item);
+=======
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
@@ -230,6 +234,7 @@ protected:
             //item->setSelected(true);
             emit itemSelected(item);
         }
+        qDebug() << "QGraphicsScene::mousePressEvent";
 
         QGraphicsScene::mousePressEvent(event);
     }
@@ -313,6 +318,10 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override
     {
+<<<<<<< HEAD
+=======
+        qDebug() << "QGraphicsView::mousePressEvent";
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
         QGraphicsView::mousePressEvent(event);
 
         if(!((CustomScene *)scene())->isDraging())

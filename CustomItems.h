@@ -32,6 +32,7 @@ public:
     {
         QRectF rect = m_item->boundingRect();
 
+<<<<<<< HEAD
         qreal scale = m_item->scale();
         if(scale <= 0.05)
             scale = 1;
@@ -41,6 +42,13 @@ public:
 
         //rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
 
+=======
+            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+                scale = 1;
+
+            rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
+        }
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
         return rect;
     }
 
@@ -134,7 +142,42 @@ public:
         qreal newScale = 1;
         if(w_last == w_new && h_last != h_new)
         {
+<<<<<<< HEAD
             newScale = h_scale_new;
+=======
+            m_item->setPos(rectNew.topLeft());
+
+            QRectF origRect = m_item->boundingRect();
+
+            QRectF rect_last = getItemCurRect();
+            int w_last = rect_last.width();
+            int h_last = rect_last.height();
+            int w_new = rectNew.width();
+            int h_new = rectNew.height();
+
+            qreal newScaleMax = qMax( rectNew.width() / origRect.width(), rectNew.height() / origRect.height() );
+            qreal w_scale_new = rectNew.width() / origRect.width();
+            qreal h_scale_new = rectNew.height() / origRect.height();
+            qreal newScale = 1;
+            if(w_last == w_new && h_last != h_new)
+            {
+                newScale = h_scale_new;
+            }
+            else if(h_last == h_new && w_last != w_new)
+            {
+                newScale = w_scale_new;
+            }
+            else if(h_last != h_new && w_last != w_new)
+            {
+                newScale = newScaleMax;
+            }
+
+            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+                newScale =1;
+            m_item->setScale(newScale);
+
+            emitRectSig();
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
         }
         else if(h_last == h_new && w_last != w_new)
         {
