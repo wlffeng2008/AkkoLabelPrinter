@@ -37,6 +37,9 @@ public:
             if(scale <= 0.05)
                 scale = 1;
 
+            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+                scale = 1;
+
             rect = QRectF(m_item->pos().x(), m_item->pos().y(), rect.width()*scale, rect.height()*scale);
         }
         return rect;
@@ -109,7 +112,7 @@ public:
     {
         QRectF rect = m_item->boundingRect();
         QPointF pos = event->pos();
-        const qreal edgeThreshold = 3.0;
+        const qreal edgeThreshold = 2.0;
 
         if (isNearEdge(pos, rect, edgeThreshold))
         {
@@ -152,6 +155,8 @@ public:
                 newScale = newScaleMax;
             }
 
+            if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+                newScale =1;
             m_item->setScale(newScale);
 
             emitRectSig();
@@ -237,12 +242,6 @@ protected:
         painter->setFont(font);
         painter->setPen(pen);
         QGraphicsTextItem::paint(painter, option, widget);
-        QRectF A = boundingRect();
-        if(isSelected())
-        {
-            //A.adjust(0,0,-1,-1);
-            //painter->drawRect(A);
-        }
 
         if(m_bShowRect)
         {
@@ -289,14 +288,6 @@ signals:
 public:
     CustomPixmapItem(const QPixmap &pixmap, QGraphicsItem *parent = nullptr)
         : QObject(), QGraphicsPixmapItem( pixmap, parent ), base(this)
-    {
-        connect( &base, &CustomBaseItem::itemChanged, this, [=](){
-            emit sigRectChanged();
-        } );
-    }
-
-    CustomPixmapItem(QGraphicsItem *parent = nullptr)
-        : QGraphicsPixmapItem(parent), base(this)
     {
         connect( &base, &CustomBaseItem::itemChanged, this, [=](){
             emit sigRectChanged();

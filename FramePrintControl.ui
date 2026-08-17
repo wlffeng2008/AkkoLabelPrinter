@@ -1035,7 +1035,7 @@
          <item row="9" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_11">
            <property name="spacing">
-            <number>30</number>
+            <number>50</number>
            </property>
            <item>
             <widget class="QPushButton" name="pushButtonSellData">
@@ -1155,7 +1155,7 @@
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,0,1">
        <property name="spacing">
-        <number>12</number>
+        <number>10</number>
        </property>
        <item>
         <widget class="QCheckBox" name="checkBoxWritePdf">
@@ -1182,7 +1182,7 @@
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="text">
-          <string>查看</string>
+          <string>打开</string>
          </property>
         </widget>
        </item>
@@ -1223,7 +1223,7 @@
      <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
        <property name="spacing">
-        <number>10</number>
+        <number>6</number>
        </property>
        <property name="topMargin">
         <number>1</number>

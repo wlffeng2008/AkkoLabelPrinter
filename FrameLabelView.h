@@ -26,6 +26,7 @@ class CustomScene : public QGraphicsScene
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
+        //connect(this, &QGraphicsScene::selectionChanged,[=]{qDebug() <<"QGraphicsScene::selectionChanged";});
     }
 
     void setView(QGraphicsView *pView) { pView_ = pView ;}
@@ -182,14 +183,12 @@ public:
 signals:
     void itemSelected(QGraphicsItem *item);
     void itemChanged(QGraphicsItem *item);
-    void dragDrop();
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
     {
         if( m_pLastItem )
         {
-            qDebug() << "mouseReleaseEvent" << m_bDraging;
             if(m_bDraging)
             {
                 emit itemChanged(m_pLastItem);
@@ -200,6 +199,7 @@ protected:
 
         QGraphicsScene::mouseReleaseEvent(event);
     }
+
     void mousePressEvent( QGraphicsSceneMouseEvent *event ) override
     {
         m_bDraging = true;
@@ -215,6 +215,7 @@ protected:
             item->setSelected(true);
             emit itemSelected(item);
         }
+        qDebug() << "QGraphicsScene::mousePressEvent";
 
         QGraphicsScene::mousePressEvent(event);
     }
@@ -291,6 +292,7 @@ public:
         scene()->render(&painter, QRectF(pixmap.rect()), this->rect());
         return pixmap;
     }
+
 protected:
     QPointF m_clkPt0;
     QPointF m_clkPt1;
@@ -298,15 +300,18 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override
     {
-        update();
+        qDebug() << "QGraphicsView::mousePressEvent";
         QGraphicsView::mousePressEvent(event);
+
         if(!((CustomScene *)scene())->isDraging())
         {
             m_clkPt0 = event->pos();
             m_clkPt1 = event->pos();
             m_bDraging=true;
         }
+        update();
     }
+
     void mouseMoveEvent(QMouseEvent *event) override
     {
         QGraphicsView::mouseMoveEvent(event);
@@ -317,15 +322,17 @@ protected:
             update();
         }
     }
+
     void mouseReleaseEvent(QMouseEvent *event) override
     {
+        QGraphicsView::mouseReleaseEvent(event);
         m_clkPt0 = event->pos();
         m_clkPt1 = event->pos();
-        QGraphicsView::mouseReleaseEvent(event);
         m_bDraging=false;
         update();
 
     }
+
     void drawForeground(QPainter *painter, const QRectF &rect) override
     {
         QGraphicsView::drawForeground(painter, rect);

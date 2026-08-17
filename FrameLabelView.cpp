@@ -50,7 +50,7 @@ FrameLabelView::FrameLabelView(QWidget *parent)
 {
     ui->setupUi(this);
     s_font.setFamily("微软雅黑");
-    s_font.setPointSize(9);
+    s_font.setPointSize(24);
 
     m_pView = ui->graphicsView;
     m_pScene = new CustomScene(this);
@@ -67,16 +67,6 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     });
     connect( m_pScene, &CustomScene::itemChanged, this, [=](QGraphicsItem *item){
         emit onItemChanged(item);
-    });
-
-    QTimer *pDragTM = new QTimer(this);
-    connect(pDragTM,&QTimer::timeout,this,[=]{
-        pDragTM->stop();
-        emit onItemLoaded();
-    });
-    connect( m_pScene, &CustomScene::dragDrop, this, [=](){
-        pDragTM->stop();
-        pDragTM->start(500);
     });
 }
 
@@ -211,7 +201,7 @@ void*FrameLabelView::AddImage(const QImage&image, const QString&strName)
     CustomPixmapItem* imgItem = m_pScene->getPixmapItem(strName);
     if(!imgItem)
     {
-        imgItem = new CustomPixmapItem();
+        imgItem = new CustomPixmapItem(QPixmap::fromImage(image));
         m_pScene->addItem(imgItem);
         imgItem->setPos(10, 40);
         imgItem->setName(strName);
@@ -360,6 +350,8 @@ void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
 
             if(fscaleN != fscale)
                 item->setScale(fscaleN);
+
+            emit onItemChanged(item);
         }
     }
 

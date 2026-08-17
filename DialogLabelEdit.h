@@ -37,7 +37,8 @@ protected:
     }
 };
 
-class DateTimeDelegate : public QStyledItemDelegate {
+class DateTimeDelegate : public QStyledItemDelegate
+{
     Q_OBJECT
 public:
     DateTimeDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent)
@@ -81,6 +82,13 @@ protected:
         Q_UNUSED(index)
         QComboBox *pComb = new QComboBox(parent);
         pComb->addItems(_strItems);
+        connect(pComb,&QComboBox::textActivated,this,[=](const QString&text){
+            QStandardItemModel *pModel = (QStandardItemModel *)index.model();
+            QStandardItem *item = pModel->item(index.row(),index.column());
+            item->setData(text,Qt::EditRole);
+            pComb->hide();
+        });
+
         return pComb;
     }
 
@@ -109,7 +117,14 @@ public:
             setText(nRow,text);
         });
     }
-    void setText(int nRow,const QString&text){ _texts[nRow] = text; }
+    void setText(int nRow,const QString&text){
+        _texts[nRow] = text;
+        if(m_bFloatMode)
+        {
+            QString val = QString::asprintf("%.2f",text.toFloat());
+            _texts[nRow] = val;
+        }
+    }
     void setTableView(QTableView *pView){ tableView = pView;}
     void setHexMode(bool set=true){ m_bHexMode = set ;}
     void setIntStep(int step){ m_nStep = step ;}
@@ -118,10 +133,10 @@ public:
 
 protected:
     QMap<int,QString> _texts;
-    QTableView *tableView = nullptr ;
-    bool m_bHexMode = false ;
-    bool m_bFloatMode = false ;
-    float m_fStep  = 0.01;
+    QTableView *tableView = nullptr;
+    bool m_bHexMode = false;
+    bool m_bFloatMode = false;
+    float m_fStep  = 0.1;
     int  m_nStep  = 1;
 
 signals:
@@ -172,11 +187,7 @@ protected:
     {
         QStyledItemDelegate::paint(painter,option,index) ;
 
-        painter->save() ;
-
-        QStandardItemModel *pModel = (QStandardItemModel *)index.model();
-        QStandardItem *item = pModel->item(index.row(),index.column());
-        QString strText = item->text();
+        painter->save();
 
         QRect rect = option.rect;
         rect.adjust(4,4,-4,-4);
@@ -185,7 +196,7 @@ protected:
         painter->setPen(pen);
         painter->drawText(rect,Qt::AlignRight|Qt::AlignVCenter,_texts[index.row()]);
 
-        painter->restore() ;
+        painter->restore();
     }
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const override {
@@ -218,8 +229,8 @@ protected:
 
             if(m_bHexMode)
             {
-                QString value = spinBox->text() ;
-                value.replace(spinBox->prefix(),"") ;
+                QString value = spinBox->text();
+                value.replace(spinBox->prefix(),"");
                 model->setData(index, value.toUpper(), Qt::EditRole);
             }
             else
@@ -236,20 +247,20 @@ protected:
         {
             QRect cellRect = tableView->visualRect(index);
 
-            QPoint clp = tableView->viewport()->mapFromGlobal(QCursor::pos())  ;
+            QPoint clp = tableView->viewport()->mapFromGlobal(QCursor::pos());
 
-            int nx = clp.x() ;
-            int ny = clp.y() ;
+            int nx = clp.x();
+            int ny = clp.y();
 
             for(int i=0; i<index.column(); i++)
-                nx -= tableView->columnWidth(i) ;
+                nx -= tableView->columnWidth(i);
             for(int i=0; i<index.row(); i++)
-                ny -= tableView->rowHeight(i) ;
+                ny -= tableView->rowHeight(i);
             if(nx * 10 / cellRect.width() > 6)
             {
-                QStandardItemModel *pModel = (QStandardItemModel *)index.model() ;
-                QStandardItem *item = pModel->item(index.row(),index.column()) ;
-                if(item && !_texts[index.row()].isEmpty()) item->setText(_texts[index.row()]) ;
+                QStandardItemModel *pModel = (QStandardItemModel *)index.model();
+                QStandardItem *item = pModel->item(index.row(),index.column());
+                if(item && !_texts[index.row()].isEmpty()) item->setText(_texts[index.row()]);
             }
         }
         return QStyledItemDelegate::editorEvent(event, model, option, index);
@@ -259,13 +270,11 @@ protected:
                               const QStyleOptionViewItem &option,
                               const QModelIndex &index) const override
     {
-        QStyleOptionViewItem opt = option ;
+        QStyleOptionViewItem opt = option;
         opt.rect.adjust(0,0,opt.rect.width()/2 * -1 + 20 ,0);
         QStyledItemDelegate::updateEditorGeometry(editor,opt,index);
     }
 };
-
-
 
 
 namespace Ui {

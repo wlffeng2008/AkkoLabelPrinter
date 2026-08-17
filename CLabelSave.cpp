@@ -181,6 +181,7 @@ bool CLabelSave::loadSceneWithImages(QGraphicsScene *scene, const QString &fileP
             if(name == "QPass")
                 textItem->m_bShowRect = true;
             scene->addItem(textItem);
+            //textItem->setScale(1);
         }
         else if (type == "pixmap")
         {

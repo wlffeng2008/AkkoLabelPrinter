@@ -558,7 +558,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddImageQR(strText303,"QrCode303");
             if(strText302.toLocal8Bit().size()>32)
             {
-                QImage textImg(500,104,QImage::Format_ARGB32);
+                QImage textImg(480,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
                 painter.fillRect(textImg.rect(),Qt::NoBrush);
 
