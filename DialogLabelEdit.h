@@ -88,7 +88,15 @@ protected:
             item->setData(text,Qt::EditRole);
             pComb->hide();
         });
+<<<<<<< HEAD
         QTimer::singleShot(20,this,[=]{pComb->showPopup();});
+=======
+<<<<<<< HEAD
+        QTimer::singleShot(20,this,[=]{pComb->showPopup();});
+=======
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
+
+>>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
         return pComb;
     }
 

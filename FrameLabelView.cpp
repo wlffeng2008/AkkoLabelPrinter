@@ -68,12 +68,21 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     connect( m_pScene, &CustomScene::itemChanged, this, [=](QGraphicsItem *item){
         emit onItemChanged(item);
     });
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
     connect( m_pScene, &CustomScene::itemAdded, this, [=](QGraphicsItem *item){
         emit onItemAdded(item);
     });
     connect( m_pScene, &CustomScene::itemDeleted, this, [=](QGraphicsItem *item){
         emit onItemDeleted(item);
     });
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
+>>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
 }
 
 FrameLabelView::~FrameLabelView()

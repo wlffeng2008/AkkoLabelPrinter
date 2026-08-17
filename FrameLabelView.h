@@ -197,8 +197,16 @@ public:
 signals:
     void itemSelected(QGraphicsItem *item);
     void itemChanged(QGraphicsItem *item);
+<<<<<<< HEAD
     void itemAdded(QGraphicsItem *item);
     void itemDeleted(QGraphicsItem *item);
+=======
+<<<<<<< HEAD
+    void itemAdded(QGraphicsItem *item);
+    void itemDeleted(QGraphicsItem *item);
+=======
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
+>>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
@@ -315,6 +323,13 @@ protected:
 
     void mousePressEvent(QMouseEvent *event) override
     {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        qDebug() << "QGraphicsView::mousePressEvent";
+>>>>>>> 6173a2adc7931979bf1b1a8c327d53f1b50ea3f1
+>>>>>>> 246c9582096e6bdc90db896777facf663de04b1b
         QGraphicsView::mousePressEvent(event);
 
         if(!((CustomScene *)scene())->isDraging())
