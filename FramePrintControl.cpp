@@ -573,9 +573,10 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             {
                 QImage textImg(480,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
-                painter.fillRect(textImg.rect(),Qt::NoBrush);
+                painter.fillRect(textImg.rect(),Qt::white);
 
                 QFont font("Microsoft YaHei");
+                //font.setBold(true);
                 painter.setPen(Qt::black);
                 drawTextAutoWrapAndScale(&painter,textImg.rect(),strText302,font);
 
@@ -927,11 +928,10 @@ void FramePrintControl::doPrint(QPrinter *printer)
                             m_pLabelView->AddText(strName301.trimmed() , "value301");
                             QImage textImg(480,120,QImage::Format_ARGB32);
                             QPainter painter(&textImg);
-
                             painter.fillRect(textImg.rect(),Qt::white);
-                            painter.fillRect(textImg.rect(),Qt::NoBrush);
 
                             QFont font("Microsoft YaHei");
+                            //font.setBold(true);
                             painter.setPen(Qt::black);
                             drawTextAutoWrapAndScale(&painter,textImg.rect(),strText301,font);
                             m_pLabelView->AddImage(textImg,"longText");
