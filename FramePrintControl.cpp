@@ -190,6 +190,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->label305->setText(m_pSet->value("name305","生产日期").toString().replace("：","").trimmed() + "：");
     ui->label306->setText(m_pSet->value("name306","交货日期").toString().replace("：","").trimmed() + "：");
     ui->label307->setText(m_pSet->value("name307","检验结果").toString().replace("：","").trimmed() + "：");
+    ui->checkBoxSetBlank0->setChecked(m_pSet->value("setDateBlank0",false).toBool());
+    ui->checkBoxSetBlank1->setChecked(m_pSet->value("setDateBlank1",false).toBool());
 
     ui->lineEditPaperW->setText(m_pSet->value("PaperW","60").toString());
     ui->lineEditPaperH->setText(m_pSet->value("PaperH","40").toString());
@@ -457,6 +459,12 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         connect(ui->radioButton2,&QRadioButton::clicked,this,[=]{
             ui->pushButtonGenLabel->click();
         });
+        connect(ui->checkBoxSetBlank0,&QRadioButton::clicked,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->checkBoxSetBlank1,&QRadioButton::clicked,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
 
         connect(ui->pushButtonOpenPdf,&QPushButton::clicked,this,[=]{
             QDesktopServices::openUrl(QUrl::fromLocalFile(ui->lineEditPdfFile->text()));
@@ -538,6 +546,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"  NG  ");
             if(ui->radioButton2->isChecked()) strText307 = "签章";
 
+            if(ui->checkBoxSetBlank0->isChecked()) strText305.clear();
+            if(ui->checkBoxSetBlank1->isChecked()) strText306.clear();
+
             QString strText308 = QString("%1").arg(ui->spinBoxUnit->value());
 
             strName300.replace("：","　　");
@@ -616,6 +627,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pSet->setValue("text303",strText303);
             m_pSet->setValue("text308",strText308);
             m_pSet->setValue("count304",ui->spinBoxCount->value());
+            m_pSet->setValue("setDateBlank0",ui->checkBoxSetBlank0->isChecked());
+            m_pSet->setValue("setDateBlank1",ui->checkBoxSetBlank1->isChecked());
 
             QTimer::singleShot(300,this,[=]{
                 if(ui->checkBoxAutoPrint->isChecked() || ui->checkBoxAutoOut->isChecked())
@@ -942,7 +955,7 @@ void FramePrintControl::doPrint(QPrinter *printer)
                         strName304.replace("：","");
                         int ship = nUnit;
                         if(index == nLabelCount) ship = nLast;
-                        QString strCount = QString("%1　　%2 (本箱: %3, 第 %4 箱, 共 %5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index+1).arg(nLabelCount);
+                        QString strCount = QString("%1　　%2 (本箱:%3,第 %4/%5 箱)").arg(strName304).arg(strText304).arg(ship).arg(index+1).arg(nLabelCount);
 
                         m_pLabelView->AddText(strCount, "value304");
                     }
