@@ -228,10 +228,8 @@ protected:
         }
         else
         {
-            //item->setSelected(true);
             emit itemSelected(item);
         }
-        qDebug() << "QGraphicsScene::mousePressEvent";
 
         QGraphicsScene::mousePressEvent(event);
     }
@@ -447,7 +445,7 @@ signals:
     void onItemChanged(QGraphicsItem *item);
     void onItemAdded(QGraphicsItem *item);
     void onItemDeleted(QGraphicsItem *item);
-    void onItemLoaded();
+    void onItemLoaded(int paperW,int paperH);
 
 protected:
     void keyPressEvent( QKeyEvent *event) override;
@@ -460,6 +458,8 @@ private:
     bool m_bCtrlPress = false;
     bool m_bShiftPress = false;
 
+    int m_paperW=100;
+    int m_paperH=100;
     QObject *m_pSelect  = nullptr;
     CustomView *m_pView = nullptr;
     CustomScene *m_pScene = nullptr;

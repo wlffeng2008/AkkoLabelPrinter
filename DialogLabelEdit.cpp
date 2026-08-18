@@ -214,7 +214,7 @@ void DialogLabelEdit::BindLabelView(FrameLabelView *pView)
     connect(pView,&FrameLabelView::onItemChanged,this,[=](QGraphicsItem *item){
         AppendRow(item);
     });
-    connect(pView,&FrameLabelView::onItemLoaded,this,[=](){
+    connect(pView,&FrameLabelView::onItemLoaded,this,[=](int paperW,int paperH){
         LoadLabels();
     });
 }

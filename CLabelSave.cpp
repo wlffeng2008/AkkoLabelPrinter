@@ -41,58 +41,64 @@ QByteArray CLabelSave::encodeImage( const QImage &image )
     return byteArray.toBase64();   // 将图片数据进行 Base64 编码
 }
 
-bool CLabelSave::saveSceneWithImages(CustomScene *scene, const QString &filePath)
+bool CLabelSave::saveSceneWithImages(CustomScene *scene, const QString &filePath, int paperWidth, int paperHeight)
 {
     QJsonArray itemsArray;
+    QJsonObject paperObj;
+    paperObj["name"]="paperset";
+    paperObj["type"]="paperset";
+    paperObj["width"]=paperWidth;
+    paperObj["height"]=paperHeight;
+    itemsArray.append(paperObj);
 
     for (auto item : scene->items())
     {
         if (auto textItem = dynamic_cast<CustomTextItem*>(item))
         {
-            QJsonObject textObject;
-            textObject["name"] = textItem->getName();
-            textObject["type"] = "text";
-            textObject["text"] = textItem->toPlainText();
+            QJsonObject textObj;
+            textObj["name"] = textItem->getName();
+            textObj["type"] = "text";
+            textObj["text"] = textItem->toPlainText();
 
             QFont tf = textItem->font();
-            textObject["font"] = tf.family();
-            textObject["style"] = tf.styleName();
-            textObject["bold"] = tf.bold();
-            textObject["size"] = tf.pointSize();
+            textObj["font"] = tf.family();
+            textObj["style"] = tf.styleName();
+            textObj["bold"] = tf.bold();
+            textObj["size"] = tf.pointSize();
 
-            textObject["x"] = textItem->pos().x();
-            textObject["y"] = textItem->pos().y();
-            textObject["w"] = textItem->getItemRect().width();
-            textObject["h"] = textItem->getItemRect().height();
-            textObject["scale"] = textItem->scale();
-            textObject["zvalue"]   = textItem->zValue();
-            textObject["type_in0"] = textItem->data( 0 ).toInt();
-            textObject["type_in1"] = textItem->data( 1 ).toInt();
-            textObject["type_in2"] = textItem->data( 2 ).toInt();
-            textObject["type_in3"] = textItem->data( 3 ).toInt();
-            itemsArray.append(textObject);
+            textObj["x"] = textItem->pos().x();
+            textObj["y"] = textItem->pos().y();
+            textObj["w"] = textItem->getItemRect().width();
+            textObj["h"] = textItem->getItemRect().height();
+            textObj["scale"] = textItem->scale();
+            textObj["zvalue"]   = textItem->zValue();
+            textObj["type_in0"] = textItem->data( 0 ).toInt();
+            textObj["type_in1"] = textItem->data( 1 ).toInt();
+            textObj["type_in2"] = textItem->data( 2 ).toInt();
+            textObj["type_in3"] = textItem->data( 3 ).toInt();
+            itemsArray.append(textObj);
         }
         else if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
         {
-            QJsonObject pixmapObject;
-            pixmapObject["name"] = pixmapItem->getName();
-            pixmapObject["type"] = "pixmap";
-            pixmapObject["x"] = pixmapItem->pos().x();
-            pixmapObject["y"] = pixmapItem->pos().y();
-            pixmapObject["w"] = pixmapItem->getItemRect().width();
-            pixmapObject["h"] = pixmapItem->getItemRect().height();
-            pixmapObject["scale"] = pixmapItem->scale();
-            pixmapObject["zvalue"]   = pixmapItem->zValue();
-            pixmapObject["type_in0"] = pixmapItem->data( 0 ).toInt();
-            pixmapObject["type_in1"] = pixmapItem->data( 1 ).toInt();
-            pixmapObject["type_in2"] = pixmapItem->data( 2 ).toInt();
-            pixmapObject["type_in3"] = pixmapItem->data( 3 ).toInt();
+            QJsonObject pixmapObj;
+            pixmapObj["name"] = pixmapItem->getName();
+            pixmapObj["type"] = "pixmap";
+            pixmapObj["x"] = pixmapItem->pos().x();
+            pixmapObj["y"] = pixmapItem->pos().y();
+            pixmapObj["w"] = pixmapItem->getItemRect().width();
+            pixmapObj["h"] = pixmapItem->getItemRect().height();
+            pixmapObj["scale"] = pixmapItem->scale();
+            pixmapObj["zvalue"]   = pixmapItem->zValue();
+            pixmapObj["type_in0"] = pixmapItem->data( 0 ).toInt();
+            pixmapObj["type_in1"] = pixmapItem->data( 1 ).toInt();
+            pixmapObj["type_in2"] = pixmapItem->data( 2 ).toInt();
+            pixmapObj["type_in3"] = pixmapItem->data( 3 ).toInt();
 
             QImage image = pixmapItem->pixmap().toImage();
             QByteArray imageData = encodeImage(image);
-            pixmapObject["imageData"] = QString::fromLatin1(imageData);
+            pixmapObj["imageData"] = QString::fromLatin1(imageData);
 
-            itemsArray.append(pixmapObject);
+            itemsArray.append(pixmapObj);
         }
     }
 
@@ -115,7 +121,7 @@ bool CLabelSave::saveSceneWithImages(CustomScene *scene, const QString &filePath
      return false;
 }
 
-bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath)
+bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath, int &paperWidth, int &paperHeight)
 {
     QFile file( filePath );
     if ( !file.open( QIODevice::ReadOnly ) )
@@ -134,11 +140,20 @@ bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath
     int nW = scene->width();
     int nH = scene->height();
 
+    paperWidth =100;
+    paperHeight=100;
+
     for( const QJsonValue &value : std::as_const(itemsArray) )
     {
         QJsonObject obj = value.toObject();
         QString type = obj["type"].toString();
         QString name = obj["name"].toString();
+
+        if (type == "paperset")
+        {
+            paperWidth = obj["width"].toInt();
+            paperHeight = obj["height"].toInt();
+        }
 
         if (type == "text")
         {

@@ -81,27 +81,6 @@ FrameLabelView::~FrameLabelView()
     delete ui;
 }
 
-void FrameLabelView::SetPaperSize(qreal width, qreal height)
-{
-    QSize LSize = this->size();
-
-    int nW = LSize.width();
-    int nH = LSize.height();
-    qreal ratio = width/height;
-
-    if(ratio > 1)
-    {
-        nH = nW / ratio;
-    }
-
-    if(ratio < 1)
-    {
-        nW = nH * ratio;
-    }
-
-    ui->graphicsView->setFixedSize(nW-1,nH-1);
-    m_pScene->setSceneRect(QRectF(0,0,nW-1,nH-1));
-}
 
 QFont FrameLabelView::GetFont()
 {
@@ -134,7 +113,30 @@ void FrameLabelView::SetFont(QFont&font)
     }
 }
 
+void FrameLabelView::SetPaperSize(qreal width, qreal height)
+{
+    QSize LSize = this->size();
 
+    int nW = LSize.width();
+    int nH = LSize.height();
+    qreal ratio = width/height;
+
+    if(ratio > 1)
+    {
+        nH = nW / ratio;
+    }
+
+    if(ratio < 1)
+    {
+        nW = nH * ratio;
+    }
+
+    ui->graphicsView->setFixedSize(nW-1,nH-1);
+    m_pScene->setSceneRect(QRectF(0,0,nW-1,nH-1));
+
+    m_paperW = width;
+    m_paperH = height;
+}
 
 void FrameLabelView::Load(const QString&srtFile)
 {
@@ -145,9 +147,12 @@ void FrameLabelView::Load(const QString&srtFile)
     if(srtFile.isEmpty())
         return;
 
-    CLabelSave::loadSceneWithImages(m_pScene,srtFile);
+    int paperW,paperH;
+    CLabelSave::loadSceneWithImages(m_pScene,srtFile,paperW,paperH);
 
-    emit onItemLoaded();
+    SetPaperSize(paperW,paperH);
+
+    emit onItemLoaded(m_paperW,m_paperH);
 }
 
 void FrameLabelView::Save()
@@ -162,7 +167,7 @@ void FrameLabelView::Save()
         m_strTemlate = strFile;
         setWindowTitle("标签打印模板 - " + strFile);
     }
-    CLabelSave::saveSceneWithImages(m_pScene,m_strTemlate);
+    CLabelSave::saveSceneWithImages(m_pScene,m_strTemlate,m_paperW,m_paperH);
 }
 
 void FrameLabelView::SetPrintMatrix(int nRows,int nCols)
@@ -286,7 +291,7 @@ void FrameLabelView::Delete()
         delete item;
     }
     Save();
-    emit onItemLoaded();
+    emit onItemLoaded(m_paperW,m_paperH);
 }
 
 
@@ -294,7 +299,7 @@ void FrameLabelView::Clear()
 {
     m_pScene->clear();
     Save();
-    emit onItemLoaded();
+    emit onItemLoaded(m_paperW,m_paperH);
 }
 
 

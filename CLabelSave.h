@@ -16,8 +16,8 @@ public:
 
     static QImage decodeImage( const QString &imageData );
     static QByteArray encodeImage( const QImage &image );
-    static bool saveSceneWithImages( CustomScene *scene, const QString &filePath);
-    static bool loadSceneWithImages( CustomScene *scene, const QString &filePath);
+    static bool saveSceneWithImages( CustomScene *scene, const QString &filePath,int paperWidth,int paperHeight);
+    static bool loadSceneWithImages(CustomScene *scene, const QString &filePath, int&paperWidth, int&paperHeight);
 };
 
 #endif // CLABELSAVE_H

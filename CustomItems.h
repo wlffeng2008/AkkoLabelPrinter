@@ -28,7 +28,7 @@ public:
         }
     }
 
-    QRectF getItemCurRect()
+    QRectF getItemRect()
     {
         QRectF rect = m_item->boundingRect();
 
@@ -43,6 +43,27 @@ public:
         return rect;
     };
 
+    void setItemRect(const QRectF &rectNew)
+    {
+        QRectF rect_last = getItemRect();
+        int w_last = rect_last.width();
+        int h_last = rect_last.height();
+        int w_new = rectNew.width();
+        int h_new = rectNew.height();
+
+        qreal w_scale_new = w_new / w_last;
+        qreal h_scale_new = h_new / h_last;
+        qreal newScale = qMax( w_scale_new, h_scale_new);
+
+        if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
+            newScale = 1;
+
+        m_item->setScale(newScale);
+        m_item->setPos(rectNew.topLeft());
+
+        emitRectSig();
+    }
+
     void handleMousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         QRectF rect = m_item->boundingRect();
@@ -52,7 +73,7 @@ public:
         if(!resizing || !moving)
         {
             initialScenePos = event->scenePos();
-            initialRect     = getItemCurRect();
+            initialRect     = getItemRect();
         }
 
         if(isNearEdge(pos, rect, edgeThreshold))
@@ -115,60 +136,6 @@ public:
         }
     }
 
-    void setItemRect(const QRectF &rectNew)
-    {
-        m_item->setPos(rectNew.topLeft());
-
-        QRectF origRect = m_item->boundingRect();
-
-        QRectF rect_last = getItemCurRect();
-        int w_last = rect_last.width();
-        int h_last = rect_last.height();
-        int w_new = rectNew.width();
-        int h_new = rectNew.height();
-
-        qreal newScaleMax = qMax( rectNew.width() / origRect.width(), rectNew.height() / origRect.height() );
-        qreal w_scale_new = rectNew.width() / origRect.width();
-        qreal h_scale_new = rectNew.height() / origRect.height();
-        qreal newScale = 1;
-        if(w_last == w_new && h_last != h_new)
-        {
-            newScale = h_scale_new;
-
-            m_item->setPos(rectNew.topLeft());
-
-            QRectF origRect = m_item->boundingRect();
-
-            QRectF rect_last = getItemCurRect();
-            int w_last = rect_last.width();
-            int h_last = rect_last.height();
-            int w_new = rectNew.width();
-            int h_new = rectNew.height();
-
-            qreal newScaleMax = qMax( rectNew.width() / origRect.width(), rectNew.height() / origRect.height() );
-            qreal w_scale_new = rectNew.width() / origRect.width();
-            qreal h_scale_new = rectNew.height() / origRect.height();
-            qreal newScale = 1;
-            if(w_last == w_new && h_last != h_new)
-            {
-                newScale = h_scale_new;
-            }
-            else if(h_last == h_new && w_last != w_new)
-            {
-                newScale = w_scale_new;
-            }
-            else if(h_last != h_new && w_last != w_new)
-            {
-                newScale = newScaleMax;
-            }
-        }
-
-        if(m_item->data(0).toInt() == 1 || m_item->data(0).toInt() == 2)
-            newScale =1;
-        m_item->setScale(newScale);
-
-        emitRectSig();
-    }
 
 signals:
     void itemChanged();
@@ -212,7 +179,7 @@ public:
     QString getName(){ return m_strName; }
 
     void setItemRect(const QRectF&rectNew ){ base.setItemRect(rectNew); }
-    QRectF getItemRect(){  return base.getItemCurRect(); }
+    QRectF getItemRect(){  return base.getItemRect(); }
 
 protected:
     CustomBaseItem base;  // Instance of Resizable to handle resizing
@@ -240,7 +207,7 @@ protected:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
 
-        QPen pen = QPen(Qt::red,1,Qt::DashLine);
+        QPen pen = QPen(Qt::red,2,Qt::DashLine);
         QFont font = painter->font();
         font.setBold(true);
         painter->setFont(font);
@@ -303,8 +270,8 @@ public:
     void setName(const QString&strName) { m_strName = strName; }
     QString getName(){ return m_strName; }
 
-    void setItemRect(const QRectF rectNew){ base.setItemRect( rectNew ); }
-    QRectF getItemRect(){  return base.getItemCurRect(); }
+    void setItemRect(const QRectF &rectNew){ base.setItemRect( rectNew ); }
+    QRectF getItemRect(){  return base.getItemRect(); }
 
 protected:
     CustomBaseItem base;
@@ -332,6 +299,7 @@ protected:
         Q_UNUSED(option)
         Q_UNUSED(widget)
         //QGraphicsPixmapItem::paint(painter, option, widget);
+
         QRectF rect = boundingRect();
         int m_nLineType = data(0).toInt();
         if(m_nLineType != 0)
@@ -340,7 +308,7 @@ protected:
         }
         else
         {
-            QPixmap pix = pixmap();
+            QPixmap pix = this->pixmap();
             painter->drawImage(rect,pix.toImage());
         }
 
