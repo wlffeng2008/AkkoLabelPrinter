@@ -165,8 +165,8 @@ class CustomTextItem : public QGraphicsTextItem
 signals:
     void sigRectChanged();
 public:
-    CustomTextItem(const QString &text, QGraphicsTextItem *parentGraph = nullptr)
-        : QGraphicsTextItem(text, parentGraph), base(this)
+    CustomTextItem(const QString &text, QGraphicsItem *parent = nullptr)
+        : QGraphicsTextItem(text, parent), base(this)
     {
         connect( &base, &CustomBaseItem::itemChanged, [=](){
             emit sigRectChanged();
@@ -260,9 +260,9 @@ public:
     CustomPixmapItem(const QPixmap &pixmap, QGraphicsItem *parent = nullptr)
         : QObject(), QGraphicsPixmapItem( pixmap, parent ), base(this)
     {
-        connect( &base, &CustomBaseItem::itemChanged, this, [=](){
-            emit sigRectChanged();
-        } );
+        // connect( &base, &CustomBaseItem::itemChanged, this, [=](){
+        //     emit sigRectChanged();
+        // } );
     }
 
     QString m_strName;

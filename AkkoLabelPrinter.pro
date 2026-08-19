@@ -37,6 +37,7 @@ SOURCES += \
     CLabelSave.cpp \
     CustomItems.cpp \
     DialogFieldPickup.cpp \
+    DialogKeyboard.cpp \
     DialogLabelEdit.cpp \
     DialogRecList.cpp \
     DialogReferId.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     CLabelSave.h \
     CustomItems.h \
     DialogFieldPickup.h \
+    DialogKeyboard.h \
     DialogLabelEdit.h \
     DialogRecList.h \
     DialogReferId.h \
@@ -64,6 +66,7 @@ HEADERS += \
 
 FORMS += \
     DialogFieldPickup.ui \
+    DialogKeyboard.ui \
     DialogLabelEdit.ui \
     DialogRecList.ui \
     DialogReferId.ui \

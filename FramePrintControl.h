@@ -7,6 +7,7 @@
 #include "DialogLabelEdit.h"
 #include "DialogReject.h"
 #include "DialogSell.h"
+#include "DialogKeyboard.h"
 
 #include <QFrame>
 #include <QPrinter>
@@ -117,6 +118,7 @@ private:
     DialogLabelEdit *m_labelEdit = nullptr;
     DialogReject *m_rejectDlg = nullptr;
     DialogSell *m_sellDlg = nullptr;
+    DialogKeyboard *m_keyboard = nullptr;
     void ShowSN();
 
     void Calculate();

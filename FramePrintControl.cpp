@@ -145,6 +145,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_labelEdit = new DialogLabelEdit(this);
     m_rejectDlg = new DialogReject(this);
     m_sellDlg   = new DialogSell(this);
+    m_keyboard   = new DialogKeyboard(this);
 
     ui->lineEditUrl->hide();
     ui->pushButtonGenLabel->setFixedSize(100,28);
@@ -231,6 +232,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         m_pSet->setValue("gen128",bGen128);
     });
 
+    connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
+        m_keyboard->show();
+    });
     connect(ui->pushButtonClear,&QPushButton::clicked,this,[=]{
         m_recList->clear();
         ui->labelCurCount->setText("0");

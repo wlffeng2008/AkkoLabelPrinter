@@ -236,7 +236,7 @@ protected:
 
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) override
     {
-        if(m_bDraging)
+        if(m_bDraging && !m_pLastItem)
         {
             QRectF rcFrame(m_clkPt,event->scenePos());
             for (auto item : items())
