@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>532</height>
+    <width>2579</width>
+    <height>968</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,11 +16,14 @@
   <widget class="CustomView" name="graphicsView">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>979</width>
-     <height>471</height>
+     <x>6</x>
+     <y>8</y>
+     <width>2561</width>
+     <height>869</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
    </property>
   </widget>
  </widget>

@@ -320,5 +320,169 @@ protected:
     }
 };
 
+class QGraphicsKeyItem: public QObject,  public QGraphicsPixmapItem
+{
+    Q_OBJECT
+public:
+    explicit QGraphicsKeyItem(QGraphicsItem *parent = nullptr): QObject(), QGraphicsPixmapItem(QPixmap(), parent)
+    {
+        init();
+    }
+
+    explicit QGraphicsKeyItem(const QImage&image,QGraphicsItem *parent = nullptr): QObject(), QGraphicsPixmapItem(QPixmap(), parent)
+    {
+        init();
+        setImage(image);
+    }
+
+    explicit QGraphicsKeyItem(const QString&text,QGraphicsItem *parent = nullptr): QObject(), QGraphicsPixmapItem(QPixmap(), parent)
+    {
+        init();
+
+        QImage image(text);
+        if(image.isNull())
+        {
+            setSize(42,42);
+            setText(text);
+        }
+        else
+        {
+            setSize(100,100);
+            setImage(image);
+        }
+    }
+
+    void init()
+    {
+        setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsFocusable);
+        setAcceptHoverEvents(true);
+        setSize(100,100);
+        setY(5);
+        setCursor(Qt::PointingHandCursor);
+    }
+
+    ~QGraphicsKeyItem() = default;
+
+    QString name(){ return m_name; }
+    void setName(const QString&name){ m_name=name; }
+
+    void setFont(const QFont&font){ m_font=font; }
+    void setFontSize(int size){ m_font.setPixelSize(size); }
+    int  fontSize(){ return m_font.pixelSize(); }
+    bool bold(){ m_font.bold(); }
+    void setBold(bool bold){ m_font.setBold(bold); }
+
+    void setText(const QString&text)
+    {
+        m_text=text;
+        m_bTextmode=true;
+        if(text.contains('\n'))
+        {
+            //setFontSize(9);
+        }
+        // else
+        // {
+        //     int len = text.toLocal8Bit().size();
+        //     if(len>5)
+        //         setW(100);
+        //     else if(len>4)
+        //         setW(80);
+        //     else if(len>3)
+        //         setW(70);
+        // }
+    }
+
+    void setImage(const QImage&image)
+    {
+        m_image=image;
+        m_bTextmode=false;
+    }
+
+    void setSize(int w,int h)
+    {
+        QImage image(w,h,QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
+        setPixmap(QPixmap::fromImage(image));
+        setScale(1);
+        m_nW = w;
+        m_nH = h;
+    }
+
+    QSize size(){ return QSize(m_nW,m_nH); }
+
+    int x(){ return pos().x(); }
+    int y(){ return pos().y(); }
+    int w(){ return m_nW; }
+    int h(){ return m_nH; }
+
+    void setX(int x){ this->setPos(x,pos().y()); }
+    void setY(int y){ this->setPos(pos().x(),y); }
+    void setW(int w){ setSize(w,m_nH); }
+    void setH(int h){ setSize(m_nW,h); }
+
+    QPainterPath shape() const override
+    {
+        QPainterPath path;
+        path.addRect(boundingRect());
+        return path;
+    }
+
+    QRectF boundingRect() const override { return QGraphicsPixmapItem::boundingRect(); }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
+        Q_UNUSED(option)
+        Q_UNUSED(widget)
+        painter->save();
+        painter->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
+        QRectF rect = boundingRect();
+        if(m_bTextmode)
+        {
+            if(isSelected())
+            {
+                painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                painter->setBrush(Qt::gray);
+            }
+            else
+            {
+                painter->setBrush(Qt::white);
+            }
+            painter->drawRoundedRect(rect,14,14);
+
+            painter->setFont(m_font);
+            painter->drawText(rect,m_text,QTextOption(Qt::AlignCenter));
+        }
+        else
+        {
+
+            QPainterPath path;
+            path.addRoundedRect(rect,14,14);
+            painter->setClipPath(path);
+            painter->drawImage(rect,m_image);
+            if(isSelected())
+            {
+                painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                painter->drawRoundedRect(rect,14,14);
+            }
+        }
+        painter->restore();
+    }
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+        qDebug() <<  x() << y() << w()+x() << h()+y();
+        QGraphicsPixmapItem::mousePressEvent(event);
+    }
+
+private:
+    int m_nW;
+    int m_nH;
+    int m_line = 0;
+    QFont m_font = QFont("微软雅黑",9,600);
+    QString m_name;
+    QString m_text;
+    QImage m_image;
+    bool m_bTextmode=false;
+};
+
+
 
 #endif // CUSTOMITEMS_H
