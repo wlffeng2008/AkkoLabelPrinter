@@ -2,6 +2,7 @@
 #define FRAMELABELVIEW_H
 
 #include "CustomItems.h"
+#include "qglobal.h"
 
 #include <QFrame>
 #include <QDebug>
@@ -192,6 +193,46 @@ public:
         return false;
     }
 
+    void DeleteItem()
+    {
+        QList<QGraphicsItem*>items = selectedItems();
+        foreach(auto item,items)
+            removeItem(item);
+    }
+
+    void MoveItem(int step,int dire=0)
+    {
+        QList<QGraphicsItem*>items = selectedItems();
+        foreach(auto item,items)
+        {
+            switch(dire)
+            {
+            case 0: item->setY(item->y() - step); break;
+            case 1: item->setY(item->y() + step); break;
+            case 2: item->setX(item->x() - step); break;
+            case 3: item->setX(item->x() + step); break;
+            }
+        }
+    }
+
+    void SetValue(int value,int type)
+    {
+        QList<QGraphicsItem*>items = selectedItems();
+        foreach(auto itemKey,items)
+        {
+            auto item = dynamic_cast<QGraphicsKeyItem*>(itemKey);
+            if(!item) continue;
+            switch(type)
+            {
+            case 0: item->setX(value); break;
+            case 1: item->setY(value); break;
+            case 2: item->setW(value); break;
+            case 3: item->setH(value); break;
+            }
+        }
+    }
+
+
     bool isDraging(){ return (m_pLastItem != nullptr); }
 
 signals:
@@ -342,7 +383,20 @@ protected:
         m_clkPt1 = event->pos();
         m_bDraging=false;
         update();
+    }
 
+    void keyPressEvent(QKeyEvent *event) override
+    {
+        QGraphicsView::keyPressEvent(event);
+    }
+
+    void keyReleaseEvent(QKeyEvent *event) override
+    {
+        if(event->key() == Qt::Key_Delete)
+        {
+            ((CustomScene *)scene())->DeleteItem();
+        }
+        QGraphicsView::keyReleaseEvent(event);
     }
 
     void drawForeground(QPainter *painter, const QRectF &rect) override

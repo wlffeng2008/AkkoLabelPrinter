@@ -13,6 +13,7 @@
 #include <QPainter>
 #include <QRgba64>
 #include <QWidget>
+#include <QJsonObject>
 
 class CustomBaseItem : public QObject
 {
@@ -414,6 +415,8 @@ public:
     int y(){ return pos().y(); }
     int w(){ return m_nW; }
     int h(){ return m_nH; }
+    int hid(){ return m_hid;}
+    void setHid(int hid){m_hid = hid;}
 
     void setX(int x){ this->setPos(x,pos().y()); }
     void setY(int y){ this->setPos(pos().x(),y); }
@@ -476,6 +479,7 @@ private:
     int m_nW;
     int m_nH;
     int m_line = 0;
+    int m_hid=0;
     QFont m_font = QFont("微软雅黑",9,600);
     QString m_name;
     QString m_text;

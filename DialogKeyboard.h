@@ -23,6 +23,9 @@ public:
     explicit DialogKeyboard(QWidget *parent = nullptr);
     ~DialogKeyboard();
 
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
+
 private:
     Ui::DialogKeyboard *ui;
 
