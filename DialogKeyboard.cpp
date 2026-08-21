@@ -1,4 +1,5 @@
 #include "DialogKeyboard.h"
+#include "qglobal.h"
 #include "qgraphicsitem.h"
 #include "ui_DialogKeyboard.h"
 #include <QKeyEvent>
@@ -155,6 +156,49 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     int nH = LSize.height();
     //ui->graphicsView->setFixedSize(nW-1,nH-1);
     m_sence->setSceneRect(QRectF(0,0,nW-1,nH-1));
+
+    connect(m_sence,&CustomScene::itemSelected,this,[=](QGraphicsItem *item){
+        int count = m_pModel->rowCount();
+        for(int i=0; i<count; i++)
+        {
+            QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(i,0)->data().toInt();
+            if(pKey == item)
+            {
+                ui->tableView->selectRow(i);
+                ui->tableView->scrollTo(m_pModel->index(i, 0));
+                break;
+            }
+        }
+    });
+    {
+        m_pModel = new QStandardItemModel(this);
+        m_pModel->setHorizontalHeaderLabels(QString("TEXT,HID,X,Y,W,H,RX,RY").split(','));
+        ui->tableView->setModel(m_pModel);
+
+        QHeaderView *pHeader = ui->tableView->horizontalHeader();
+        pHeader->setSectionResizeMode(QHeaderView::Stretch);
+        pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
+        pHeader->resizeSection(0,150);
+
+        pDele0 = new SideValueDelegate(this);
+        pDele1 = new SideValueDelegate(this);
+        pDele2 = new SideValueDelegate(this);
+        pDele3 = new SideValueDelegate(this);
+        pDele4 = new SideValueDelegate(this);
+        pDele5 = new SideValueDelegate(this);
+        pDele0->setTableView(ui->tableView) ;
+        pDele1->setTableView(ui->tableView) ;
+        pDele2->setTableView(ui->tableView) ;
+        pDele3->setTableView(ui->tableView) ;
+        pDele4->setTableView(ui->tableView) ;
+        pDele5->setTableView(ui->tableView) ;
+        ui->tableView->setItemDelegateForColumn(2,pDele0);
+        ui->tableView->setItemDelegateForColumn(3,pDele1);
+        ui->tableView->setItemDelegateForColumn(4,pDele2);
+        ui->tableView->setItemDelegateForColumn(5,pDele3);
+        ui->tableView->setItemDelegateForColumn(6,pDele4);
+        ui->tableView->setItemDelegateForColumn(7,pDele5);
+    }
 
     static bool updating = false;
     connect(m_sence,&CustomScene::itemSelected,this,[=](QGraphicsItem *item){
@@ -331,6 +375,34 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         }
 
         qDebug() << m_sence->items().size() << hidIndex;
+
+        {
+            pDele0->resetText();
+            pDele1->resetText();
+            pDele2->resetText();
+            pDele3->resetText();
+            pDele4->resetText();
+            pDele5->resetText();
+            m_pModel->removeRows(0,255);
+            QList<QGraphicsItem*> items = m_sence->items();
+            for(int i=items.count()-1;i>=0; i--)
+            {
+                auto itemKey = dynamic_cast<QGraphicsKeyItem*>(items[i]);
+                if(itemKey)
+                {
+                    QStandardItem *item0=new QStandardItem(itemKey->text());
+                    QStandardItem *item1=new QStandardItem(QString("%1").arg(itemKey->hid()));
+                    QStandardItem *item2=new QStandardItem(QString("%1").arg(itemKey->x()));
+                    QStandardItem *item3=new QStandardItem(QString("%1").arg(itemKey->y()));
+                    QStandardItem *item4=new QStandardItem(QString("%1").arg(itemKey->w()));
+                    QStandardItem *item5=new QStandardItem(QString("%1").arg(itemKey->h()));
+                    QStandardItem *item6=new QStandardItem(QString("%1").arg(itemKey->rx()));
+                    QStandardItem *item7=new QStandardItem(QString("%1").arg(itemKey->ry()));
+                    item0->setData((int)items[i]);
+                    m_pModel->appendRow({item0,item1,item2,item3,item4,item5,item6,item7});
+                }
+            }
+        }
     });
 }
 

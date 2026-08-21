@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1136</width>
-    <height>500</height>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,8 +29,8 @@
   <widget class="QPushButton" name="pushButtonReset">
    <property name="geometry">
     <rect>
-     <x>1050</x>
-     <y>384</y>
+     <x>1052</x>
+     <y>344</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -42,9 +42,9 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>11</x>
-     <y>380</y>
-     <width>311</width>
+     <x>844</x>
+     <y>370</y>
+     <width>283</width>
      <height>50</height>
     </rect>
    </property>
@@ -144,6 +144,22 @@
      <widget class="QLineEdit" name="lineEditKeytHid"/>
     </item>
    </layout>
+  </widget>
+  <widget class="QTableView" name="tableView">
+   <property name="geometry">
+    <rect>
+     <x>8</x>
+     <y>350</y>
+     <width>825</width>
+     <height>407</height>
+    </rect>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
   </widget>
  </widget>
  <customwidgets>

@@ -284,7 +284,7 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
 
         item7->setEditable(bEdit);
 
-        item0->setData((int)item,Qt::UserRole+1);
+        item0->setData((int)item);
         item1->setEditable(false);
         item8->setEditable(false);
 
