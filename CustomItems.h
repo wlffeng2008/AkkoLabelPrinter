@@ -372,25 +372,12 @@ public:
     int  fontSize(){ return m_font.pixelSize(); }
     bool bold(){ m_font.bold(); }
     void setBold(bool bold){ m_font.setBold(bold); }
+    QString text(){ return m_text; }
 
     void setText(const QString&text)
     {
-        m_text=text;
+        m_text = text;
         m_bTextmode=true;
-        if(text.contains('\n'))
-        {
-            //setFontSize(9);
-        }
-        // else
-        // {
-        //     int len = text.toLocal8Bit().size();
-        //     if(len>5)
-        //         setW(100);
-        //     else if(len>4)
-        //         setW(80);
-        //     else if(len>3)
-        //         setW(70);
-        // }
     }
 
     void setImage(const QImage&image)
@@ -422,6 +409,76 @@ public:
     void setY(int y){ this->setPos(pos().x(),y); }
     void setW(int w){ setSize(w,m_nH); }
     void setH(int h){ setSize(m_nW,h); }
+    int rx(){ return (x() + w());}
+    int ry(){ return (y() + h());}
+    void setRX(int rx){ setW(rx - x()); }
+    void setRY(int ry){ setH(ry - y()); }
+
+    void extend(int toValue,int type){
+
+        switch(type)
+        {
+        case 0:
+        {
+            int nm = y() - toValue;
+            int nd = h() + nm;
+            setY(toValue);
+            setH(nd);
+        }
+            break;
+        case 1:
+        {
+            int nh = toValue - y() + h();
+            setH(nh);
+        }
+            break;
+
+        case 2:
+        {
+            int nm = x() - toValue;
+            int nd = w() + nm;
+            setX(toValue);
+            setW(nd);
+        }
+            break;
+
+        case 3:
+        {
+            int nw = toValue - x() + w();
+            setW(nw);
+        }
+            break;
+        }
+    }
+
+    void setAlignTo(int toValue,int type)
+    {
+        switch(type)
+        {
+        case 0:
+        {
+            setY(toValue);
+        }
+        break;
+        case 1:
+        {
+            setY(toValue - h());
+        }
+        break;
+
+        case 2:
+        {
+            setX(toValue);
+        }
+        break;
+
+        case 3:
+        {
+            setW(toValue - w());
+        }
+        break;
+        }
+    }
 
     QPainterPath shape() const override
     {
@@ -456,7 +513,6 @@ public:
         }
         else
         {
-
             QPainterPath path;
             path.addRoundedRect(rect,14,14);
             painter->setClipPath(path);
@@ -471,8 +527,14 @@ public:
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        qDebug() <<  x() << y() << w()+x() << h()+y();
-        QGraphicsPixmapItem::mousePressEvent(event);
+        qDebug() <<  x() << y() << rx() << ry();
+        event->accept();
+        //QGraphicsPixmapItem::mousePressEvent(event);
+    }
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
+        setSelected(!isSelected());
+        event->accept();
+        //QGraphicsPixmapItem::mouseReleaseEvent(event);
     }
 
 private:
@@ -480,7 +542,7 @@ private:
     int m_nH;
     int m_line = 0;
     int m_hid=0;
-    QFont m_font = QFont("微软雅黑",9,600);
+    QFont m_font = QFont("微软雅黑",9,700);
     QString m_name;
     QString m_text;
     QImage m_image;

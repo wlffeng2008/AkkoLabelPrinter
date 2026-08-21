@@ -160,7 +160,6 @@ void FrameLabelView::Save()
     if(m_strTemlate.isEmpty())
     {
         QString strFile = QFileDialog::getSaveFileName(this, "保存模板文件", QApplication::applicationDirPath() + "/config", "Template Files (*.tem);;All Files (*.*)");
-
         if(strFile.isEmpty())
             return;
 

@@ -28,7 +28,6 @@ class CustomScene : public QGraphicsScene
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
-        //connect(this, &QGraphicsScene::selectionChanged,[=]{qDebug() <<"QGraphicsScene::selectionChanged";});
     }
 
     void addItem(QGraphicsItem *item)
@@ -348,6 +347,8 @@ public:
     }
 
 protected:
+    int m_nCols = 1;
+    int m_nRows = 1;
     QPointF m_clkPt0;
     QPointF m_clkPt1;
     bool m_bDraging = false;
@@ -450,8 +451,6 @@ private:
         painter.drawPixmap(0, 0, pixmap);
     }
 
-    int m_nCols = 1;
-    int m_nRows = 1;
 };
 
 namespace Ui {
