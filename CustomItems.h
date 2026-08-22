@@ -1,6 +1,7 @@
 #ifndef CUSTOMITEMS_H
 #define CUSTOMITEMS_H
 
+#include "qgraphicsscene.h"
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsTextItem>
@@ -13,6 +14,7 @@
 #include <QPainter>
 #include <QRgba64>
 #include <QWidget>
+#include <QLineEdit>
 #include <QJsonObject>
 
 class CustomBaseItem : public QObject
@@ -249,6 +251,7 @@ protected:
     }
 };
 
+#include <QGraphicsProxyWidget>
 
 class CustomPixmapItem : public QObject, public QGraphicsPixmapItem
 {
@@ -372,11 +375,17 @@ public:
     int  fontSize(){ return m_font.pixelSize(); }
     bool bold(){ m_font.bold(); }
     void setBold(bool bold){ m_font.setBold(bold); }
-    QString text(){ return m_text; }
+
+    QString text()
+    {
+        QString tmp(m_text);
+        return tmp.replace("\n","\\n");
+    }
 
     void setText(const QString&text)
     {
-        m_text = text;
+        QString tmp(text);
+        m_text = tmp.replace("\\n","\n");
         m_bTextmode=true;
     }
 
@@ -508,8 +517,11 @@ public:
             }
             painter->drawRoundedRect(rect,14,14);
 
+            QString text = m_text;
+            if(m_bEditing) text.clear();
+
             painter->setFont(m_font);
-            painter->drawText(rect,m_text,QTextOption(Qt::AlignCenter));
+            painter->drawText(rect,text,QTextOption(Qt::AlignCenter));
         }
         else
         {
@@ -527,14 +539,68 @@ public:
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        qDebug() <<  x() << y() << rx() << ry();
+        qDebug() << QString::asprintf("X:%4d  Y:%4d  RX:%4d  RY:%4d  W:%3d  H:%3d",x(),y(),rx(),ry(),w(),h());
+        setSelected(!isSelected());
         event->accept();
         //QGraphicsPixmapItem::mousePressEvent(event);
     }
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override {
-        setSelected(!isSelected());
         event->accept();
         //QGraphicsPixmapItem::mouseReleaseEvent(event);
+    }
+
+    bool m_bEditing = false;
+    QLineEdit *edit = nullptr;
+    QGraphicsProxyWidget *proxy = nullptr;
+    bool sceneEventFilter(QGraphicsItem *watched,QEvent *event) override {
+        if(proxy == watched && m_bEditing)
+        {
+            if(event->type() == QEvent::FocusOut)
+            {
+                this->setText(edit->text().trimmed());
+                proxy->hide();
+                m_bEditing = false;
+                return true;
+            }
+        }
+        return QGraphicsPixmapItem::sceneEventFilter(watched,event);
+    }
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override {
+        if(m_bTextmode)
+        {
+            if(!edit)
+            {
+                edit = new QLineEdit("");
+                edit->setGeometry(x(),y(),w(),h());
+                edit->setStyleSheet("QLineEdit{border:none;border-radius:14px;background-color:transparent;}");
+                connect(edit,&QLineEdit::editingFinished,this,[=]{
+                    this->setText(edit->text().trimmed());
+                    m_bEditing = false;
+                    proxy->hide();
+                });
+                proxy = scene()->addWidget(edit);
+                proxy->setZValue(zValue() + 1);
+
+                proxy->installSceneEventFilter(this);
+            }
+
+            m_bEditing = true;
+            QFont font = m_font;
+            font.setPixelSize(14);
+            edit->setFont(font);
+            edit->setText(this->text());
+            edit->selectAll();
+            edit->setAlignment(Qt::AlignCenter);
+            proxy->show();
+            edit->setFocus();
+            update();
+            event->accept();
+        }
+        else
+        {
+            QGraphicsPixmapItem::mouseDoubleClickEvent(event);
+        }
     }
 
 private:
@@ -542,7 +608,7 @@ private:
     int m_nH;
     int m_line = 0;
     int m_hid=0;
-    QFont m_font = QFont("微软雅黑",9,700);
+    QFont m_font = QFont("微软雅黑",10,600);
     QString m_name;
     QString m_text;
     QImage m_image;

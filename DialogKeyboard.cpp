@@ -198,6 +198,14 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         ui->tableView->setItemDelegateForColumn(5,pDele3);
         ui->tableView->setItemDelegateForColumn(6,pDele4);
         ui->tableView->setItemDelegateForColumn(7,pDele5);
+
+    connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
+            m_nSelected = index.row();
+
+            QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(index.row(),0)->data().toInt();
+            pKey->scene()->clearSelection();
+            pKey->setSelected(true);
+        });
     }
 
     static bool updating = false;
@@ -296,7 +304,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
         nPosX=20;
         nPosY += nKY+nGapY;
-        strKeys = QString("Tab,Q,W,E,R,T,Y,U,I,O,P,{\n[,}\n},|\n\\,Del,End,PnDn,7\nHome,8\n↑,9\nPgUp,+").split(',');
+        strKeys = QString("Tab,Q,W,E,R,T,Y,U,I,O,P,{\n[,}\n],|\n\\,Del,End,PnDn,7\nHome,8\n↑,9\nPgUp,+").split(',');
         count = strKeys.count();
         for(int i=0; i<count; i++)
         {
@@ -387,23 +395,28 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             QList<QGraphicsItem*> items = m_sence->items();
             for(int i=items.count()-1;i>=0; i--)
             {
-                auto itemKey = dynamic_cast<QGraphicsKeyItem*>(items[i]);
-                if(itemKey)
-                {
-                    QStandardItem *item0=new QStandardItem(itemKey->text());
-                    QStandardItem *item1=new QStandardItem(QString("%1").arg(itemKey->hid()));
-                    QStandardItem *item2=new QStandardItem(QString("%1").arg(itemKey->x()));
-                    QStandardItem *item3=new QStandardItem(QString("%1").arg(itemKey->y()));
-                    QStandardItem *item4=new QStandardItem(QString("%1").arg(itemKey->w()));
-                    QStandardItem *item5=new QStandardItem(QString("%1").arg(itemKey->h()));
-                    QStandardItem *item6=new QStandardItem(QString("%1").arg(itemKey->rx()));
-                    QStandardItem *item7=new QStandardItem(QString("%1").arg(itemKey->ry()));
-                    item0->setData((int)items[i]);
-                    m_pModel->appendRow({item0,item1,item2,item3,item4,item5,item6,item7});
-                }
+                UpdateRow(items[i]);
             }
         }
     });
+}
+
+void DialogKeyboard::UpdateRow(QGraphicsItem *item)
+{
+    auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
+    if(itemKey)
+    {
+        QStandardItem *item0=new QStandardItem(itemKey->text());
+        QStandardItem *item1=new QStandardItem(QString("%1").arg(itemKey->hid()));
+        QStandardItem *item2=new QStandardItem(QString("%1").arg(itemKey->x()));
+        QStandardItem *item3=new QStandardItem(QString("%1").arg(itemKey->y()));
+        QStandardItem *item4=new QStandardItem(QString("%1").arg(itemKey->w()));
+        QStandardItem *item5=new QStandardItem(QString("%1").arg(itemKey->h()));
+        QStandardItem *item6=new QStandardItem(QString("%1").arg(itemKey->rx()));
+        QStandardItem *item7=new QStandardItem(QString("%1").arg(itemKey->ry()));
+        item0->setData((int)item);
+        m_pModel->appendRow({item0,item1,item2,item3,item4,item5,item6,item7});
+    }
 }
 
 DialogKeyboard::~DialogKeyboard()

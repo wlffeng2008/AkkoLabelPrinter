@@ -215,6 +215,8 @@ void DialogLabelEdit::BindLabelView(FrameLabelView *pView)
         AppendRow(item);
     });
     connect(pView,&FrameLabelView::onItemLoaded,this,[=](int paperW,int paperH){
+        Q_UNUSED(paperW)
+        Q_UNUSED(paperH)
         LoadLabels();
     });
 }
@@ -230,7 +232,7 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
     if (auto textItem = dynamic_cast<CustomTextItem*>(item))
     {
         strName = textItem->getName();
-        strType = "文本";
+        strType = QString("文本") + QString("%1").arg(item->zValue());
         strW = QString::asprintf("%d",textItem->getItemRect().toRect().width());
         strH = QString::asprintf("%d",textItem->getItemRect().toRect().height());
         strData = textItem->toPlainText();
@@ -241,12 +243,13 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
     if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
     {
         strName = pixmapItem->getName();
-        strType = "图片";
+        strType = QString("图片");
         strW = QString::asprintf("%d",pixmapItem->getItemRect().toRect().width());
         strH = QString::asprintf("%d",pixmapItem->getItemRect().toRect().height());
         if(pixmapItem->data(0) == 1) strType = "水平线";
         if(pixmapItem->data(0) == 2) strType = "垂直线";
-        if(pixmapItem->data(0) == 0) strData = "切换图片";
+        if(pixmapItem->data(0) == 0) strData = "设置图片";
+        strType += QString("%1").arg(item->zValue());
         bEdit = false;
     }
 
@@ -308,7 +311,9 @@ void DialogLabelEdit::LoadLabels()
     QTimer::singleShot(500,this,[=]{ m_bLoading = false;});
     m_pModel->removeRows(0,m_pModel->rowCount());
     QList<QGraphicsItem *> items = this->m_pView->GetItems();
-    for( int i = 0; i < items.size(); i++ )
+
+    for(int i=items.count()-1;i>=0; i--)
+    //for( int i = 0; i < items.size(); i++ )
     {
         AppendRow(items[i]);
     }
