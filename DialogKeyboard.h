@@ -40,6 +40,7 @@ private:
     SideValueDelegate *pDele4;
     SideValueDelegate *pDele5;
     void UpdateRow(QGraphicsItem *item);
+    void MoveGroup(int type,int step=0);
 };
 
 #endif // DIALOGKEYBOARD_H

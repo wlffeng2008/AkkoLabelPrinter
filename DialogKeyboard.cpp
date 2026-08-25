@@ -157,25 +157,13 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     //ui->graphicsView->setFixedSize(nW-1,nH-1);
     m_sence->setSceneRect(QRectF(0,0,nW-1,nH-1));
 
-    connect(m_sence,&CustomScene::itemSelected,this,[=](QGraphicsItem *item){
-        int count = m_pModel->rowCount();
-        for(int i=0; i<count; i++)
-        {
-            QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(i,0)->data().toInt();
-            if(pKey == item)
-            {
-                ui->tableView->selectRow(i);
-                ui->tableView->scrollTo(m_pModel->index(i, 0));
-                break;
-            }
-        }
-    });
     {
         m_pModel = new QStandardItemModel(this);
         m_pModel->setHorizontalHeaderLabels(QString("TEXT,HID,X,Y,W,H,RX,RY").split(','));
         ui->tableView->setModel(m_pModel);
 
         QHeaderView *pHeader = ui->tableView->horizontalHeader();
+        pHeader->setDefaultAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         pHeader->setSectionResizeMode(QHeaderView::Stretch);
         pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
         pHeader->resizeSection(0,150);
@@ -205,23 +193,52 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(index.row(),0)->data().toInt();
             pKey->scene()->clearSelection();
             pKey->setSelected(true);
+
+            m_sence->itemSelected(pKey);
         });
     }
 
     static bool updating = false;
+
+    connect(m_sence,&CustomScene::viewPosition,this,[=](const QPoint&point){
+        //qDebug() << point;
+        ui->lineEditCursor->setText(QString::asprintf("当前位置：%d,%d",point.x(),point.y()));
+    });
+    connect(m_sence,&CustomScene::itemChanged,this,[=](QGraphicsItem *item){
+        updating = true;
+        UpdateRow(item);
+        QTimer::singleShot(20,this,[=]{ updating = false;});
+    });
     connect(m_sence,&CustomScene::itemSelected,this,[=](QGraphicsItem *item){
         updating = true;
-        auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
-        if(itemKey)
+
         {
-            ui->spinBoxX->setValue(itemKey->x());
-            ui->spinBoxY->setValue(itemKey->y());
-            ui->spinBoxW->setValue(itemKey->w());
-            ui->spinBoxH->setValue(itemKey->h());
-            ui->lineEditKeytext->setText(itemKey->text());
-            ui->lineEditKeytHid->setText(QString("%1").arg(itemKey->hid()));
+            int count = m_pModel->rowCount();
+            for(int i=0; i<count; i++)
+            {
+                QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(i,0)->data().toInt();
+                if(pKey == item)
+                {
+                    ui->tableView->selectRow(i);
+                    ui->tableView->scrollTo(m_pModel->index(i, 0));
+                    break;
+                }
+            }
         }
-        QTimer::singleShot(200,this,[=]{updating = false;});
+
+        {
+            auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
+            if(itemKey)
+            {
+                ui->spinBoxX->setValue(itemKey->x());
+                ui->spinBoxY->setValue(itemKey->y());
+                ui->spinBoxW->setValue(itemKey->w());
+                ui->spinBoxH->setValue(itemKey->h());
+                ui->lineEditKeytext->setText(itemKey->text());
+                ui->lineEditKeytHid->setText(QString("%1").arg(itemKey->hid()));
+            }
+        }
+        QTimer::singleShot(20,this,[=]{ updating = false;});
     });
 
     connect(ui->spinBoxX,&QSpinBox::textChanged,this,[=](const QString & text){
@@ -245,11 +262,24 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SetValue(ui->spinBoxH->value(),3);
     });
 
-    QImage img(200,120,QImage::Format_ARGB32);
-    QPainter painter(&img);
-    painter.fillRect(img.rect(),Qt::blue);
+    QTimer::singleShot(1000,this,[=]{
+        ui->frameEdit->setFixedWidth(370);
+        ui->pushButtonU->setFixedSize(40,40);
+        ui->pushButtonD->setFixedSize(40,40);
+        ui->pushButtonL->setFixedSize(40,40);
+        ui->pushButtonR->setFixedSize(40,40);
+    });
 
-    QGraphicsKeyItem *NT0 = new QGraphicsKeyItem("D:\\radioChecked.png");
+    connect(ui->pushButtonU,&QPushButton::clicked,this,[=]{MoveGroup(0);});
+    connect(ui->pushButtonD,&QPushButton::clicked,this,[=]{MoveGroup(1);});
+    connect(ui->pushButtonL,&QPushButton::clicked,this,[=]{MoveGroup(2);});
+    connect(ui->pushButtonR,&QPushButton::clicked,this,[=]{MoveGroup(3);});
+
+    //QImage img(200,120,QImage::Format_ARGB32);
+    //QPainter painter(&img);
+    //painter.fillRect(img.rect(),Qt::blue);
+
+    //QGraphicsKeyItem *NT0 = new QGraphicsKeyItem("D:\\radioChecked.png");
     //NT0->setY(300);
     //m_sence->addItem(NT0);
 
@@ -406,6 +436,23 @@ void DialogKeyboard::UpdateRow(QGraphicsItem *item)
     auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
     if(itemKey)
     {
+        int count = m_pModel->rowCount();
+        for(int i=0; i<count; i++)
+        {
+            if(m_pModel->item(i)->data().toInt() == (int)item)
+            {
+                m_pModel->item(i,0)->setText(itemKey->text());
+                m_pModel->item(i,1)->setText(QString("%1").arg(itemKey->hid()));
+                m_pModel->item(i,2)->setText(QString("%1").arg(itemKey->x()));
+                m_pModel->item(i,3)->setText(QString("%1").arg(itemKey->y()));
+                m_pModel->item(i,4)->setText(QString("%1").arg(itemKey->w()));
+                m_pModel->item(i,5)->setText(QString("%1").arg(itemKey->h()));
+                m_pModel->item(i,6)->setText(QString("%1").arg(itemKey->rx()));
+                m_pModel->item(i,7)->setText(QString("%1").arg(itemKey->ry()));
+                return;
+            }
+        }
+
         QStandardItem *item0=new QStandardItem(itemKey->text());
         QStandardItem *item1=new QStandardItem(QString("%1").arg(itemKey->hid()));
         QStandardItem *item2=new QStandardItem(QString("%1").arg(itemKey->x()));
@@ -414,10 +461,19 @@ void DialogKeyboard::UpdateRow(QGraphicsItem *item)
         QStandardItem *item5=new QStandardItem(QString("%1").arg(itemKey->h()));
         QStandardItem *item6=new QStandardItem(QString("%1").arg(itemKey->rx()));
         QStandardItem *item7=new QStandardItem(QString("%1").arg(itemKey->ry()));
+
         item0->setData((int)item);
         m_pModel->appendRow({item0,item1,item2,item3,item4,item5,item6,item7});
     }
 }
+
+void DialogKeyboard::MoveGroup(int type,int step)
+{
+    float fStep = ui->spinBoxStep->value();
+    if(step != 0) fStep = step;
+    ui->graphicsView->moveGroup(type,fStep);
+}
+
 
 DialogKeyboard::~DialogKeyboard()
 {

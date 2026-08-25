@@ -355,6 +355,19 @@ public:
             setImage(image);
         }
     }
+    ~QGraphicsKeyItem() = default;
+
+
+private:
+    int m_nW;
+    int m_nH;
+    int m_flag = 0;
+    int m_hid=0;
+    QFont m_font = QFont("微软雅黑",10,600);
+    QString m_name;
+    QString m_text;
+    QImage m_image;
+    bool m_bTextmode=false;
 
     void init()
     {
@@ -365,8 +378,8 @@ public:
         setCursor(Qt::PointingHandCursor);
     }
 
-    ~QGraphicsKeyItem() = default;
 
+public:
     QString name(){ return m_name; }
     void setName(const QString&name){ m_name=name; }
 
@@ -423,8 +436,25 @@ public:
     void setRX(int rx){ setW(rx - x()); }
     void setRY(int ry){ setH(ry - y()); }
 
-    void extend(int toValue,int type){
+    void move(int step,int type){
+        int nx = x();
+        int ny = y();
+        int lx =this->scene()->sceneRect().right()-2;
+        int ly =this->scene()->sceneRect().bottom()-2;
+        switch(type)
+        {
+        case 0: ny -= step;break;
+        case 1: ny += step;break;
+        case 2: nx -= step;break;
+        case 3: nx += step;break;
+        }
+        if(nx>lx) nx=lx;
+        if(ny>ly) ny=ly;
+        setX(nx);
+        setY(ny);
+    }
 
+    void extend(int toValue,int type){
         switch(type)
         {
         case 0:
@@ -503,7 +533,9 @@ public:
         Q_UNUSED(widget)
         painter->save();
         painter->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
+
         QRectF rect = boundingRect();
+
         if(m_bTextmode)
         {
             if(isSelected())
@@ -535,6 +567,7 @@ public:
                 painter->drawRoundedRect(rect,14,14);
             }
         }
+
         painter->restore();
     }
 
@@ -602,17 +635,6 @@ public:
             QGraphicsPixmapItem::mouseDoubleClickEvent(event);
         }
     }
-
-private:
-    int m_nW;
-    int m_nH;
-    int m_line = 0;
-    int m_hid=0;
-    QFont m_font = QFont("微软雅黑",10,600);
-    QString m_name;
-    QString m_text;
-    QImage m_image;
-    bool m_bTextmode=false;
 };
 
 

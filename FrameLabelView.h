@@ -38,7 +38,7 @@ public:
 
     void removeItem(QGraphicsItem *item)
     {
-        emit itemDeleted(item);
+        emit itemRemoved(item);
         QGraphicsScene::removeItem(item);
     }
 
@@ -199,6 +199,13 @@ public:
             removeItem(item);
     }
 
+    void SelectAll(bool select=true)
+    {
+        QList<QGraphicsItem*>items = this->items();
+        foreach(auto item,items)
+            item->setSelected(select);
+    }
+
     void MoveItem(int step,int dire=0)
     {
         QList<QGraphicsItem*>items = selectedItems();
@@ -238,7 +245,8 @@ signals:
     void itemSelected(QGraphicsItem *item);
     void itemChanged(QGraphicsItem *item);
     void itemAdded(QGraphicsItem *item);
-    void itemDeleted(QGraphicsItem *item);
+    void itemRemoved(QGraphicsItem *item);
+    void viewPosition(const QPoint&piont);
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
@@ -276,17 +284,19 @@ protected:
 
     void mouseMoveEvent( QGraphicsSceneMouseEvent *event ) override
     {
+        emit viewPosition(event->scenePos().toPoint());
         if(m_bDraging && !m_pLastItem)
         {
             QRectF rcFrame(m_clkPt,event->scenePos());
             for (auto item : items())
             {
-                // ✅ item局部包围盒 → 转换到scene全局坐标
+                // item局部包围盒 → 转换到scene全局坐标
                 QRectF itemSceneRect = item->mapToScene(item->boundingRect()).boundingRect();
 
-                // ✅ 矩形相交：只要有重叠就选中，标准框选
+                // 矩形相交：只要有重叠就选中，标准框选
                 bool bHit = rcFrame.intersects(itemSceneRect);
                 item->setSelected(bHit);
+                if(bHit) emit itemSelected(item);
             }
         }
 
@@ -346,6 +356,56 @@ public:
         return pixmap;
     }
 
+    void moveGroup(int type,float step, bool moveAll=false)
+    {
+        int nw = size().width()-4;
+        int nh = size().height()-4;
+        for( auto item : this->items() )
+        {
+            if( item->isSelected() || moveAll)
+            {
+                QPointF pos   = item->pos();
+                qreal fscale  = item->scale();
+                qreal fscaleN = item->scale();
+
+                int ox = pos.x();
+                int oy = pos.y();
+                int nx = ox;
+                int ny = oy;
+
+                if(type == 2)  nx -= step;
+                if(type == 3)  nx += step;
+
+                if(type == 0)  ny -= step;
+                if(type == 1)  ny += step;
+
+                if(type == 5) fscaleN -= 0.05;
+                if(type == 6) fscaleN += 0.05;
+                if(type == 7) fscaleN = 1;
+                if(type == 8) fscaleN = 1;
+
+                if(nx < 0) nx = 0;
+                if(ny < 0) ny = 0;
+                if(nx > nw)nx = nw;
+                if(ny > nh)ny = nh;
+
+                if(nx != ox || ny != oy)
+                {
+                    item->setPos(nx,ny);
+                    ((CustomScene *)scene())->itemChanged(item);
+                    ((CustomScene *)scene())->itemSelected(item);
+                }
+
+                if(fscaleN != fscale)
+                {
+                    item->setScale(fscaleN);
+                    ((CustomScene *)scene())->itemSelected(item);
+                    //emit itemChanged(item);
+                }
+            }
+        }
+    }
+
 protected:
     int m_nCols = 1;
     int m_nRows = 1;
@@ -393,10 +453,43 @@ protected:
 
     void keyReleaseEvent(QKeyEvent *event) override
     {
+        bool bCtrlPress = (event->modifiers() & Qt::ControlModifier);
+        bool bShiftPress = (event->modifiers() & Qt::ShiftModifier);
+
+        if(event->key() == Qt::Key_A && bCtrlPress)
+        {
+            ((CustomScene *)scene())->SelectAll(scene()->selectedItems().size() == 0);
+            event->accept();
+            return;
+        }
+
         if(event->key() == Qt::Key_Delete)
         {
             ((CustomScene *)scene())->DeleteItem();
+            event->accept();
+            return;
         }
+        {
+            int type = 0;
+
+            auto nKey = event->key();
+            if(nKey == Qt::Key_Left)  type=2;
+            if(nKey == Qt::Key_Right) type=3;
+
+            if(nKey == Qt::Key_Up)    type=0;
+            if(nKey == Qt::Key_Down)  type=1;
+
+            if(nKey == Qt::Key_Minus) type=5;
+            if(nKey == Qt::Key_Equal) type=6;
+
+            if(nKey == Qt::Key_Underscore)type=7;
+            if(nKey == Qt::Key_Plus)      type=8;
+
+            float step = 4;
+            if(bShiftPress) step = 1;
+            moveGroup(type,step,bCtrlPress);
+        }
+
         QGraphicsView::keyReleaseEvent(event);
     }
 
@@ -499,10 +592,6 @@ signals:
     void onItemAdded(QGraphicsItem *item);
     void onItemDeleted(QGraphicsItem *item);
     void onItemLoaded(int paperW,int paperH);
-
-protected:
-    void keyPressEvent( QKeyEvent *event) override;
-    void keyReleaseEvent( QKeyEvent *event) override;
 
 private:
     Ui::FrameLabelView *ui;

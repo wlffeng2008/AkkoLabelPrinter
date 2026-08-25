@@ -71,7 +71,7 @@ FrameLabelView::FrameLabelView(QWidget *parent)
     connect( m_pScene, &CustomScene::itemAdded, this, [=](QGraphicsItem *item){
         emit onItemAdded(item);
     });
-    connect( m_pScene, &CustomScene::itemDeleted, this, [=](QGraphicsItem *item){
+    connect( m_pScene, &CustomScene::itemRemoved, this, [=](QGraphicsItem *item){
         emit onItemDeleted(item);
     });
 }
@@ -132,7 +132,7 @@ void FrameLabelView::SetPaperSize(qreal width, qreal height)
     }
 
     ui->graphicsView->setFixedSize(nW-1,nH-1);
-    m_pScene->setSceneRect(QRectF(0,0,nW-1,nH-1));
+    m_pScene->setSceneRect(QRectF(0,0,nW-3,nH-3));
 
     m_paperW = width;
     m_paperH = height;
@@ -307,87 +307,4 @@ bool FrameLabelView::Remove(const QString&strName)
     return m_pScene->Remove(strName);
 }
 
-void FrameLabelView::keyReleaseEvent(QKeyEvent *event)
-{
-    auto nKey = event->key();
-
-    bool bCtrlPress = (event->modifiers() & Qt::ControlModifier);
-    m_bCtrlPress = bCtrlPress;
-    m_bShiftPress = (event->modifiers() & Qt::ShiftModifier);
-
-
-    int nw = size().width()-4;
-    int nh = size().height()-4;
-
-    for( auto item : m_pScene->items() )
-    {
-        if( item->isSelected() || bCtrlPress )
-        {
-            // qDebug() << "FrameLabelView::keyReleaseEvent" << m_bShiftPress << nKey << Qt::hex << nKey;
-            QPointF pos   = item->pos();
-            qreal fscale  = item->scale();
-            qreal fscaleN = item->scale();
-
-            int ox = pos.x();
-            int oy = pos.y();
-            int nx = ox;
-            int ny = oy;
-
-            int step = 4;
-            if(m_bShiftPress) step = 1;
-
-            if(nKey == Qt::Key_Left)  nx -= step;
-            if(nKey == Qt::Key_Right) nx += step;
-
-            if(nKey == Qt::Key_Up)    ny -= step;
-            if(nKey == Qt::Key_Down)  ny += step;
-
-            if(nKey == Qt::Key_Minus) fscaleN -= 0.05;
-            if(nKey == Qt::Key_Equal) fscaleN += 0.05;
-
-            if(nKey == Qt::Key_Underscore)fscaleN = 1.0;
-            if(nKey == Qt::Key_Plus)      fscaleN = 1.0;
-
-            if(nx < 0) nx = 0;
-            if(ny < 0) ny = 0;
-            if(nx > nw)nx = nw;
-            if(ny > nh)ny = nh;
-
-            if(fscaleN<0.05) fscaleN =  0.05;
-
-            if(nx != ox || ny != oy)
-                item->setPos(nx,ny);
-
-            if(fscaleN != fscale)
-                item->setScale(fscaleN);
-
-            emit onItemChanged(item);
-        }
-    }
-
-    QFrame::keyReleaseEvent(event);
-}
-
-void FrameLabelView::keyPressEvent(QKeyEvent *event)
-{
-    auto nKey = event->key();
-
-    if (nKey == Qt::Key_Delete)
-    {
-        Delete();
-    }
-
-    if(event->modifiers() == Qt::ControlModifier)
-    {
-        m_bCtrlPress = true;
-        if(event->key() == Qt::Key_S)
-            this->Save();
-    }
-    if(event->modifiers() == Qt::ShiftModifier)
-    {
-        m_bShiftPress = true;
-    }
-
-    QFrame::keyPressEvent(event);
-}
 

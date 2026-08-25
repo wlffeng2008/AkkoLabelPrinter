@@ -148,6 +148,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_keyboard   = new DialogKeyboard(this);
 
     ui->lineEditUrl->hide();
+    //ui->pushButtonKeyboard->hide();
     ui->pushButtonGenLabel->setFixedSize(100,28);
 
     connect(ui->textEdit302,&QTextEdit::textChanged,this,[=]{
