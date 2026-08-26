@@ -3,6 +3,8 @@
 
 #include "CustomItems.h"
 #include "qglobal.h"
+#include "qjsonarray.h"
+#include "qjsondocument.h"
 
 #include <QFrame>
 #include <QDebug>
@@ -30,10 +32,45 @@ public:
     {
     }
 
-    void addItem(QGraphicsItem *item)
+    bool addItem(QGraphicsItem *item)
     {
+        auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
+        if(itemKey)
+        {
+            QString strName = itemKey->name();
+            if(!strName.isEmpty())
+            {
+                for (auto item : items())
+                {
+                    if (auto kItem = dynamic_cast<QGraphicsKeyItem*>(item))
+                    {
+                        if(kItem->name().toUpper() == strName.toUpper())
+                            return false;
+                    }
+                }
+            }
+
+            int hid = itemKey->hid();
+            if(hid != 0)
+            {
+                for (auto item : items())
+                {
+                    if (auto kItem = dynamic_cast<QGraphicsKeyItem*>(item))
+                    {
+                        if(kItem->hid() == hid)
+                            return false;
+                    }
+                }
+            }
+            if(hid == 233 || hid == 234 ||hid == 235 || hid == 236)
+               itemKey->setW(14);
+            //if(hid == 233)
+            itemKey->setZValue(9999-hid);
+        }
+
         QGraphicsScene::addItem(item);
         emit itemAdded(item);
+        return true;
     }
 
     void removeItem(QGraphicsItem *item)
@@ -42,14 +79,34 @@ public:
         QGraphicsScene::removeItem(item);
     }
 
+    QGraphicsKeyItem *getKeyItem(const QString&strName)
+    {
+        if(!strName.isEmpty())
+        {
+            for (auto item : items())
+            {
+                if (auto Item = dynamic_cast<QGraphicsKeyItem*>(item))
+                {
+                    if(Item->name().trimmed().toUpper() == strName.toUpper())
+                        return Item;
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
     CustomTextItem *getTextItem(const QString&strName)
     {
-        for (auto item : items())
+        if(!strName.isEmpty())
         {
-            if (auto textItem = dynamic_cast<CustomTextItem*>(item))
+            for (auto item : items())
             {
-                if(textItem->m_strName.trimmed().toUpper() == strName.toUpper())
-                    return textItem;
+                if (auto textItem = dynamic_cast<CustomTextItem*>(item))
+                {
+                    if(textItem->m_strName.trimmed().toUpper() == strName.toUpper())
+                        return textItem;
+                }
             }
         }
 
@@ -58,29 +115,19 @@ public:
 
     CustomPixmapItem *getPixmapItem(const QString&strName)
     {
-        for (auto item : items())
+        if(!strName.isEmpty())
         {
-            if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
+            for (auto item : items())
             {
-                if(pixmapItem->m_strName.trimmed().toUpper() == strName.toUpper())
-                    return pixmapItem;
+                if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
+                {
+                    if(pixmapItem->m_strName.trimmed().toUpper() == strName.toUpper())
+                        return pixmapItem;
+                }
             }
         }
 
         return nullptr;
-    }
-
-    QStringList getAllItems()
-    {
-        QStringList names;
-        for (auto item : items())
-        {
-            if (auto textItem = dynamic_cast<CustomTextItem*>(item))
-                names.push_back(textItem->m_strName.trimmed());
-            if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
-                names.push_back(pixmapItem->m_strName.trimmed());
-        }
-        return names;
     }
 
     bool Remove(const QString&strName)
@@ -118,7 +165,7 @@ public:
             QPoint pt = pixmapItem->pos().toPoint();
             if(x != -1) pt.setX(x);
             if(y != -1) pt.setY(y);
-            textItem->setPos(pt);
+            pixmapItem->setPos(pt);
             return true;
         }
         return false;
@@ -137,7 +184,7 @@ public:
         if(pixmapItem)
         {
             QPoint pt = pixmapItem->pos().toPoint();
-            textItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));
+            pixmapItem->setItemRect(QRectF(pt.x(),pt.y(),w,h));
             return true;
         }
         return false;
@@ -162,41 +209,12 @@ public:
         return false;
     }
 
-    bool GetItem(const QString&strName,int &x,int &y,int &w, int&h,float &scale)
-    {
-        CustomTextItem *textItem = getTextItem(strName);
-        if(textItem)
-        {
-            scale = textItem->scale();
-            QPoint pt = textItem->pos().toPoint();
-            QRectF rc = textItem->getItemRect();
-            x = pt.x();
-            y = pt.y();
-            w = rc.width();
-            h = rc.height();
-            return true;
-        }
-
-        CustomPixmapItem *pixmapItem = getPixmapItem(strName);
-        if(pixmapItem)
-        {
-            scale = pixmapItem->scale();
-            QPoint pt = pixmapItem->pos().toPoint();
-            QRectF rc = pixmapItem->getItemRect();
-            x = pt.x();
-            y = pt.y();
-            w = rc.width();
-            h = rc.height();
-            return true;
-        }
-        return false;
-    }
-
     void DeleteItem()
     {
         QList<QGraphicsItem*>items = selectedItems();
         foreach(auto item,items)
             removeItem(item);
+        emit scenceReset();
     }
 
     void SelectAll(bool select=true)
@@ -238,7 +256,135 @@ public:
         }
     }
 
+    void Lock(bool lock){
+        m_bLocking = lock;
+        QList<QGraphicsItem*>items = selectedItems();
+        foreach(auto itemKey,items)
+        {
+            auto item = dynamic_cast<QGraphicsKeyItem*>(itemKey);
+            if(item) item->Lock(lock);
+        }
+    }
 
+    bool SetLastItemText(const QString&text)
+    {
+        if(m_pLastItem)
+        {
+            auto item = dynamic_cast<QGraphicsKeyItem*>(m_pLastItem);
+            if(item)
+            {
+                item->setText(text);
+                emit itemChanged(m_pLastItem);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool SetLastItemHid(int hid)
+    {
+        if(m_pLastItem)
+        {
+            auto item = dynamic_cast<QGraphicsKeyItem*>(m_pLastItem);
+            if(item)
+            {
+                item->setHid(hid);
+                emit itemChanged(m_pLastItem);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    QString m_strJsoFile;
+
+    void SaveToJson(const QString&strJsoFile="")
+    {
+        QJsonArray jArray;
+        for (auto item : items())
+        {
+            if (auto Item = dynamic_cast<QGraphicsKeyItem*>(item))
+            {
+                jArray.push_back(Item->toJsonObject());
+            }
+        }
+
+        QString strFile = strJsoFile;
+        if(strFile.isEmpty())
+            strFile = m_strJsoFile;
+
+        QFile file(strFile);
+        if(file.open( QIODevice::WriteOnly ))
+        {
+            QJsonObject itemsObject;
+            QJsonObject verObj;
+            verObj["validflag"]="Akko88647749";
+            verObj["keycount"]=jArray.count();
+            verObj["datetime"]=QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+            itemsObject["version"] = verObj;
+            itemsObject["items"] = jArray;
+            QJsonDocument jDoc(itemsObject);
+            file.write(jDoc.toJson());
+            file.close();
+            m_strJsoFile = strJsoFile;
+        }
+    }
+
+    static bool getJsonInfo(const QString&strJsoFile,QJsonArray &jArray,QJsonObject&jVer)
+    {
+        QFile file(strJsoFile);
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QByteArray data = file.readAll();
+            file.close();
+
+            QJsonDocument jDoc(QJsonDocument::fromJson(data));
+            if(jDoc.isObject())
+            {
+                QJsonObject itemsObject = jDoc.object();
+                if(!itemsObject["version"].isNull())
+                {
+                    jVer   = itemsObject["version"].toObject();
+                    jArray = itemsObject["items"].toArray();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    void LoadFromJson(const QString&strJsoFile="")
+    {
+        if(!m_strJsoFile.isEmpty() && m_strJsoFile != strJsoFile)
+        {
+            SaveToJson(m_strJsoFile);
+        }
+
+        QString strFile = strJsoFile;
+        if(strFile.isEmpty())
+            strFile = m_strJsoFile;
+        QFile file(strFile);
+        if (file.open(QIODevice::ReadOnly))
+        {
+            QByteArray data = file.readAll();
+            file.close();
+            QJsonDocument jDoc(QJsonDocument::fromJson(data));
+            QJsonObject itemsObject = jDoc.object();
+            QJsonArray jArray = itemsObject["items"].toArray();
+
+            this->clear();
+            for(const QJsonValue &jObj : std::as_const(jArray))
+            {
+                QGraphicsKeyItem *itemKey = new QGraphicsKeyItem();
+                itemKey->SetJsonObject(jObj.toObject());
+                addItem(itemKey);
+            }
+
+            m_strJsoFile = strJsoFile;
+            emit scenceReset();
+        }
+    }
     bool isDraging(){ return (m_pLastItem != nullptr); }
 
 signals:
@@ -247,11 +393,12 @@ signals:
     void itemAdded(QGraphicsItem *item);
     void itemRemoved(QGraphicsItem *item);
     void viewPosition(const QPoint&piont);
+    void scenceReset();
 
 protected:
     void mouseReleaseEvent( QGraphicsSceneMouseEvent *event ) override
     {
-        if( m_pLastItem )
+        if(m_pLastItem)
         {
             if(m_bDraging)
             {
@@ -270,13 +417,19 @@ protected:
         m_clkPt = event->scenePos();
         QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
         m_pLastItem = item;
-        if( !item )
+        if(!item)
         {
             clearSelection();
         }
         else
         {
             emit itemSelected(item);
+            if(m_bLocking)
+            {
+                item->setSelected(!item->isSelected());
+                event->accept();
+                return;
+            }
         }
 
         QGraphicsScene::mousePressEvent(event);
@@ -306,6 +459,7 @@ protected:
 private:
     QPointF m_clkPt;
     bool m_bDraging  = false;
+    bool m_bLocking  = false;
     QGraphicsItem *m_pLastItem=nullptr;
 };
 
@@ -358,6 +512,9 @@ public:
 
     void moveGroup(int type,float step, bool moveAll=false)
     {
+        if(type < 0) return;
+        if(type > 8) return;
+
         int nw = size().width()-4;
         int nh = size().height()-4;
         for( auto item : this->items() )
@@ -399,11 +556,18 @@ public:
                 if(fscaleN != fscale)
                 {
                     item->setScale(fscaleN);
-                    ((CustomScene *)scene())->itemSelected(item);
+                    ((CustomScene *)scene())->itemChanged(item);
+                    //((CustomScene *)scene())->itemSelected(item);
                     //emit itemChanged(item);
                 }
             }
         }
+    }
+
+    void Lock(bool lock)
+    {
+        ((CustomScene *)scene())->Lock(lock);
+        m_bLocking=lock;
     }
 
 protected:
@@ -412,6 +576,7 @@ protected:
     QPointF m_clkPt0;
     QPointF m_clkPt1;
     bool m_bDraging = false;
+    bool m_bLocking  = false;
 
     void mousePressEvent(QMouseEvent *event) override
     {
@@ -462,32 +627,48 @@ protected:
             event->accept();
             return;
         }
-
-        if(event->key() == Qt::Key_Delete)
+        if(!m_bLocking)
         {
-            ((CustomScene *)scene())->DeleteItem();
-            event->accept();
-            return;
-        }
-        {
-            int type = 0;
+            if(event->key() == Qt::Key_Delete)
+            {
+                ((CustomScene *)scene())->DeleteItem();
+                event->accept();
+                return;
+            }
 
-            auto nKey = event->key();
-            if(nKey == Qt::Key_Left)  type=2;
-            if(nKey == Qt::Key_Right) type=3;
+            if(event->key() == Qt::Key_Z)
+            {
+                ((CustomScene *)scene())->LoadFromJson("");
+                event->accept();
+                return;
+            }
+            if(event->key() == Qt::Key_S)
+            {
+                ((CustomScene *)scene())->SaveToJson("");
+                event->accept();
+                return;
+            }
+            {
+                int type = -1;
 
-            if(nKey == Qt::Key_Up)    type=0;
-            if(nKey == Qt::Key_Down)  type=1;
+                auto nKey = event->key();
+                if(nKey == Qt::Key_Left)  type=2;
+                if(nKey == Qt::Key_Right) type=3;
 
-            if(nKey == Qt::Key_Minus) type=5;
-            if(nKey == Qt::Key_Equal) type=6;
+                if(nKey == Qt::Key_Up)    type=0;
+                if(nKey == Qt::Key_Down)  type=1;
 
-            if(nKey == Qt::Key_Underscore)type=7;
-            if(nKey == Qt::Key_Plus)      type=8;
+                if(nKey == Qt::Key_Minus) type=5;
+                if(nKey == Qt::Key_Equal) type=6;
 
-            float step = 4;
-            if(bShiftPress) step = 1;
-            moveGroup(type,step,bCtrlPress);
+                if(nKey == Qt::Key_Underscore)type=7;
+                if(nKey == Qt::Key_Plus)      type=8;
+
+                float step = 4;
+                if(bShiftPress) step = 1;
+                if(type != -1)
+                    moveGroup(type,step,bCtrlPress);
+            }
         }
 
         QGraphicsView::keyReleaseEvent(event);
@@ -581,7 +762,7 @@ public:
 
     void SetPaperSize(qreal width,qreal height);
 
-    QList<QGraphicsItem *>GetItems() ;
+    QList<QGraphicsItem *>GetItems();
 
     QFont GetFont();
     void SetFont(QFont&font);

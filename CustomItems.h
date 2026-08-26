@@ -16,6 +16,9 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QJsonObject>
+#include <QGraphicsProxyWidget>
+#include <QBuffer>
+
 
 class CustomBaseItem : public QObject
 {
@@ -251,7 +254,6 @@ protected:
     }
 };
 
-#include <QGraphicsProxyWidget>
 
 class CustomPixmapItem : public QObject, public QGraphicsPixmapItem
 {
@@ -264,9 +266,6 @@ public:
     CustomPixmapItem(const QPixmap &pixmap, QGraphicsItem *parent = nullptr)
         : QObject(), QGraphicsPixmapItem( pixmap, parent ), base(this)
     {
-        // connect( &base, &CustomBaseItem::itemChanged, this, [=](){
-        //     emit sigRectChanged();
-        // } );
     }
 
     QString m_strName;
@@ -324,6 +323,8 @@ protected:
     }
 };
 
+
+
 class QGraphicsKeyItem: public QObject,  public QGraphicsPixmapItem
 {
     Q_OBJECT
@@ -355,39 +356,119 @@ public:
             setImage(image);
         }
     }
+
+    static QImage ImageFromBase64(const QString &imageData)
+    {
+        QByteArray byteArray = QByteArray::fromBase64(imageData.toLatin1());
+        QImage image;
+        image.loadFromData(byteArray, "PNG");
+        return image;
+    }
+
+    static QString ImageToBase64(const QImage &image)
+    {
+        QByteArray byteArray;
+        QBuffer buffer(&byteArray);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "PNG");
+        return  QString::fromLatin1(byteArray.toBase64());
+    }
+
     ~QGraphicsKeyItem() = default;
 
+    QJsonObject toJsonObject()
+    {
+        QJsonObject jObj;
+        jObj["x"] = x();
+        jObj["y"] = y();
+        jObj["w"] = w();
+        jObj["h"] = h();
+        jObj["rx"] = rx();
+        jObj["ry"] = ry();
+        jObj["text"] = this->text();
+        jObj["name"] = m_name;
+        jObj["hid"]  = m_hid;
+        jObj["type"] = m_type;
+        jObj["font"] = m_font.toString();
+        jObj["image"] = ImageToBase64(m_image);
+
+        return jObj;
+    }
+
+    void SetJsonObject(const QJsonObject&jObj){
+        setPos(jObj["x"].toInt(),jObj["y"].toInt());
+        setSize(jObj["w"].toInt(),jObj["h"].toInt());
+        setText(jObj["text"].toString());
+        setName(jObj["name"].toString());
+        m_hid = jObj["hid"].toInt();
+        m_type = jObj["type"].toInt();
+        m_image = ImageFromBase64(jObj["image"].toString());
+    }
 
 private:
     int m_nW;
     int m_nH;
-    int m_flag = 0;
     int m_hid=0;
-    QFont m_font = QFont("微软雅黑",10,600);
+    QFont m_font = QFont("微软雅黑",9,600);
     QString m_name;
     QString m_text;
     QImage m_image;
-    bool m_bTextmode=false;
+    int m_type=0;
+    bool m_bLocking=false;
 
     void init()
     {
-        setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsFocusable);
+        Lock(false);
         setAcceptHoverEvents(true);
         setSize(100,100);
         setY(5);
         setCursor(Qt::PointingHandCursor);
     }
 
-
 public:
     QString name(){ return m_name; }
     void setName(const QString&name){ m_name=name; }
 
-    void setFont(const QFont&font){ m_font=font; }
     void setFontSize(int size){ m_font.setPixelSize(size); }
     int  fontSize(){ return m_font.pixelSize(); }
     bool bold(){ m_font.bold(); }
     void setBold(bool bold){ m_font.setBold(bold); }
+    QFont font(){return m_font;}
+    void setFont(const QFont&font){ m_font=font; }
+
+    int hid(){ return m_hid;}
+    void setHid(int hid){m_hid = hid;}
+
+    int x(){ return pos().x(); }
+    int y(){ return pos().y(); }
+    int w(){ return m_nW; }
+    int h(){ return m_nH; }
+
+    void setX(int x){ this->setPos(x,pos().y()); }
+    void setY(int y){ this->setPos(pos().x(),y); }
+    void setW(int w){ setSize(w,m_nH); }
+    void setH(int h){ setSize(m_nW,h); }
+    int rx(){ return (x() + w());}
+    int ry(){ return (y() + h());}
+    void setRX(int rx){ setW(rx - x()); }
+    void setRY(int ry){ setH(ry - y()); }
+
+    void Lock(bool lock=true)
+    {
+        m_bLocking=lock;
+
+        QGraphicsItem::GraphicsItemFlags flags;
+        flags |= QGraphicsItem::ItemIsSelectable;
+        flags |= QGraphicsItem::ItemSendsGeometryChanges;
+        flags |= QGraphicsItem::ItemIsFocusable;
+
+        if (!lock)
+        {
+            flags |= QGraphicsItem::ItemIsMovable;
+        }
+
+        setFlags(flags);
+    }
 
     QString text()
     {
@@ -399,15 +480,27 @@ public:
     {
         QString tmp(text);
         m_text = tmp.replace("\\n","\n");
-        m_bTextmode=true;
+        m_type=0;
     }
 
     void setImage(const QImage&image)
     {
         m_image=image;
-        m_bTextmode=false;
+        m_type=1;
     }
 
+    void setVLine(int height=100){
+        setSize(2,height);
+        m_type=2;
+    }
+
+    void setHLine(int width=200){
+
+        setSize(width,2);
+        m_type=3;
+    }
+
+    QSize size(){ return QSize(m_nW,m_nH); }
     void setSize(int w,int h)
     {
         QImage image(w,h,QImage::Format_ARGB32);
@@ -417,24 +510,6 @@ public:
         m_nW = w;
         m_nH = h;
     }
-
-    QSize size(){ return QSize(m_nW,m_nH); }
-
-    int x(){ return pos().x(); }
-    int y(){ return pos().y(); }
-    int w(){ return m_nW; }
-    int h(){ return m_nH; }
-    int hid(){ return m_hid;}
-    void setHid(int hid){m_hid = hid;}
-
-    void setX(int x){ this->setPos(x,pos().y()); }
-    void setY(int y){ this->setPos(pos().x(),y); }
-    void setW(int w){ setSize(w,m_nH); }
-    void setH(int h){ setSize(m_nW,h); }
-    int rx(){ return (x() + w());}
-    int ry(){ return (y() + h());}
-    void setRX(int rx){ setW(rx - x()); }
-    void setRY(int ry){ setH(ry - y()); }
 
     void move(int step,int type){
         int nx = x();
@@ -532,39 +607,83 @@ public:
         Q_UNUSED(option)
         Q_UNUSED(widget)
         painter->save();
-        painter->setRenderHints(QPainter::Antialiasing|QPainter::SmoothPixmapTransform);
 
         QRectF rect = boundingRect();
 
-        if(m_bTextmode)
+        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        if(m_hid == 233)
         {
-            if(isSelected())
-            {
-                painter->setPen(QPen(Qt::red,1,Qt::DashLine));
-                painter->setBrush(Qt::gray);
-            }
-            else
-            {
-                painter->setBrush(Qt::white);
-            }
-            painter->drawRoundedRect(rect,14,14);
+            QImage img(42,42,QImage::Format_ARGB32);
+            img.fill(Qt::transparent);
+            QPainter tmp(&img);
+            tmp.setRenderHint(QPainter::Antialiasing);
+            tmp.setBrush(isSelected()?Qt::gray:Qt::red);
+            tmp.drawRoundedRect(img.rect(),21,21);
 
-            QString text = m_text;
-            if(m_bEditing) text.clear();
+            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(0,0,14,42)));
+        }
+        else if(m_hid == 234)
+        {
+            QImage img(42,42,QImage::Format_ARGB32);
+            img.fill(Qt::transparent);
+            QPainter tmp(&img);
+            tmp.setRenderHint(QPainter::Antialiasing);
+            tmp.setBrush(isSelected()?Qt::gray:Qt::blue);
+            tmp.drawRoundedRect(img.rect(),21,21);
 
-            painter->setFont(m_font);
-            painter->drawText(rect,text,QTextOption(Qt::AlignCenter));
+            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(28,0,14,42)));
+        }
+        else if(m_hid == 235 || m_hid == 236)
+        {
+            QImage img(42,42,QImage::Format_ARGB32);
+            img.fill(Qt::transparent);
+            QPainter tmp(&img);
+            tmp.setRenderHint(QPainter::Antialiasing);
+            tmp.setBrush(isSelected()?Qt::gray:Qt::green);
+            tmp.drawRoundedRect(img.rect(),21,21);
+
+            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(14,0,14,42)));
         }
         else
         {
-            QPainterPath path;
-            path.addRoundedRect(rect,14,14);
-            painter->setClipPath(path);
-            painter->drawImage(rect,m_image);
-            if(isSelected())
+            if(m_type == 0)
             {
-                painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                painter->setRenderHint(QPainter::Antialiasing);
+                if(isSelected())
+                {
+                    //painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                    painter->setBrush(Qt::gray);
+                }
+                else
+                {
+                    painter->setBrush(Qt::white);
+                }
                 painter->drawRoundedRect(rect,14,14);
+
+                QString text = m_text;
+                if(m_bEditing) text.clear();
+
+                painter->setFont(m_font);
+                painter->drawText(rect,text,QTextOption(Qt::AlignCenter));
+            }
+            else
+            {
+                if(m_type == 1)
+                {
+                    QPainterPath path;
+                    path.addRoundedRect(rect,14,14);
+                    painter->setClipPath(path);
+                    painter->drawImage(rect,m_image);
+                    if(isSelected())
+                    {
+                        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                        painter->drawRoundedRect(rect,14,14);
+                    }
+                }
+                else
+                {
+                    painter->fillRect(rect,Qt::black);
+                }
             }
         }
 
@@ -585,14 +704,15 @@ public:
     bool m_bEditing = false;
     QLineEdit *edit = nullptr;
     QGraphicsProxyWidget *proxy = nullptr;
+
     bool sceneEventFilter(QGraphicsItem *watched,QEvent *event) override {
         if(proxy == watched && m_bEditing)
         {
             if(event->type() == QEvent::FocusOut)
             {
                 this->setText(edit->text().trimmed());
-                proxy->hide();
                 m_bEditing = false;
+                proxy->hide();
                 return true;
             }
         }
@@ -600,7 +720,7 @@ public:
     }
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override {
-        if(m_bTextmode)
+        if(m_type == 0 && !m_bLocking)
         {
             if(!edit)
             {
@@ -629,11 +749,10 @@ public:
             edit->setFocus();
             update();
             event->accept();
+            return;
         }
-        else
-        {
-            QGraphicsPixmapItem::mouseDoubleClickEvent(event);
-        }
+
+        QGraphicsPixmapItem::mouseDoubleClickEvent(event);
     }
 };
 

@@ -32,6 +32,7 @@ private:
 
     CustomScene *m_sence=nullptr;
     QStandardItemModel *m_pModel = nullptr;
+    QStandardItemModel *m_pModel2 = nullptr;
     int m_nSelected=-1;
     SideValueDelegate *pDele0;
     SideValueDelegate *pDele1;

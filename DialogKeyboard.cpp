@@ -2,7 +2,13 @@
 #include "qglobal.h"
 #include "qgraphicsitem.h"
 #include "ui_DialogKeyboard.h"
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QKeyEvent>
+#include <QDir>
+
 struct KeyMapItem
 {
     const char* name;
@@ -29,8 +35,8 @@ const KeyMapItem g_keyTable[] = {
     { "Print-Screen", 70, 57436 },
     { "Scroll-Lock" , 71,    70 },
     { "Pause-Break" , 72,    69 },
-    { "Cal",         233,     0 },
-    { "VOLx",        234,     0 },
+    { "Cal",         236,     0 },
+    { "VOLx",        235,     0 },
     { "VOL-",        233,     0 },
     { "VOL+",        234,     0 },
 
@@ -198,6 +204,10 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         });
     }
 
+    for (int i=0; i<108; i++) {
+        ui->comboBoxKey->addItem(g_keyTable[i].name);
+    };
+
     static bool updating = false;
 
     connect(m_sence,&CustomScene::viewPosition,this,[=](const QPoint&point){
@@ -262,12 +272,23 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SetValue(ui->spinBoxH->value(),3);
     });
 
-    QTimer::singleShot(1000,this,[=]{
+    connect(ui->lineEditKeytext,&QLineEdit::textChanged,this,[=](const QString&text){
+        Q_UNUSED(text)
+        if(updating) return;
+        m_sence->SetLastItemText(ui->lineEditKeytext->text().trimmed());
+    });
+    connect(ui->lineEditKeytHid,&QLineEdit::textChanged,this,[=](const QString&text){
+        Q_UNUSED(text)
+        if(updating) return;
+        m_sence->SetLastItemHid(ui->lineEditKeytHid->text().trimmed().toInt());
+    });
+
+    QTimer::singleShot(200,this,[=]{
         ui->frameEdit->setFixedWidth(370);
-        ui->pushButtonU->setFixedSize(40,40);
-        ui->pushButtonD->setFixedSize(40,40);
-        ui->pushButtonL->setFixedSize(40,40);
-        ui->pushButtonR->setFixedSize(40,40);
+        ui->pushButtonU->setFixedSize(36,36);
+        ui->pushButtonD->setFixedSize(36,36);
+        ui->pushButtonL->setFixedSize(36,36);
+        ui->pushButtonR->setFixedSize(36,36);
     });
 
     connect(ui->pushButtonU,&QPushButton::clicked,this,[=]{MoveGroup(0);});
@@ -275,13 +296,25 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     connect(ui->pushButtonL,&QPushButton::clicked,this,[=]{MoveGroup(2);});
     connect(ui->pushButtonR,&QPushButton::clicked,this,[=]{MoveGroup(3);});
 
-    //QImage img(200,120,QImage::Format_ARGB32);
-    //QPainter painter(&img);
-    //painter.fillRect(img.rect(),Qt::blue);
+    connect(ui->checkBoxLock,&QCheckBox::clicked,this,[=](bool checked){
+        ui->graphicsView->Lock(checked);
+    });
 
-    //QGraphicsKeyItem *NT0 = new QGraphicsKeyItem("D:\\radioChecked.png");
-    //NT0->setY(300);
-    //m_sence->addItem(NT0);
+    //QImage img(200,120,QImage::Format_ARGB32);
+    //img.fill(Qt::blue);
+
+    connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
+        m_sence->SaveToJson(ui->lineEditJsonFile->text().trimmed());
+    });
+    connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
+        m_sence->LoadFromJson(ui->lineEditJsonFile->text().trimmed());
+    });
+    connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
+        int index = ui->comboBoxKey->currentIndex();
+        QGraphicsKeyItem *NT0 = new QGraphicsKeyItem(g_keyTable[index].name);
+        NT0->setHid(g_keyTable[index].hidUsageId);
+        m_sence->addItem(NT0);
+    });
 
     connect(ui->pushButtonReset,&QPushButton::clicked,this,[=]{
         m_sence->clear();
@@ -414,21 +447,65 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
         qDebug() << m_sence->items().size() << hidIndex;
 
-        {
-            pDele0->resetText();
-            pDele1->resetText();
-            pDele2->resetText();
-            pDele3->resetText();
-            pDele4->resetText();
-            pDele5->resetText();
-            m_pModel->removeRows(0,255);
-            QList<QGraphicsItem*> items = m_sence->items();
-            for(int i=items.count()-1;i>=0; i--)
-            {
-                UpdateRow(items[i]);
-            }
-        }
+        m_sence->scenceReset();
     });
+
+    connect(m_sence,&CustomScene::scenceReset,this,[=]{
+        updating=true;
+        pDele0->resetText();
+        pDele1->resetText();
+        pDele2->resetText();
+        pDele3->resetText();
+        pDele4->resetText();
+        pDele5->resetText();
+        m_pModel->removeRows(0,m_pModel->rowCount());
+        ui->checkBoxLock->setChecked(false);
+        QList<QGraphicsItem*> items = m_sence->items();
+        for(int i=items.count()-1; i>=0; i--)
+        {
+            UpdateRow(items[i]);
+        }
+        updating=false;
+    });
+
+    {
+        m_pModel2 = new QStandardItemModel(this);
+        m_pModel2->setHorizontalHeaderLabels(QString("文件名,按键数量,时间").split(','));
+        ui->tableView2->setModel(m_pModel2);
+        QHeaderView *pHeader = ui->tableView2->horizontalHeader();
+        pHeader->setDefaultAlignment(Qt::AlignLeft|Qt::AlignVCenter);
+        pHeader->setSectionResizeMode(QHeaderView::Stretch);
+        pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
+        pHeader->resizeSection(0,200);
+        {
+            QString strPath = "D:\\";//QApplication::applicationDirPath() + "/images/";
+            QDir d(strPath);
+
+            QDir::Filters filters = QDir::Files | QDir::NoDotAndDotDot | QDir::Readable;
+            QStringList nameFilters;
+            nameFilters << "*.json";
+            QStringList fileList = d.entryList(nameFilters, filters);
+            for(const QString &strFile:std::as_const(fileList))
+            {
+                QJsonArray jArray;
+                QJsonObject jVer;
+                if(CustomScene::getJsonInfo(strPath+strFile,jArray,jVer))
+                {
+                    QStandardItem *item0 = new QStandardItem(strPath+strFile);
+                    QStandardItem *item1 = new QStandardItem(jVer["keycount"].toString());
+                    QStandardItem *item2 = new QStandardItem("222");
+                    m_pModel2->appendRow({item0,item1,item2});
+                }
+                qDebug() << jVer ;
+
+            }
+
+            connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){
+                ui->lineEditJsonFile->setText(m_pModel2->item(index.row(),0)->text().trimmed());
+                ui->pushButtonLoad->click();
+            });
+        }
+    }
 }
 
 void DialogKeyboard::UpdateRow(QGraphicsItem *item)
