@@ -66,7 +66,6 @@ public:
             {
                 if(m_bVolRoundButton)
                 {
-                    qDebug() << "--------------------" ;
                     int h = itemKey->h()/3*3;
                     itemKey->setSize(h/3,h);
                 }
@@ -86,6 +85,8 @@ public:
     void setVolRoundButon(bool set=true)
     {
         m_bVolRoundButton = set;
+        //SaveToJson();
+        LoadFromJson();
     }
 
     void removeItem(QGraphicsItem *item)
@@ -312,13 +313,13 @@ public:
         return false;
     }
 
-    QString m_strJsoFile;
+    QString m_strJsonFile;
 
-    void SaveToJson(const QString&strJsoFile="")
+    void SaveToJson(const QString&strJsonFile="")
     {
-        QString strFile = strJsoFile;
+        QString strFile = strJsonFile;
         if(strFile.isEmpty())
-            strFile = m_strJsoFile;
+            strFile = m_strJsonFile;
 
         if(strFile.isEmpty())
             return;
@@ -327,32 +328,34 @@ public:
         QFile file(strFile);
         if(file.open( QIODevice::WriteOnly ))
         {
-            QJsonArray jArray;
+            QJsonArray jItems;
             for (auto item : items())
             {
                 if (auto Item = dynamic_cast<QGraphicsKeyItem*>(item))
                 {
-                    jArray.push_back(Item->toJsonObject());
+                    jItems.push_back(Item->toJsonObject());
                 }
             }
-            QJsonObject itemsObject;
-            QJsonObject verObj;
-            verObj["validflag"]="Akko88647749";
-            verObj["keycount"]=jArray.count();
-            verObj["volroundbtn"]=m_bVolRoundButton;
-            verObj["keyW"]=m_nKeyW;
-            verObj["keyH"]=m_nKeyH;
-            verObj["datetime"]=QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-            itemsObject["version"] = verObj;
-            itemsObject["items"] = jArray;
-            QJsonDocument jDoc(itemsObject);
+
+            QJsonObject jVer;
+            jVer["validflag"]="Akko88647749";
+            jVer["keycount"]=jItems.count();
+            jVer["volroundbtn"]=m_bVolRoundButton;
+            jVer["keyW"]=m_nKeyW;
+            jVer["keyH"]=m_nKeyH;
+            jVer["datetime"]=QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+            QJsonObject jRoot;
+            jRoot["version"] = jVer;
+            jRoot["items"] = jItems;
+            QJsonDocument jDoc(jRoot);
             file.write(jDoc.toJson());
             file.close();
-            m_strJsoFile = strJsoFile;
+            m_strJsonFile = strFile;
         }
     }
 
-    static bool getJsonInfo(const QString&strJsoFile,QJsonArray &jArray,QJsonObject&jVer)
+    static bool getJsonInfo(const QString&strJsoFile,QJsonArray &jItems,QJsonObject&jVer)
     {
         QFile file(strJsoFile);
         if (file.open(QIODevice::ReadOnly))
@@ -363,11 +366,11 @@ public:
             QJsonDocument jDoc(QJsonDocument::fromJson(data));
             if(jDoc.isObject())
             {
-                QJsonObject itemsObject = jDoc.object();
-                if(!itemsObject["version"].isNull())
+                QJsonObject jRoot = jDoc.object();
+                if(!jRoot["version"].isNull())
                 {
-                    jVer   = itemsObject["version"].toObject();
-                    jArray = itemsObject["items"].toArray();
+                    jVer   = jRoot["version"].toObject();
+                    jItems = jRoot["items"].toArray();
                     return true;
                 }
             }
@@ -377,51 +380,33 @@ public:
 
     void LoadFromJson(const QString&strJsoFile="")
     {
-        if(!m_strJsoFile.isEmpty() && m_strJsoFile != strJsoFile)
-        {
-           SaveToJson(m_strJsoFile);
-        }
+        SaveToJson();
 
-        QString strFile = strJsoFile;
-        if(strFile.isEmpty())
-            strFile = m_strJsoFile;
-        QJsonArray jArray;
-        QJsonObject jVer;
-        if(getJsonInfo(strFile,jArray,jVer))
-        {
-            this->clear();
-            for(const QJsonValue &jObj : std::as_const(jArray))
+        QTimer::singleShot(200,this,[=]{
+            QString strFile = strJsoFile;
+            if(strFile.isEmpty())
+                strFile = m_strJsonFile;
+
+            qDebug() << "LoadFromJson" << strFile;
+            QJsonArray jItems;
+            QJsonObject jVer;
+            if(getJsonInfo(strFile,jItems,jVer))
             {
-                QGraphicsKeyItem *itemKey = new QGraphicsKeyItem();
-                itemKey->SetJsonObject(jObj.toObject());
-                addItem(itemKey);
+                this->clear();
+                m_bVolRoundButton = jVer["volroundbtn"].toBool();
+                for(const QJsonValue &jValue : std::as_const(jItems))
+                {
+                    QGraphicsKeyItem *itemKey = new QGraphicsKeyItem();
+                    itemKey->SetJsonObject(jValue.toObject());
+                    addItem(itemKey);
+                }
+
+                m_strJsonFile = strFile;
+                emit scenceReset();
             }
-
-            m_strJsoFile = strJsoFile;
-            emit scenceReset();
-        }
-
-        /*QFile file(strFile);
-        if (file.open(QIODevice::ReadOnly))
-        {
-            QByteArray data = file.readAll();
-            file.close();
-            QJsonDocument jDoc(QJsonDocument::fromJson(data));
-            QJsonObject itemsObject = jDoc.object();
-            QJsonArray jArray = itemsObject["items"].toArray();
-
-            this->clear();
-            for(const QJsonValue &jObj : std::as_const(jArray))
-            {
-                QGraphicsKeyItem *itemKey = new QGraphicsKeyItem();
-                itemKey->SetJsonObject(jObj.toObject());
-                addItem(itemKey);
-            }
-
-            m_strJsoFile = strJsoFile;
-            emit scenceReset();
-        }*/
+        });
     }
+
     bool isDraging(){ return (m_pLastItem != nullptr); }
 
 signals:

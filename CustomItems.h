@@ -647,7 +647,7 @@ public:
             if(!rcCopy.isEmpty())
             {
                 bDone = true;
-                tmp.drawRoundedRect(img.rect(),h/2,h/2);
+                tmp.drawRoundedRect(img.rect().adjusted(1,1,-1,-1),h/2-1,h/2-1);
                 painter->drawImage(rect,img.copy(rcCopy));
             }
         }

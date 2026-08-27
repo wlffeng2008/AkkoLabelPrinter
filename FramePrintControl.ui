@@ -698,9 +698,6 @@
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout" rowminimumheight="32,0,0,0,0,0,0,0,0,0">
-         <property name="leftMargin">
-          <number>10</number>
-         </property>
          <property name="rightMargin">
           <number>5</number>
          </property>
@@ -1205,9 +1202,6 @@
        <property name="spacing">
         <number>6</number>
        </property>
-       <property name="rightMargin">
-        <number>2</number>
-       </property>
        <item>
         <widget class="QCheckBox" name="checkBoxWritePdf">
          <property name="text">
@@ -1273,12 +1267,6 @@
      </item>
      <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
        <item>
         <widget class="QComboBox" name="comboBoxPrinter">
          <property name="maximumSize">

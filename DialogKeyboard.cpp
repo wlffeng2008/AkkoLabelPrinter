@@ -18,7 +18,7 @@ struct KeyMapItem
 
 // US QWERTY 104键盘完整普通按键表（不含Modifier修饰键）
 const KeyMapItem g_keyTable[] = {
-    // -------------------- 功能键区 F1~F12 --------------------
+    // --------------------Esc 功能键区 F1~F12    0行--------------------
     { "Esc",          41,     1 },
     { "F1",           58,    59 },
     { "F2",           59,    60 },
@@ -32,15 +32,16 @@ const KeyMapItem g_keyTable[] = {
     { "F10",          67,    68 },
     { "F11",          68,    87 },
     { "F12",          69,    88 },
-    { "Print-Screen", 70, 57436 },
-    { "Scroll-Lock" , 71,    70 },
-    { "Pause-Break" , 72,    69 },
-    { "Cal",         236,     0 },
+    { "PtrSc",        70, 57436 },
+    { "ScrLk" ,       71,    70 },
+    { "Pause" ,       72,    69 },
+
+    { "Cal",         236,     0 }, //多媒体键
     { "VOLx",        235,     0 },
     { "VOL-",        233,     0 },
     { "VOL+",        234,     0 },
 
-    // -------------------- ESC 数字行 --------------------
+    // -------------------- 数字行   1行--------------------
     { "` ~",          53,    41 },
     { "1 !",          30,     2 },
     { "2 @",          31,     3 },
@@ -59,11 +60,11 @@ const KeyMapItem g_keyTable[] = {
     { "Home",         74, 57415 },
     { "Pgup",         75, 57417 },
     { "Num Lock",     83, 57413 },
-    { "Num /",        84, 57397 },
-    { "Num *",        85,    55 },
-    { "Num -",        86,    74 },
+    { "/",            84, 57397 },
+    { "*",            85,    55 },
+    { "-",            86,    74 },
 
-    // -------------------- Tab行 QWERTY --------------------
+    // -------------------- Tab行 QWERTY 2行-------------------
     { "Tab",          43,    15 },
     { "Q",            20,    16 },
     { "W",            26,    17 },
@@ -81,12 +82,12 @@ const KeyMapItem g_keyTable[] = {
     { "Delete",       76, 57427 },
     { "End",          77, 57423 },
     { "Pgdn",         78, 57425 },
-    { "Num 7",        95,    71 },
-    { "Num 8",        96,    72 },
-    { "Num 9",        97,    73 },
-    { "Num +",        87,    78 },
+    { "7",            95,    71 },
+    { "8",            96,    72 },
+    { "9",            97,    73 },
+    { "+",            87,    78 },
 
-    // -------------------- CapsLock A‑L --------------------
+    // -------------------- CapsLock ASDFG 3行 --------------------
     { "Caps-Lock",    57,    58 },
     { "A",             4,    30 },
     { "S",            22,    31 },
@@ -100,11 +101,11 @@ const KeyMapItem g_keyTable[] = {
     { "; :",          51,    39 },
     { "' \"",         52,    40 },
     { "Enter",        40,    28 },
-    { "Num 4",        92,    75 },
-    { "Num 5",        93,    76 },
-    { "Num 6",        94,    77 },
+    { "4",            92,    75 },
+    { "5",            93,    76 },
+    { "6",            94,    77 },
 
-    // -------------------- Shift Z‑M --------------------
+    // -------------------- Shift ZXCVBNM     4行--------------------
     { "L-Shift",     225,    42 },
     { "Z",            29,    44 },
     { "X",            27,    45 },
@@ -118,12 +119,12 @@ const KeyMapItem g_keyTable[] = {
     { "/ ?",          56,    53 },
     { "R-Shift",     229,    54 },
     { "↑",           82, 57416 },
-    { "Num 1",        89,    79 },
-    { "Num 2",        90,    80 },
-    { "Num 3",        91,    81 },
-    { "Num Enter",    88,   108 },
+    { "1",            89,    79 },
+    { "2",            90,    80 },
+    { "3",            91,    81 },
+    { "Enter",        88,   108 },
 
-    // -------------------- Ctrl Win Alt 空格 --------------------
+    // -------------------- Ctrl Win Alt 空格 5行--------------------
     { "L-Ctrl",      224,    29 },
     { "L-Alt",       226,    56 },
     { "L-Win",       227, 57435 },
@@ -135,8 +136,8 @@ const KeyMapItem g_keyTable[] = {
     { "←"    ,       80, 57419 },
     { "↓",           81, 57424 },
     { "→",           79, 57421 },
-    { "Num 0",        98,    82 },
-    { "Num .",        99,    83 },
+    { "0",            98,    82 },
+    { ".",            99,    83 },
 };
 
 const int g_keyTableCount = sizeof(g_keyTable)/sizeof(KeyMapItem);
@@ -205,7 +206,8 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     }
 
     for (int i=0; i<108; i++) {
-        ui->comboBoxKey->addItem(g_keyTable[i].name);
+        QString strItem=QString::asprintf("%02X[%03d] %-10s",g_keyTable[i].hidUsageId,g_keyTable[i].hidUsageId,g_keyTable[i].name);
+        ui->comboBoxKey->addItem(strItem);
     };
 
     static bool updating = false;
@@ -307,7 +309,6 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SaveToJson(ui->lineEditJsonFile->text().trimmed());
     });
     connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
-        qDebug() << "pushButtonLoad" ;
         m_sence->LoadFromJson(ui->lineEditJsonFile->text().trimmed());
     });
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
@@ -461,6 +462,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pDele5->resetText();
         m_pModel->removeRows(0,m_pModel->rowCount());
         ui->checkBoxLock->setChecked(false);
+        ui->checkBoxRound->setChecked(m_sence->isVolRoundButton());
         QList<QGraphicsItem*> items = m_sence->items();
         for(int i=items.count()-1; i>=0; i--)
         {
@@ -505,6 +507,10 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 ui->pushButtonLoad->click();
             });
         }
+
+        connect(ui->checkBoxRound,&QCheckBox::clicked,this,[=](bool checked){
+            m_sence->setVolRoundButon(checked);
+        });
     }
 }
 
