@@ -1108,9 +1108,9 @@
        <widget class="QCheckBox" name="checkBoxReject">
         <property name="geometry">
          <rect>
-          <x>104</x>
-          <y>486</y>
-          <width>86</width>
+          <x>96</x>
+          <y>470</y>
+          <width>78</width>
           <height>22</height>
          </rect>
         </property>
@@ -1121,9 +1121,9 @@
        <widget class="QPushButton" name="pushButtonReject">
         <property name="geometry">
          <rect>
-          <x>190</x>
-          <y>484</y>
-          <width>96</width>
+          <x>178</x>
+          <y>468</y>
+          <width>98</width>
           <height>28</height>
          </rect>
         </property>
@@ -1143,7 +1143,7 @@
        <widget class="QPushButton" name="pushButtonKeyboard">
         <property name="geometry">
          <rect>
-          <x>106</x>
+          <x>94</x>
           <y>526</y>
           <width>181</width>
           <height>28</height>
@@ -1195,7 +1195,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,0,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
        <property name="spacing">
         <number>6</number>
        </property>
@@ -1263,9 +1263,15 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
         <widget class="QComboBox" name="comboBoxPrinter">
+         <property name="minimumSize">
+          <size>
+           <width>188</width>
+           <height>21</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>200</width>

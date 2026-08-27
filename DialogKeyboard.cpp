@@ -289,10 +289,10 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
     QTimer::singleShot(200,this,[=]{
         ui->frameEdit->setFixedWidth(370);
-        ui->pushButtonU->setFixedSize(36,36);
-        ui->pushButtonD->setFixedSize(36,36);
-        ui->pushButtonL->setFixedSize(36,36);
-        ui->pushButtonR->setFixedSize(36,36);
+        ui->pushButtonU->setFixedSize(32,32);
+        ui->pushButtonD->setFixedSize(32,32);
+        ui->pushButtonL->setFixedSize(32,32);
+        ui->pushButtonR->setFixedSize(32,32);
     });
 
     connect(ui->pushButtonU,&QPushButton::clicked,this,[=]{MoveGroup(0);});
