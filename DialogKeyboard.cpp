@@ -307,6 +307,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SaveToJson(ui->lineEditJsonFile->text().trimmed());
     });
     connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
+        qDebug() << "pushButtonLoad" ;
         m_sence->LoadFromJson(ui->lineEditJsonFile->text().trimmed());
     });
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
@@ -491,13 +492,12 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 QJsonObject jVer;
                 if(CustomScene::getJsonInfo(strPath+strFile,jArray,jVer))
                 {
+                    qDebug() << jVer ;
                     QStandardItem *item0 = new QStandardItem(strPath+strFile);
-                    QStandardItem *item1 = new QStandardItem(jVer["keycount"].toString());
-                    QStandardItem *item2 = new QStandardItem("222");
+                    QStandardItem *item1 = new QStandardItem(QString("%1").arg(jVer["keycount"].toInt()));
+                    QStandardItem *item2 = new QStandardItem(jVer["datetime"].toString());
                     m_pModel2->appendRow({item0,item1,item2});
                 }
-                qDebug() << jVer ;
-
             }
 
             connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){

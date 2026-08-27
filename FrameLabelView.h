@@ -26,7 +26,6 @@
 class CustomScene : public QGraphicsScene
 {
     Q_OBJECT
-
 public:
     CustomScene(QObject *parent = nullptr) : QGraphicsScene(parent)
     {
@@ -62,15 +61,31 @@ public:
                     }
                 }
             }
-            if(hid == 233 || hid == 234 ||hid == 235 || hid == 236)
-               itemKey->setW(14);
-            //if(hid == 233)
-            itemKey->setZValue(9999-hid);
+
+            if(hid == 233 || hid == 234 || hid == 235 || hid == 236)
+            {
+                if(m_bVolRoundButton)
+                {
+                    qDebug() << "--------------------" ;
+                    int h = itemKey->h()/3*3;
+                    itemKey->setSize(h/3,h);
+                }
+                else
+                {
+                    itemKey->setSize(m_nKeyW,m_nKeyH);
+                }
+            }
         }
 
         QGraphicsScene::addItem(item);
         emit itemAdded(item);
         return true;
+    }
+
+    bool isVolRoundButton(){ return m_bVolRoundButton;}
+    void setVolRoundButon(bool set=true)
+    {
+        m_bVolRoundButton = set;
     }
 
     void removeItem(QGraphicsItem *item)
@@ -301,26 +316,32 @@ public:
 
     void SaveToJson(const QString&strJsoFile="")
     {
-        QJsonArray jArray;
-        for (auto item : items())
-        {
-            if (auto Item = dynamic_cast<QGraphicsKeyItem*>(item))
-            {
-                jArray.push_back(Item->toJsonObject());
-            }
-        }
-
         QString strFile = strJsoFile;
         if(strFile.isEmpty())
             strFile = m_strJsoFile;
 
+        if(strFile.isEmpty())
+            return;
+
+        qDebug() << "SaveToJson" << strFile;
         QFile file(strFile);
         if(file.open( QIODevice::WriteOnly ))
         {
+            QJsonArray jArray;
+            for (auto item : items())
+            {
+                if (auto Item = dynamic_cast<QGraphicsKeyItem*>(item))
+                {
+                    jArray.push_back(Item->toJsonObject());
+                }
+            }
             QJsonObject itemsObject;
             QJsonObject verObj;
             verObj["validflag"]="Akko88647749";
             verObj["keycount"]=jArray.count();
+            verObj["volroundbtn"]=m_bVolRoundButton;
+            verObj["keyW"]=m_nKeyW;
+            verObj["keyH"]=m_nKeyH;
             verObj["datetime"]=QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
             itemsObject["version"] = verObj;
             itemsObject["items"] = jArray;
@@ -358,13 +379,29 @@ public:
     {
         if(!m_strJsoFile.isEmpty() && m_strJsoFile != strJsoFile)
         {
-            SaveToJson(m_strJsoFile);
+           SaveToJson(m_strJsoFile);
         }
 
         QString strFile = strJsoFile;
         if(strFile.isEmpty())
             strFile = m_strJsoFile;
-        QFile file(strFile);
+        QJsonArray jArray;
+        QJsonObject jVer;
+        if(getJsonInfo(strFile,jArray,jVer))
+        {
+            this->clear();
+            for(const QJsonValue &jObj : std::as_const(jArray))
+            {
+                QGraphicsKeyItem *itemKey = new QGraphicsKeyItem();
+                itemKey->SetJsonObject(jObj.toObject());
+                addItem(itemKey);
+            }
+
+            m_strJsoFile = strJsoFile;
+            emit scenceReset();
+        }
+
+        /*QFile file(strFile);
         if (file.open(QIODevice::ReadOnly))
         {
             QByteArray data = file.readAll();
@@ -383,7 +420,7 @@ public:
 
             m_strJsoFile = strJsoFile;
             emit scenceReset();
-        }
+        }*/
     }
     bool isDraging(){ return (m_pLastItem != nullptr); }
 
@@ -460,6 +497,9 @@ private:
     QPointF m_clkPt;
     bool m_bDraging  = false;
     bool m_bLocking  = false;
+    bool m_bVolRoundButton = false;
+    int m_nKeyW = 40;
+    int m_nKeyH = 40;
     QGraphicsItem *m_pLastItem=nullptr;
 };
 

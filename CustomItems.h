@@ -1,6 +1,7 @@
 #ifndef CUSTOMITEMS_H
 #define CUSTOMITEMS_H
 
+//#include "FrameLabelView.h"
 #include "qgraphicsscene.h"
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -611,40 +612,47 @@ public:
         QRectF rect = boundingRect();
 
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        if(m_hid == 233)
+        bool isVolRound = false;
+        bool bDone = false;
+        if(m_hid == 233 || m_hid == 234 || m_hid == 235 || m_hid == 236)
         {
-            QImage img(42,42,QImage::Format_ARGB32);
+            if(h()/w() == 3)
+                isVolRound = true;
+        }
+
+        if(isVolRound)
+        {
+            int h = this->h();
+            int s = h/3;
+            QImage img(h,h,QImage::Format_ARGB32);
             img.fill(Qt::transparent);
             QPainter tmp(&img);
             tmp.setRenderHint(QPainter::Antialiasing);
-            tmp.setBrush(isSelected()?Qt::gray:Qt::red);
-            tmp.drawRoundedRect(img.rect(),21,21);
-
-            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(0,0,14,42)));
+            QRect rcCopy;
+            if(m_hid == 233)
+            {
+                rcCopy = QRect(0,0,s,h);
+                tmp.setBrush(isSelected()?Qt::gray:Qt::red);
+            }
+            else if(m_hid == 234)
+            {
+                rcCopy = QRect(s*2,0,s,h);
+                tmp.setBrush(isSelected()?Qt::gray:Qt::blue);
+            }
+            else if(m_hid == 235 || m_hid == 236)
+            {
+                rcCopy = QRect(s,0,s,h);
+                tmp.setBrush(isSelected()?Qt::gray:Qt::green);
+            }
+            if(!rcCopy.isEmpty())
+            {
+                bDone = true;
+                tmp.drawRoundedRect(img.rect(),h/2,h/2);
+                painter->drawImage(rect,img.copy(rcCopy));
+            }
         }
-        else if(m_hid == 234)
-        {
-            QImage img(42,42,QImage::Format_ARGB32);
-            img.fill(Qt::transparent);
-            QPainter tmp(&img);
-            tmp.setRenderHint(QPainter::Antialiasing);
-            tmp.setBrush(isSelected()?Qt::gray:Qt::blue);
-            tmp.drawRoundedRect(img.rect(),21,21);
 
-            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(28,0,14,42)));
-        }
-        else if(m_hid == 235 || m_hid == 236)
-        {
-            QImage img(42,42,QImage::Format_ARGB32);
-            img.fill(Qt::transparent);
-            QPainter tmp(&img);
-            tmp.setRenderHint(QPainter::Antialiasing);
-            tmp.setBrush(isSelected()?Qt::gray:Qt::green);
-            tmp.drawRoundedRect(img.rect(),21,21);
-
-            painter->drawImage(QRect(0,0,14,42),img.copy(QRect(14,0,14,42)));
-        }
-        else
+        if(!bDone)
         {
             if(m_type == 0)
             {
