@@ -9,6 +9,8 @@
 #include <QKeyEvent>
 #include <QDir>
 
+#include <DialogHidReview.h>
+
 struct KeyMapItem
 {
     const char* name;
@@ -305,6 +307,11 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     //QImage img(200,120,QImage::Format_ARGB32);
     //img.fill(Qt::blue);
 
+    connect(ui->pushButtonHid,&QPushButton::clicked,this,[=]{
+        static DialogHidReview *pHid = new DialogHidReview(this);
+        pHid->show();
+    });
+
     connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
         m_sence->SaveToJson(ui->lineEditJsonFile->text().trimmed());
     });
@@ -503,8 +510,13 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             }
 
             connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){
-                ui->lineEditJsonFile->setText(m_pModel2->item(index.row(),0)->text().trimmed());
-                ui->pushButtonLoad->click();
+                QString strFile0 = ui->lineEditJsonFile->text().trimmed();
+                QString strFile1 = m_pModel2->item(index.row(),0)->text().trimmed() ;
+                if(strFile1 != strFile0)
+                {
+                    ui->lineEditJsonFile->setText(strFile1);
+                    ui->pushButtonLoad->click();
+                }
             });
         }
 

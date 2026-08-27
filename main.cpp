@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QString strStyle=R"(
 
-        QPushButton:focus{background-color: #30B0EF;}
-        QPushButton:hover{background-color: #C0B0BF;}
-        QPushButton {background-color: #3030EF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 40px; min-height: 26px; padding-left:2px;padding-right:2px;}
+        QPushButton:focus{background-color: #C0B0BF;}
+        QPushButton:hover{background-color: #B0B0BF;}
+        QPushButton {background-color: #3CBEEF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 26px; padding-left:2px;padding-right:2px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
         QTableView{ border: 1px solid gray; background-color: rgb(226, 240, 255) ; gridline-color: gray;}

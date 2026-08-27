@@ -232,7 +232,7 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
     if (auto textItem = dynamic_cast<CustomTextItem*>(item))
     {
         strName = textItem->getName();
-        strType = QString("文本") + QString("%1").arg(item->zValue());
+        strType = QString("文本") ;//+ QString("%1").arg(item->zValue());
         strW = QString::asprintf("%d",textItem->getItemRect().toRect().width());
         strH = QString::asprintf("%d",textItem->getItemRect().toRect().height());
         strData = textItem->toPlainText();
@@ -249,7 +249,7 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
         if(pixmapItem->data(0) == 1) strType = "水平线";
         if(pixmapItem->data(0) == 2) strType = "垂直线";
         if(pixmapItem->data(0) == 0) strData = "设置图片";
-        strType += QString("%1").arg(item->zValue());
+        //strType += QString("%1").arg(item->zValue());
         bEdit = false;
     }
 
