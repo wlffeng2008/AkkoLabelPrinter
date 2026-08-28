@@ -62,7 +62,7 @@ public:
                 }
             }
 
-            if(hid == 233 || hid == 234 || hid == 235 || hid == 236)
+            if(hid == 233 || hid == 234 || hid == 235)
             {
                 if(m_bVolRoundButton)
                 {
@@ -76,8 +76,11 @@ public:
             }
         }
 
+        if(item->zValue() == 0)
+        item->setZValue(this->items().count()+1);
         QGraphicsScene::addItem(item);
         emit itemAdded(item);
+
         return true;
     }
 
@@ -85,7 +88,6 @@ public:
     void setVolRoundButon(bool set=true)
     {
         m_bVolRoundButton = set;
-        //SaveToJson();
         LoadFromJson();
     }
 
@@ -164,7 +166,8 @@ public:
         return false;
     }
 
-    bool SetItemPos(const QString&strName,int x,int y){
+    bool SetItemPos(const QString&strName,int x,int y)
+    {
         CustomTextItem *textItem = getTextItem(strName);
         if(textItem)
         {
@@ -187,7 +190,8 @@ public:
         return false;
     }
 
-    bool SetItemSize(const QString&strName,int w,int h){
+    bool SetItemSize(const QString&strName,int w,int h)
+    {
         CustomTextItem *textItem = getTextItem(strName);
         if(textItem)
         {
@@ -274,7 +278,7 @@ public:
 
     void Lock(bool lock){
         m_bLocking = lock;
-        QList<QGraphicsItem*>items = selectedItems();
+        QList<QGraphicsItem*>items = this->items();
         foreach(auto itemKey,items)
         {
             auto item = dynamic_cast<QGraphicsKeyItem*>(itemKey);
@@ -321,8 +325,7 @@ public:
         if(strFile.isEmpty())
             strFile = m_strJsonFile;
 
-        if(strFile.isEmpty())
-            return;
+        if(strFile.isEmpty()) return;
 
         qDebug() << "SaveToJson" << strFile;
         QFile file(strFile);
@@ -386,6 +389,7 @@ public:
             QString strFile = strJsoFile;
             if(strFile.isEmpty())
                 strFile = m_strJsonFile;
+            if(strFile.isEmpty()) return;
 
             qDebug() << "LoadFromJson" << strFile;
             QJsonArray jItems;
@@ -465,10 +469,7 @@ protected:
             QRectF rcFrame(m_clkPt,event->scenePos());
             for (auto item : items())
             {
-                // item局部包围盒 → 转换到scene全局坐标
                 QRectF itemSceneRect = item->mapToScene(item->boundingRect()).boundingRect();
-
-                // 矩形相交：只要有重叠就选中，标准框选
                 bool bHit = rcFrame.intersects(itemSceneRect);
                 item->setSelected(bHit);
                 if(bHit) emit itemSelected(item);
@@ -492,9 +493,96 @@ class CustomView : public QGraphicsView
 {
     Q_OBJECT
 public:
+
     CustomView(QWidget *parent = nullptr) : QGraphicsView(parent)
     {
         setBackgroundBrush(QBrush(Qt::white));
+    }
+
+    void resizeEvent(QResizeEvent *event) override
+    {
+        QGraphicsView::resizeEvent(event);
+        {
+            if(m_scence)
+            {
+                QSize LSize = this->size();
+
+                int nW = LSize.width();
+                int nH = LSize.height();
+                m_scence->setSceneRect(QRectF(1,1,nW-1,nH-1));
+            }
+        }
+    }
+
+    CustomScene *m_scence=nullptr;
+    void bindScence(CustomScene *scence)
+    {
+
+        this->setScene(scence);
+
+        QSize LSize = this->size();
+
+        int nW = LSize.width();
+        int nH = LSize.height();
+        scence->setSceneRect(QRectF(1,1,nW-1,nH-1));
+
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        m_scence = scence;
+    }
+
+    QGraphicsKeyItem *getItem(const QString&strName,bool createIfNot=false)
+    {
+        if(!m_scence) return nullptr;
+
+        QString name = strName.trimmed();
+        if(!name.isEmpty())
+        {
+            QList<QGraphicsItem*> items = m_scence->items();
+            foreach (QGraphicsItem *item, items)
+            {
+                if(auto tmp = dynamic_cast<QGraphicsKeyItem*>(item))
+                {
+                    if(tmp->name() == name)
+                        return tmp;
+                }
+            }
+        }
+
+        if(createIfNot)
+        {
+            QGraphicsKeyItem *item = new QGraphicsKeyItem();
+            if(name.isEmpty())
+                name = QString("item%1").arg(time(nullptr));
+            item->setName(name);
+            item->setHid(-1);
+            item->setPos(100,20);
+            ((CustomScene *)scene())->addItem(item);
+            return item;
+        }
+
+        return nullptr;
+    }
+
+    void addText(const QString&text,const QString&strName="")
+    {
+        getItem(strName,true)->setText(text);
+    }
+
+    void addImage(const QImage&image,const QString&strName="")
+    {        
+        getItem(strName,true)->setImage(image);
+    }
+
+    void addLine(int len,bool horizone=true,const QString&strName="")
+    {
+        QGraphicsKeyItem *item = getItem(strName,true);
+
+        item->setName(strName);
+        if(horizone)
+            item->setHLine(len);
+        else
+            item->setVLine(len);
     }
 
     void setPrintMatrix(int nRows=1,int nCols=1)
@@ -582,8 +670,7 @@ public:
                 {
                     item->setScale(fscaleN);
                     ((CustomScene *)scene())->itemChanged(item);
-                    //((CustomScene *)scene())->itemSelected(item);
-                    //emit itemChanged(item);
+                    ((CustomScene *)scene())->itemSelected(item);
                 }
             }
         }
@@ -591,8 +678,8 @@ public:
 
     void Lock(bool lock)
     {
-        ((CustomScene *)scene())->Lock(lock);
         m_bLocking=lock;
+        ((CustomScene *)scene())->Lock(lock);
     }
 
 protected:
@@ -638,11 +725,6 @@ protected:
 
     void keyPressEvent(QKeyEvent *event) override
     {
-        QGraphicsView::keyPressEvent(event);
-    }
-
-    void keyReleaseEvent(QKeyEvent *event) override
-    {
         bool bCtrlPress = (event->modifiers() & Qt::ControlModifier);
         bool bShiftPress = (event->modifiers() & Qt::ShiftModifier);
 
@@ -652,6 +734,7 @@ protected:
             event->accept();
             return;
         }
+
         if(!m_bLocking)
         {
             if(event->key() == Qt::Key_Delete)
@@ -663,16 +746,18 @@ protected:
 
             if(event->key() == Qt::Key_Z)
             {
-                ((CustomScene *)scene())->LoadFromJson("");
+                ((CustomScene *)scene())->LoadFromJson();
                 event->accept();
                 return;
             }
+
             if(event->key() == Qt::Key_S)
             {
-                ((CustomScene *)scene())->SaveToJson("");
+                ((CustomScene *)scene())->SaveToJson();
                 event->accept();
                 return;
             }
+
             {
                 int type = -1;
 
@@ -696,6 +781,11 @@ protected:
             }
         }
 
+        QGraphicsView::keyPressEvent(event);
+    }
+
+    void keyReleaseEvent(QKeyEvent *event) override
+    {
         QGraphicsView::keyReleaseEvent(event);
     }
 

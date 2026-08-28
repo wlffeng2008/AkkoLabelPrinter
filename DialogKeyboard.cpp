@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QKeyEvent>
+#include <QTimer>
 #include <QDir>
 
 #include <DialogHidReview.h>
@@ -154,17 +155,17 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     qDebug()<< "g_keyTableCount:" << g_keyTableCount;
 
     m_sence = new CustomScene(this);
-    ui->graphicsView->setScene(m_sence);
-    ui->graphicsView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    ui->graphicsView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    ui->graphicsView->bindScence(m_sence);
+    //ui->graphicsView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    //ui->graphicsView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
-    QSize LSize = ui->graphicsView->size();
+    // QSize LSize = ui->graphicsView->size();
 
-    qDebug() << "graphicsView:" << LSize;
-    int nW = LSize.width();
-    int nH = LSize.height();
-    //ui->graphicsView->setFixedSize(nW-1,nH-1);
-    m_sence->setSceneRect(QRectF(0,0,nW-1,nH-1));
+    // qDebug() << "graphicsView:" << LSize;
+    // int nW = LSize.width();
+    // int nH = LSize.height();
+    // //ui->graphicsView->setFixedSize(nW-1,nH-1);
+    // m_sence->setSceneRect(QRectF(0,0,nW-1,nH-1));
 
     {
         m_pModel = new QStandardItemModel(this);
@@ -196,7 +197,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         ui->tableView->setItemDelegateForColumn(6,pDele4);
         ui->tableView->setItemDelegateForColumn(7,pDele5);
 
-    connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
+        connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
             m_nSelected = index.row();
 
             QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(index.row(),0)->data().toInt();
@@ -204,6 +205,28 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             pKey->setSelected(true);
 
             m_sence->itemSelected(pKey);
+        });
+        connect(m_pModel,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+            int row = item->row();
+            int col = item->column();
+
+            QGraphicsItem *pKey = (QGraphicsItem *)m_pModel->item(row,0)->data().toInt();
+            if(auto key = dynamic_cast<QGraphicsKeyItem*>(pKey))
+            {
+                QString strText = m_pModel->item(row,col)->text().trimmed();
+                switch(col)
+                {
+                case 0: key->setText(strText);        break;
+                case 1: key->setHid(strText.toInt()); break;
+                case 2: key->setX(strText.toInt());   break;
+                case 3: key->setY(strText.toInt());   break;
+                case 4: key->setW(strText.toInt());   break;
+                case 5: key->setH(strText.toInt());   break;
+                case 6: key->setRX(strText.toInt());  break;
+                case 7: key->setRY(strText.toInt());  break;
+                }
+            }
+
         });
     }
 
@@ -252,7 +275,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 ui->lineEditKeytHid->setText(QString("%1").arg(itemKey->hid()));
             }
         }
-        QTimer::singleShot(20,this,[=]{ updating = false;});
+        QTimer::singleShot(5,this,[=]{ updating = false;});
     });
 
     connect(ui->spinBoxX,&QSpinBox::textChanged,this,[=](const QString & text){
@@ -312,12 +335,6 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHid->show();
     });
 
-    connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
-        m_sence->SaveToJson(ui->lineEditJsonFile->text().trimmed());
-    });
-    connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
-        m_sence->LoadFromJson(ui->lineEditJsonFile->text().trimmed());
-    });
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
         int index = ui->comboBoxKey->currentIndex();
         QGraphicsKeyItem *NT0 = new QGraphicsKeyItem(g_keyTable[index].name);
@@ -325,6 +342,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->addItem(NT0);
     });
 
+    QTimer::singleShot(1000,this,[=]{ ui->pushButtonReset->click(); });
     connect(ui->pushButtonReset,&QPushButton::clicked,this,[=]{
         m_sence->clear();
         QGraphicsKeyItem *NT0 = nullptr;
@@ -488,7 +506,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
         pHeader->resizeSection(0,200);
         {
-            QString strPath = "D:\\";//QApplication::applicationDirPath() + "/images/";
+            static QString strPath =QApplication::applicationDirPath() + "/layouts/";
             QDir d(strPath);
 
             QDir::Filters filters = QDir::Files | QDir::NoDotAndDotDot | QDir::Readable;
@@ -502,7 +520,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 if(CustomScene::getJsonInfo(strPath+strFile,jArray,jVer))
                 {
                     qDebug() << jVer ;
-                    QStandardItem *item0 = new QStandardItem(strPath+strFile);
+                    QStandardItem *item0 = new QStandardItem(strFile);
                     QStandardItem *item1 = new QStandardItem(QString("%1").arg(jVer["keycount"].toInt()));
                     QStandardItem *item2 = new QStandardItem(jVer["datetime"].toString());
                     m_pModel2->appendRow({item0,item1,item2});
@@ -518,12 +536,39 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                     ui->pushButtonLoad->click();
                 }
             });
+            connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
+                m_sence->SaveToJson(strPath+ui->lineEditJsonFile->text().trimmed());
+            });
+            connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
+                m_sence->LoadFromJson(strPath+ui->lineEditJsonFile->text().trimmed());
+            });
         }
 
         connect(ui->checkBoxRound,&QCheckBox::clicked,this,[=](bool checked){
             m_sence->setVolRoundButon(checked);
         });
     }
+
+    connect(ui->pushButtonAddImg,&QPushButton::clicked,this,[=]{
+        if(m_bCtrlPressed)
+        {
+            ui->graphicsView->addLine(200);
+            return;
+        }
+
+        if(m_bShiftPressed)
+        {
+            ui->graphicsView->addLine(200,false);
+            return;
+        }
+
+        if(m_bAltPressed)
+        {
+            ui->graphicsView->addText("Hello World!");
+            return;
+        }
+
+    });
 }
 
 void DialogKeyboard::UpdateRow(QGraphicsItem *item)
@@ -577,7 +622,20 @@ DialogKeyboard::~DialogKeyboard()
 
 void DialogKeyboard::keyPressEvent(QKeyEvent *event)
 {
-    //qDebug() << event->key() << event->nativeScanCode() << event->nativeVirtualKey();
+    qDebug() << Qt::hex << event->key() << Qt::dec << event->nativeScanCode() << event->nativeVirtualKey();
+
+    if(event->key() == Qt::Key_Shift) m_bShiftPressed = true;
+    if(event->key() == Qt::Key_Control) m_bCtrlPressed = true;
+    if(event->key() == Qt::Key_Alt) m_bAltPressed = true;
 
     QDialog::keyPressEvent(event);
+}
+void DialogKeyboard::keyReleaseEvent(QKeyEvent *event)
+{
+    //qDebug() << event->key() << event->nativeScanCode() << event->nativeVirtualKey();
+
+    if(event->key() == Qt::Key_Shift) m_bShiftPressed = false;
+    if(event->key() == Qt::Key_Control) m_bCtrlPressed = false;
+    if(event->key() == Qt::Key_Alt) m_bAltPressed = false;
+    QDialog::keyReleaseEvent(event);
 }

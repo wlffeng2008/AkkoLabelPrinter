@@ -1,0 +1,29 @@
+﻿Hex,Dec,Name
+0x68,104,Keyboard F13
+0x69,105,Keyboard F14
+0x6A,106,Keyboard F15
+0x6B,107,Keyboard F16
+0x6C,108,Keyboard F17
+0x6D,109,Keyboard F18
+0x6E,110,Keyboard F19
+0x6F,111,Keyboard F20
+0x70,112,Keyboard F21
+0x71,113,Keyboard F22
+0x72,114,Keyboard F23
+0x73,115,Keyboard F24
+0x74,116,Keyboard Execute
+0x75,117,Keyboard Help
+0x76,118,Keyboard Menu
+0x77,119,Keyboard Select
+0x78,120,Keyboard Stop
+0x79,121,Keyboard Again
+0x7A,122,Keyboard Undo
+0x7B,123,Keyboard Cut
+0x7C,124,Keyboard Copy
+0x7D,125,Keyboard Paste
+0x7E,126,Keyboard Find
+0x7F,127,Keyboard Mute
+0x80,128,Keyboard Volume Up
+0x81,129,Keyboard Volume Down
+0x82,130,Keyboard Locking Caps Lock
+0x83,131,Keyboard Locking Num Lock

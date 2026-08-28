@@ -1,0 +1,65 @@
+﻿Hex,Dec,Name
+0x00,0,No Event / None
+0x01,1,ErrorRollOver
+0x02,2,POSTFail
+0x03,3,ErrorUndefined
+0x04,4,Keyboard a / A
+0x05,5,Keyboard b / B
+0x06,6,Keyboard c / C
+0x07,7,Keyboard d / D
+0x08,8,Keyboard e / E
+0x09,9,Keyboard f / F
+0x0A,10,Keyboard g / G
+0x0B,11,Keyboard h / H
+0x0C,12,Keyboard i / I
+0x0D,13,Keyboard j / J
+0x0E,14,Keyboard k / K
+0x0F,15,Keyboard l / L
+0x10,16,Keyboard m / M
+0x11,17,Keyboard n / N
+0x12,18,Keyboard o / O
+0x13,19,Keyboard p / P
+0x14,20,Keyboard q / Q
+0x15,21,Keyboard r / R
+0x16,22,Keyboard s / S
+0x17,23,Keyboard t / T
+0x18,24,Keyboard u / U
+0x19,25,Keyboard v / V
+0x1A,26,Keyboard w / W
+0x1B,27,Keyboard x / X
+0x1C,28,Keyboard y / Y
+0x1D,29,Keyboard z / Z
+0x1E,30,Keyboard 1 / !
+0x1F,31,Keyboard 2 / @
+0x20,32,Keyboard 3 / #
+0x21,33,Keyboard 4 / $
+0x22,34,Keyboard 5 / %
+0x23,35,Keyboard 6 / ^
+0x24,36,Keyboard 7 / &
+0x25,37,Keyboard 8 / *
+0x26,38,Keyboard 9 / (
+0x27,39,Keyboard 0 / )
+0x28,40,Keyboard Enter
+0x29,41,Keyboard Escape
+0x2A,42,Keyboard Backspace
+0x2B,43,Keyboard Tab
+0x2C,44,Keyboard Spacebar
+0x2D,45,Keyboard - / _
+0x2E,46,Keyboard = / +
+0x2F,47,Keyboard [ / {
+0x30,48,Keyboard ] / }
+0x31,49,Keyboard \ / |
+0x32,50,Keyboard Non-US # / ~
+0x33,51,Keyboard ; / :
+0x34,52,"Keyboard ' / """
+0x35,53,Keyboard ` / ~
+0x36,54,"Keyboard , / <"
+0x37,55,Keyboard . / >
+0x38,56,Keyboard / / ?
+0x39,57,Keyboard Caps Lock
+0x3A,58,Keyboard F1
+0x3B,59,Keyboard F2
+0x3C,60,Keyboard F3
+0x3D,61,Keyboard F4
+0x3E,62,Keyboard F5
+0x3F,63,Keyboard F6

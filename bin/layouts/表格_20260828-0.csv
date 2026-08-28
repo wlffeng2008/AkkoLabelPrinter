@@ -1,0 +1,9 @@
+﻿Bit,掩码,含义,VK
+bit0,0x01,Left Ctrl,VK_LCONTROL(0xA2)
+bit1,0x02,Left Shift,VK_LSHIFT(0xA0)
+bit2,0x04,Left Alt,VK_LMENU(0xA4)
+bit3,0x08,Left GUI(Win),VK_LWIN(0x5B)
+bit4,0x10,Right Ctrl,VK_RCONTROL(0xA3)
+bit5,0x20,Right Shift,VK_RSHIFT(0xA1)
+bit6,0x40,Right Alt,VK_RMENU(0xA5)
+bit7,0x80,Right GUI(Win),VK_RWIN(0x5C)

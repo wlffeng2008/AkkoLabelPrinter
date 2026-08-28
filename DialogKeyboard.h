@@ -26,9 +26,14 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
     Ui::DialogKeyboard *ui;
+
+    bool m_bShiftPressed = false;
+    bool m_bCtrlPressed = false;
+    bool m_bAltPressed = false;
 
     CustomScene *m_sence=nullptr;
     QStandardItemModel *m_pModel = nullptr;

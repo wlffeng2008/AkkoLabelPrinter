@@ -752,7 +752,7 @@
           </widget>
          </item>
          <item row="8" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <property name="sizeConstraint">
             <enum>QLayout::SetDefaultConstraint</enum>
            </property>
@@ -1054,20 +1054,17 @@
          </item>
          <item row="9" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_11">
-           <property name="spacing">
-            <number>60</number>
-           </property>
            <item>
             <widget class="QPushButton" name="pushButtonSellData">
              <property name="minimumSize">
               <size>
-               <width>0</width>
+               <width>100</width>
                <height>28</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>16777215</width>
+               <width>100</width>
                <height>28</height>
               </size>
              </property>
@@ -1080,16 +1077,32 @@
             </widget>
            </item>
            <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>60</width>
+               <height>30</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
             <widget class="QPushButton" name="pushButtonGenLabel">
              <property name="minimumSize">
               <size>
-               <width>0</width>
+               <width>100</width>
                <height>28</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>16777215</width>
+               <width>100</width>
                <height>28</height>
               </size>
              </property>
@@ -1121,9 +1134,9 @@
        <widget class="QPushButton" name="pushButtonReject">
         <property name="geometry">
          <rect>
-          <x>178</x>
+          <x>176</x>
           <y>468</y>
-          <width>98</width>
+          <width>100</width>
           <height>28</height>
          </rect>
         </property>
@@ -1145,7 +1158,7 @@
          <rect>
           <x>94</x>
           <y>526</y>
-          <width>181</width>
+          <width>180</width>
           <height>28</height>
          </rect>
         </property>
@@ -1168,6 +1181,9 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_4">
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="label307_2">
        <property name="text">
@@ -1199,6 +1215,9 @@
        <property name="spacing">
         <number>6</number>
        </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QCheckBox" name="checkBoxWritePdf">
          <property name="text">
@@ -1208,18 +1227,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonOpenPdf">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>28</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>28</height>
-          </size>
-         </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
@@ -1230,18 +1237,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonSetPdf">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>28</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>28</height>
-          </size>
-         </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
@@ -1263,42 +1258,29 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_10">
+      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0">
        <item>
-        <widget class="QComboBox" name="comboBoxPrinter">
-         <property name="minimumSize">
-          <size>
-           <width>188</width>
-           <height>21</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>21</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QComboBox" name="comboBoxPrinter"/>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonPrinter">
          <property name="minimumSize">
           <size>
-           <width>120</width>
-           <height>28</height>
+           <width>98</width>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>120</width>
-           <height>28</height>
+           <width>98</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="text">
-          <string>刷新打印机</string>
+          <string>刷新</string>
          </property>
         </widget>
        </item>
@@ -1309,6 +1291,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1,5,1">
      <property name="spacing">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
       <number>5</number>
      </property>
      <item>

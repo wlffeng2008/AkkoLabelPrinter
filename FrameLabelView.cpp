@@ -242,8 +242,8 @@ void FrameLabelView::AddLine(bool horizontal,const QString&strName)
     QImage image(QSize(741,2),QImage::Format_RGB32);
     if(!horizontal)
         image = QImage(QSize(2,727),QImage::Format_RGB32);
-    QPainter painter(&image);
-    painter.fillRect(image.rect(),Qt::black);
+
+    image.fill(Qt::black);
     CustomPixmapItem* imgItem = (CustomPixmapItem*)AddImage(image,strName);
     imgItem->setData(0, (horizontal ? 1 : 2));
     imgItem->setZValue(9999);

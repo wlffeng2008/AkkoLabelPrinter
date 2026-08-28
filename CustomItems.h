@@ -305,10 +305,14 @@ protected:
         //QGraphicsPixmapItem::paint(painter, option, widget);
 
         QRectF rect = boundingRect();
-        int m_nLineType = data(0).toInt();
-        if(m_nLineType != 0)
+        int nLineType = data(0).toInt();
+        //qDebug() << rect << m_strName << nLineType;
+        if(nLineType != 0)
         {
-            painter->fillRect(rect,Qt::black);
+            if(nLineType == 2)
+                painter->fillRect(rect.adjusted(0,0,-1,0),Qt::black);
+            else
+                painter->fillRect(rect.adjusted(0,0,0,-1),Qt::black);
         }
         else
         {
@@ -368,6 +372,7 @@ public:
 
     static QString ImageToBase64(const QImage &image)
     {
+        if(image.isNull()) return QString();
         QByteArray byteArray;
         QBuffer buffer(&byteArray);
         buffer.open(QIODevice::WriteOnly);
@@ -392,23 +397,26 @@ public:
         jObj["type"] = m_type;
         jObj["font"] = m_font.toString();
         jObj["image"] = ImageToBase64(m_image);
+        jObj["zvalue"] = zValue();
 
         return jObj;
     }
 
-    void SetJsonObject(const QJsonObject&jObj){
+    void SetJsonObject(const QJsonObject&jObj)
+    {
         setPos(jObj["x"].toInt(),jObj["y"].toInt());
         setSize(jObj["w"].toInt(),jObj["h"].toInt());
         setText(jObj["text"].toString());
         setName(jObj["name"].toString());
+        setZValue(jObj["zvalue"].toInt());
         m_hid = jObj["hid"].toInt();
         m_type = jObj["type"].toInt();
         m_image = ImageFromBase64(jObj["image"].toString());
     }
 
 private:
-    int m_nW;
-    int m_nH;
+    int m_nW=40;
+    int m_nH=40;
     int m_hid=0;
     QFont m_font = QFont("微软雅黑",9,600);
     QString m_name;
@@ -428,17 +436,20 @@ private:
 
 public:
     QString name(){ return m_name; }
-    void setName(const QString&name){ m_name=name; }
+    void setName(const QString&name)
+    {
+        m_name = name;
+    }
 
     void setFontSize(int size){ m_font.setPixelSize(size); }
     int  fontSize(){ return m_font.pixelSize(); }
     bool bold(){ m_font.bold(); }
     void setBold(bool bold){ m_font.setBold(bold); }
-    QFont font(){return m_font;}
+    QFont font(){ return m_font; }
     void setFont(const QFont&font){ m_font=font; }
 
-    int hid(){ return m_hid;}
-    void setHid(int hid){m_hid = hid;}
+    int hid(){ return m_hid; }
+    void setHid(int hid){ m_hid = hid; }
 
     int x(){ return pos().x(); }
     int y(){ return pos().y(); }
@@ -453,6 +464,9 @@ public:
     int ry(){ return (y() + h());}
     void setRX(int rx){ setW(rx - x()); }
     void setRY(int ry){ setH(ry - y()); }
+
+    void setItemType(int type){ m_type=type; }
+    int itemType(){ return m_type; }
 
     void Lock(bool lock=true)
     {
@@ -610,24 +624,25 @@ public:
         painter->save();
 
         QRectF rect = boundingRect();
-
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
         bool isVolRound = false;
-        bool bDone = false;
-        if(m_hid == 233 || m_hid == 234 || m_hid == 235 || m_hid == 236)
+        if(m_hid == 233 || m_hid == 234 || m_hid == 235)
         {
             if(h()/w() == 3)
                 isVolRound = true;
         }
 
+        bool bDone = false;
         if(isVolRound)
         {
             int h = this->h();
             int s = h/3;
             QImage img(h,h,QImage::Format_ARGB32);
             img.fill(Qt::transparent);
+
             QPainter tmp(&img);
             tmp.setRenderHint(QPainter::Antialiasing);
+
             QRect rcCopy;
             if(m_hid == 233)
             {
@@ -644,6 +659,7 @@ public:
                 rcCopy = QRect(s,0,s,h);
                 tmp.setBrush(isSelected()?Qt::gray:Qt::green);
             }
+
             if(!rcCopy.isEmpty())
             {
                 bDone = true;
@@ -657,36 +673,48 @@ public:
             if(m_type == 0)
             {
                 painter->setRenderHint(QPainter::Antialiasing);
-                if(isSelected())
+                painter->setBrush(Qt::white);
+                if(m_hid == -1)
                 {
-                    //painter->setPen(QPen(Qt::red,1,Qt::DashLine));
-                    painter->setBrush(Qt::gray);
+                    painter->setPen(Qt::NoPen);
+                    painter->setBrush(Qt::NoBrush);
+                    if(isSelected())
+                    {
+                        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                    }
+                    painter->drawRoundedRect(rect,0,0);
                 }
                 else
                 {
-                    painter->setBrush(Qt::white);
+                    if(isSelected())
+                    {
+                        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                        painter->setBrush(Qt::gray);
+                    }
+                    painter->drawRoundedRect(rect,14,14);
                 }
-                painter->drawRoundedRect(rect,14,14);
 
                 QString text = m_text;
                 if(m_bEditing) text.clear();
 
                 painter->setFont(m_font);
+                painter->setPen(QPen(Qt::black));
                 painter->drawText(rect,text,QTextOption(Qt::AlignCenter));
             }
             else
             {
+                if(isSelected())
+                {
+                    painter->setPen(QPen(Qt::red,1,Qt::DashLine));
+                    painter->drawRoundedRect(rect,0,0);
+                }
+
                 if(m_type == 1)
                 {
-                    QPainterPath path;
-                    path.addRoundedRect(rect,14,14);
-                    painter->setClipPath(path);
+                    //QPainterPath path;
+                    //path.addRoundedRect(rect,14,14);
+                    //painter->setClipPath(path);
                     painter->drawImage(rect,m_image);
-                    if(isSelected())
-                    {
-                        painter->setPen(QPen(Qt::red,1,Qt::DashLine));
-                        painter->drawRoundedRect(rect,14,14);
-                    }
                 }
                 else
                 {
@@ -699,7 +727,7 @@ public:
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        qDebug() << QString::asprintf("X:%4d  Y:%4d  RX:%4d  RY:%4d  W:%3d  H:%3d",x(),y(),rx(),ry(),w(),h());
+        qDebug() << QString::asprintf("X:%4d  Y:%4d  RX:%4d  RY:%4d  W:%3d  H:%3d",x(),y(),rx(),ry(),w(),h()) << name();
         setSelected(!isSelected());
         event->accept();
         //QGraphicsPixmapItem::mousePressEvent(event);

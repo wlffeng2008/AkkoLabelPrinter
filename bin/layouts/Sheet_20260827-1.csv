@@ -1,0 +1,41 @@
+﻿Hex,Dec,Name
+0x40,64,Keyboard F7
+0x41,65,Keyboard F8
+0x42,66,Keyboard F9
+0x43,67,Keyboard F10
+0x44,68,Keyboard F11
+0x45,69,Keyboard F12
+0x46,70,Keyboard PrintScreen
+0x47,71,Keyboard Scroll Lock
+0x48,72,Keyboard Pause
+0x49,73,Keyboard Insert
+0x4A,74,Keyboard Home
+0x4B,75,Keyboard PageUp
+0x4C,76,Keyboard Delete (Forward)
+0x4D,77,Keyboard End
+0x4E,78,Keyboard PageDown
+0x4F,79,Keyboard Right Arrow
+0x50,80,Keyboard Left Arrow
+0x51,81,Keyboard Down Arrow
+0x52,82,Keyboard Up Arrow
+0x53,83,Keypad Num Lock / Clear
+0x54,84,Keypad /
+0x55,85,Keypad *
+0x56,86,Keypad -
+0x57,87,Keypad +
+0x58,88,Keypad Enter
+0x59,89,Keypad 1 / End
+0x5A,90,Keypad 2 / Down
+0x5B,91,Keypad 3 / PageDn
+0x5C,92,Keypad 4 / Left
+0x5D,93,Keypad 5
+0x5E,94,Keypad 6 / Right
+0x5F,95,Keypad 7 / Home
+0x60,96,Keypad 8 / Up
+0x61,97,Keypad 9 / PageUp
+0x62,98,Keypad 0 / Insert
+0x63,99,Keypad . / Delete
+0x64,100,Keyboard Non-US \ / |
+0x65,101,Keyboard Application (Menu)
+0x66,102,Keyboard Power
+0x67,103,Keypad =

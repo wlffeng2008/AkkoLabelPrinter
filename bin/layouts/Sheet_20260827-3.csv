@@ -1,0 +1,29 @@
+﻿Hex,Dec,Name
+0x84,132,Keyboard Locking Scroll Lock
+0x85,133,Keypad Comma
+0x86,134,Keypad Equal Sign (AS/400)
+0x87,135,Keyboard International 1 (Ro)
+0x88,136,Keyboard International 2 (Kana)
+0x89,137,Keyboard International 3 (Yen)
+0x8A,138,Keyboard International 4
+0x8B,139,Keyboard International 5
+0x8C,140,Keyboard International 6
+0x8D,141,Keyboard International 7
+0x8E,142,Keyboard International 8
+0x8F,143,Keyboard International 9
+0x90,144,Keyboard LANG 1 (Hangul/English)
+0x91,145,Keyboard LANG 2 (Hanja)
+0x92,146,Keyboard LANG 3 (Katakana)
+0x93,147,Keyboard LANG 4 (Hiragana)
+0x94,148,Keyboard LANG 5
+0x95,149,Keyboard LANG 6
+0x96,150,Keyboard LANG 7
+0x97,151,Keyboard LANG 8
+0x98,152,Keyboard LANG 9
+0x99,153,Keyboard Alternate Erase
+0x9A,154,Keyboard SysReq / Attention
+0x9B,155,Keyboard Cancel
+0x9C,156,Keyboard Clear
+0x9D,157,Keyboard Prior
+0x9E,158,Keyboard Return
+0x9F,159,Keyboard Separator

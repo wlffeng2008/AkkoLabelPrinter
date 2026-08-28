@@ -105,6 +105,7 @@ void DialogReject::saveLoadData(bool save)
         {
             QString line = in.readLine();
             QStringList vals = line.split(',');
+            if(vals.count() != 7) continue;
 
             QString val0 = vals[0].replace(strRepl,",").trimmed();
             QString val1 = vals[1].replace(strRepl,",").trimmed();

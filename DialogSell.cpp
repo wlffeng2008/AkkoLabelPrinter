@@ -24,8 +24,8 @@ DialogSell::DialogSell(QWidget *parent)
     m_model = new QStandardItemModel(this);
     m_model->setHorizontalHeaderLabels(QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果").split(','));
     ui->tableView->setModel(m_model);
-    QHeaderView *pHeader = ui->tableView->horizontalHeader();
 
+    QHeaderView *pHeader = ui->tableView->horizontalHeader();
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
     pHeader->resizeSection(0,170);
@@ -117,6 +117,7 @@ void DialogSell::saveLoadData(bool save)
         {
             QString line = in.readLine();
             QStringList vals = line.split(',');
+            if(vals.count() != 9) continue;
 
             QString val0 = vals[0].replace(strRepl,",").trimmed();
             QString val1 = vals[1].replace(strRepl,",").trimmed();
