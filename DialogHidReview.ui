@@ -34,6 +34,9 @@
        <property name="text">
         <string>Page0</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>

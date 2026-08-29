@@ -54,7 +54,7 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
         pLabel->setSelected(true);
         auto textItem = dynamic_cast<CustomTextItem*>(pLabel);
         auto pixmapItem = dynamic_cast<CustomPixmapItem*>(pLabel);
-        if(index.column() == 7 || index.column() == 8)
+        if((index.column() == 7 || index.column() == 8) && pLabel->data(0).toInt() == 0)
         {
             if(pixmapItem)
             {

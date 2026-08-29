@@ -50,7 +50,7 @@ public:
             }
 
             int hid = itemKey->hid();
-            if(hid != 0)
+            if(hid > 0)
             {
                 for (auto item : items())
                 {
@@ -77,7 +77,7 @@ public:
         }
 
         if(item->zValue() == 0)
-        item->setZValue(this->items().count()+1);
+            item->setZValue(this->items().count()+1);
         QGraphicsScene::addItem(item);
         emit itemAdded(item);
 
@@ -276,7 +276,8 @@ public:
         }
     }
 
-    void Lock(bool lock){
+    void Lock(bool lock)
+    {
         m_bLocking = lock;
         QList<QGraphicsItem*>items = this->items();
         foreach(auto itemKey,items)
@@ -566,12 +567,16 @@ public:
 
     void addText(const QString&text,const QString&strName="")
     {
-        getItem(strName,true)->setText(text);
+        QGraphicsKeyItem *item = getItem(strName,true);
+        item->setText(text);
+        item->setH(50);
+        item->setFontSize(24);
     }
 
     void addImage(const QImage&image,const QString&strName="")
-    {        
-        getItem(strName,true)->setImage(image);
+    {
+        QGraphicsKeyItem *item = getItem(strName,true);
+        item->setImage(image);
     }
 
     void addLine(int len,bool horizone=true,const QString&strName="")

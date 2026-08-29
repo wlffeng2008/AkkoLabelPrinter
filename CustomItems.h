@@ -102,13 +102,26 @@ public:
             QPointF delta = event->scenePos() - initialScenePos;
             qreal newWidth = initialRect.width() + delta.x();
             qreal newHeight = initialRect.height() + delta.y();
-            m_item->setScale(qMax( newWidth / initialRect.width(), newHeight / initialRect.height()));  // Scaling logic
+            qreal scaleX =newWidth *1.0 / initialRect.width() ;
+            qreal scaleY =newHeight *1.0 / initialRect.height() ;
+
+            if(delta.x() == 0)
+            {
+                m_item->setScale(scaleY);
+            }
+            else if(delta.y() == 0)
+            {
+                m_item->setScale(scaleX);
+            }
+            else
+            {
+                m_item->setScale(qMax( scaleX, scaleY));
+            }
         }
         else if( moving )
         {
             m_item->setPos(m_item->pos() + (event->scenePos() - initialScenePos));  // Move item
             initialScenePos = event->scenePos();
-            event->accept();
         }
         event->accept();
 
@@ -133,14 +146,16 @@ public:
         QPointF pos = event->pos();
         const qreal edgeThreshold = 2.0;
 
-        if (isNearEdge(pos, rect, edgeThreshold))
+        if (isNearEdge(pos, rect, edgeThreshold) && m_item->isSelected())
         {
-            m_item->setCursor(Qt::SizeFDiagCursor);  // Change cursor to resizing
+            m_item->setCursor(Qt::SizeBDiagCursor);  // Change cursor to resizing
         }
         else
         {
             m_item->setCursor(Qt::PointingHandCursor);  // Normal cursor
         }
+
+        event->accept();
     }
 
 
@@ -398,6 +413,7 @@ public:
         jObj["font"] = m_font.toString();
         jObj["image"] = ImageToBase64(m_image);
         jObj["zvalue"] = zValue();
+        jObj["scale"] = scale();
 
         return jObj;
     }
@@ -409,6 +425,10 @@ public:
         setText(jObj["text"].toString());
         setName(jObj["name"].toString());
         setZValue(jObj["zvalue"].toInt());
+        m_font.fromString(jObj["font"].toString());
+        qreal scale = jObj["scale"].toDouble();
+        if(scale<=0.1) scale=1.0;
+        setScale(scale);
         m_hid = jObj["hid"].toInt();
         m_type = jObj["type"].toInt();
         m_image = ImageFromBase64(jObj["image"].toString());
@@ -418,7 +438,7 @@ private:
     int m_nW=40;
     int m_nH=40;
     int m_hid=0;
-    QFont m_font = QFont("微软雅黑",9,600);
+    QFont m_font = QFont("微软雅黑",9,500);
     QString m_name;
     QString m_text;
     QImage m_image;
@@ -714,7 +734,7 @@ public:
                     //QPainterPath path;
                     //path.addRoundedRect(rect,14,14);
                     //painter->setClipPath(path);
-                    painter->drawImage(rect,m_image);
+                    painter->drawImage(rect.adjusted(0,0,-1,-1),m_image);
                 }
                 else
                 {

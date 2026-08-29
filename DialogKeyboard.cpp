@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QDir>
+#include <QFileDialog>
 
 #include <DialogHidReview.h>
 
@@ -568,6 +569,20 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             return;
         }
 
+        QString strImg = QFileDialog::getOpenFileName(
+            this,
+            tr("选择图片"),
+            "",
+            tr("图片文件(*.png *.jpg *.jpeg *.bmp *.tiff);;所有文件(*.*)")
+            );
+
+        if (!strImg.isEmpty())
+        {
+            ui->graphicsView->addImage(QImage(strImg));
+        }
+    });
+    QTimer::singleShot(500,this,[=]{
+        ui->frameEdit->move(ui->tableView2->geometry().topRight());
     });
 }
 

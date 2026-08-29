@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QString strStyle=R"(
 
-        QPushButton:focus{background-color: #C0B0BF;}
-        QPushButton:hover{background-color: #B0B0BF;}
+        QPushButton:focus{background-color: #6CCEEF;}
+        QPushButton:hover{background-color: #6CCEEF;}
         QPushButton {background-color: #3CBEEF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 26px; padding-left:2px;padding-right:2px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     )";
 
-    a.setStyleSheet(strStyle );
+    a.setStyleSheet(strStyle);
 
     QLocale::setDefault( QLocale(QLocale::Chinese, QLocale::China) );
     QTranslator translatorA;

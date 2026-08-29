@@ -1,7 +1,6 @@
 #include "DialogHidReview.h"
 #include "ui_DialogHidReview.h"
 
-
 QString strPage0(R"(0x00 – 0x3F 基础键
 Hex,Dec,Name
 0x00,0,No Event / None
@@ -491,6 +490,8 @@ QString strDefine(R"(
 #define HID_MEDIA_CALC 0xFB
 )");
 
+#include <QTimer>
+
 DialogHidReview::DialogHidReview(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::DialogHidReview)
@@ -499,6 +500,7 @@ DialogHidReview::DialogHidReview(QWidget *parent)
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
     ui->textEdit->setText(strPage0);
 
+    QTimer::singleShot(100,this,[=]{ui->radioButton_1->click();});
     connect(ui->radioButton_1,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage0);
     });
@@ -522,10 +524,10 @@ DialogHidReview::DialogHidReview(QWidget *parent)
     connect(ui->radioButton_6,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage5 + QString("\n\n\n") + strUrl + strDefine);
     });
+
     connect(ui->pushButtonOK,&QPushButton::clicked,this,[=]{
         hide();
     });
-
 }
 
 DialogHidReview::~DialogHidReview()
