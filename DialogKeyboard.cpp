@@ -239,7 +239,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
     connect(m_sence,&CustomScene::viewPosition,this,[=](const QPoint&point){
         //qDebug() << point;
-        ui->lineEditCursor->setText(QString::asprintf("当前位置：%d,%d",point.x(),point.y()));
+        ui->lineEditCursor->setText(QString::asprintf("位置：%d,%d",point.x(),point.y()));
     });
     connect(m_sence,&CustomScene::itemChanged,this,[=](QGraphicsItem *item){
         updating = true;

@@ -34,7 +34,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,5">
+    <layout class="QHBoxLayout" name="HY2" stretch="2,3">
      <item>
       <widget class="QTableView" name="tableView">
        <property name="selectionMode">
@@ -54,9 +54,9 @@
        <widget class="QPushButton" name="pushButtonReset">
         <property name="geometry">
          <rect>
-          <x>304</x>
+          <x>306</x>
           <y>4</y>
-          <width>58</width>
+          <width>62</width>
           <height>28</height>
          </rect>
         </property>
@@ -79,52 +79,27 @@
        <widget class="QLineEdit" name="lineEditCursor">
         <property name="geometry">
          <rect>
-          <x>220</x>
-          <y>176</y>
-          <width>138</width>
+          <x>270</x>
+          <y>100</y>
+          <width>214</width>
           <height>21</height>
          </rect>
         </property>
         <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>96</x>
-          <y>51</y>
-          <width>30</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>W：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <bool>false</bool>
         </property>
        </widget>
        <widget class="QSpinBox" name="spinBoxH">
         <property name="geometry">
          <rect>
-          <x>126</x>
-          <y>77</y>
-          <width>54</width>
+          <x>206</x>
+          <y>39</y>
+          <width>62</width>
           <height>24</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
+        <property name="prefix">
+         <string>H:</string>
         </property>
         <property name="maximum">
          <number>4000</number>
@@ -133,23 +108,14 @@
        <widget class="QSpinBox" name="spinBoxX">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>47</y>
-          <width>54</width>
+          <x>8</x>
+          <y>39</y>
+          <width>62</width>
           <height>24</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
+        <property name="prefix">
+         <string>X:</string>
         </property>
         <property name="maximum">
          <number>4000</number>
@@ -158,31 +124,22 @@
        <widget class="QLineEdit" name="lineEditKeytext">
         <property name="geometry">
          <rect>
-          <x>226</x>
-          <y>48</y>
-          <width>135</width>
+          <x>8</x>
+          <y>68</y>
+          <width>62</width>
           <height>21</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>135</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>135</width>
-          <height>16777215</height>
-         </size>
+        <property name="placeholderText">
+         <string>Text</string>
         </property>
        </widget>
        <widget class="QLineEdit" name="lineEditKeytHid">
         <property name="geometry">
          <rect>
-          <x>226</x>
-          <y>78</y>
-          <width>33</width>
+          <x>76</x>
+          <y>68</y>
+          <width>58</width>
           <height>21</height>
          </rect>
         </property>
@@ -192,43 +149,21 @@
           <height>16777215</height>
          </size>
         </property>
-       </widget>
-       <widget class="QLabel" name="label_6">
-        <property name="geometry">
-         <rect>
-          <x>184</x>
-          <y>79</y>
-          <width>40</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Hid：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="placeholderText">
+         <string>Hid</string>
         </property>
        </widget>
        <widget class="QSpinBox" name="spinBoxY">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>77</y>
-          <width>54</width>
+          <x>74</x>
+          <y>39</y>
+          <width>62</width>
           <height>24</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
+        <property name="prefix">
+         <string>Y:</string>
         </property>
         <property name="maximum">
          <number>4000</number>
@@ -237,114 +172,25 @@
        <widget class="QSpinBox" name="spinBoxW">
         <property name="geometry">
          <rect>
-          <x>126</x>
-          <y>47</y>
-          <width>54</width>
+          <x>140</x>
+          <y>39</y>
+          <width>62</width>
           <height>24</height>
          </rect>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>54</width>
-          <height>24</height>
-         </size>
+        <property name="prefix">
+         <string>W:</string>
         </property>
         <property name="maximum">
          <number>4000</number>
         </property>
        </widget>
-       <widget class="QLabel" name="label_2">
-        <property name="geometry">
-         <rect>
-          <x>8</x>
-          <y>79</y>
-          <width>30</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Y：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_1">
-        <property name="geometry">
-         <rect>
-          <x>8</x>
-          <y>49</y>
-          <width>30</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>X：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_3">
-        <property name="geometry">
-         <rect>
-          <x>96</x>
-          <y>81</y>
-          <width>30</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>H：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_5">
-        <property name="geometry">
-         <rect>
-          <x>184</x>
-          <y>49</y>
-          <width>40</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Text：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_7">
-        <property name="geometry">
-         <rect>
-          <x>4</x>
-          <y>116</y>
-          <width>38</width>
-          <height>18</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Step：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
        <widget class="QSpinBox" name="spinBoxStep">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>110</y>
-          <width>54</width>
+          <x>8</x>
+          <y>98</y>
+          <width>80</width>
           <height>28</height>
          </rect>
         </property>
@@ -353,6 +199,9 @@
           <width>0</width>
           <height>28</height>
          </size>
+        </property>
+        <property name="prefix">
+         <string>Step:</string>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -367,9 +216,9 @@
        <widget class="QCheckBox" name="checkBoxLock">
         <property name="geometry">
          <rect>
-          <x>8</x>
-          <y>8</y>
-          <width>82</width>
+          <x>274</x>
+          <y>40</y>
+          <width>90</width>
           <height>19</height>
          </rect>
         </property>
@@ -380,8 +229,8 @@
        <widget class="QPushButton" name="pushButtonSave">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>172</y>
+          <x>248</x>
+          <y>132</y>
           <width>54</width>
           <height>28</height>
          </rect>
@@ -393,8 +242,8 @@
        <widget class="QPushButton" name="pushButtonLoad">
         <property name="geometry">
          <rect>
-          <x>102</x>
-          <y>172</y>
+          <x>310</x>
+          <y>132</y>
           <width>54</width>
           <height>28</height>
          </rect>
@@ -406,38 +255,22 @@
        <widget class="QLineEdit" name="lineEditJsonFile">
         <property name="geometry">
          <rect>
-          <x>40</x>
-          <y>146</y>
-          <width>318</width>
+          <x>8</x>
+          <y>136</y>
+          <width>233</width>
           <height>21</height>
          </rect>
         </property>
         <property name="text">
-         <string>D:\keyboard-layout-Full-108.json</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_8">
-        <property name="geometry">
-         <rect>
-          <x>3</x>
-          <y>146</y>
-          <width>37</width>
-          <height>18</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>File：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <string>keyboard-layout-Full-108.json</string>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButtonAdd">
         <property name="geometry">
          <rect>
-          <x>234</x>
+          <x>164</x>
           <y>4</y>
-          <width>64</width>
+          <width>62</width>
           <height>28</height>
          </rect>
         </property>
@@ -460,23 +293,26 @@
        <widget class="QComboBox" name="comboBoxKey">
         <property name="geometry">
          <rect>
-          <x>92</x>
+          <x>10</x>
           <y>8</y>
-          <width>136</width>
+          <width>148</width>
           <height>22</height>
          </rect>
         </property>
         <property name="maxVisibleItems">
          <number>50</number>
         </property>
+        <property name="placeholderText">
+         <string>常用按键</string>
+        </property>
        </widget>
        <widget class="QTableView" name="tableView2">
         <property name="geometry">
          <rect>
           <x>6</x>
-          <y>206</y>
-          <width>360</width>
-          <height>201</height>
+          <y>162</y>
+          <width>358</width>
+          <height>245</height>
          </rect>
         </property>
         <property name="focusPolicy">
@@ -495,22 +331,22 @@
        <widget class="QCheckBox" name="checkBoxRound">
         <property name="geometry">
          <rect>
-          <x>266</x>
-          <y>116</y>
+          <x>274</x>
+          <y>70</y>
           <width>92</width>
           <height>19</height>
          </rect>
         </property>
         <property name="text">
-         <string>Round Vol</string>
+         <string>Round Btn</string>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButtonHid">
         <property name="geometry">
          <rect>
-          <x>264</x>
-          <y>76</y>
-          <width>44</width>
+          <x>138</x>
+          <y>66</y>
+          <width>64</width>
           <height>28</height>
          </rect>
         </property>
@@ -534,7 +370,7 @@
         <property name="geometry">
          <rect>
           <x>226</x>
-          <y>108</y>
+          <y>96</y>
           <width>32</width>
           <height>32</height>
          </rect>
@@ -570,8 +406,8 @@
        <widget class="QPushButton" name="pushButtonU">
         <property name="geometry">
          <rect>
-          <x>99</x>
-          <y>108</y>
+          <x>100</x>
+          <y>96</y>
           <width>32</width>
           <height>32</height>
          </rect>
@@ -608,7 +444,7 @@
         <property name="geometry">
          <rect>
           <x>142</x>
-          <y>108</y>
+          <y>96</y>
           <width>32</width>
           <height>32</height>
          </rect>
@@ -645,7 +481,7 @@
         <property name="geometry">
          <rect>
           <x>184</x>
-          <y>108</y>
+          <y>96</y>
           <width>32</width>
           <height>32</height>
          </rect>
@@ -681,9 +517,9 @@
        <widget class="QPushButton" name="pushButtonAddImg">
         <property name="geometry">
          <rect>
-          <x>310</x>
-          <y>76</y>
-          <width>50</width>
+          <x>232</x>
+          <y>4</y>
+          <width>62</width>
           <height>28</height>
          </rect>
         </property>
@@ -697,7 +533,7 @@
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="text">
-         <string>Image</string>
+         <string>Add ...</string>
         </property>
         <property name="autoDefault">
          <bool>false</bool>
