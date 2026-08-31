@@ -642,9 +642,9 @@ void DialogKeyboard::keyPressEvent(QKeyEvent *event)
 {
     // qDebug() << Qt::hex << event->key() << Qt::dec << event->nativeScanCode() << event->nativeVirtualKey();
 
-    if(event->key() == Qt::Key_Shift) m_bShiftPressed = true;
-    if(event->key() == Qt::Key_Control) m_bCtrlPressed = true;
-    if(event->key() == Qt::Key_Alt) m_bAltPressed = true;
+    if(event->key() == Qt::Key_Shift)   m_bShiftPressed = true;
+    if(event->key() == Qt::Key_Control) m_bCtrlPressed  = true;
+    if(event->key() == Qt::Key_Alt)     m_bAltPressed   = true;
 
     QDialog::keyPressEvent(event);
 }
@@ -652,8 +652,9 @@ void DialogKeyboard::keyReleaseEvent(QKeyEvent *event)
 {
     //qDebug() << event->key() << event->nativeScanCode() << event->nativeVirtualKey();
 
-    if(event->key() == Qt::Key_Shift) m_bShiftPressed = false;
-    if(event->key() == Qt::Key_Control) m_bCtrlPressed = false;
-    if(event->key() == Qt::Key_Alt) m_bAltPressed = false;
+    if(event->key() == Qt::Key_Shift)   m_bShiftPressed = false;
+    if(event->key() == Qt::Key_Control) m_bCtrlPressed  = false;
+    if(event->key() == Qt::Key_Alt)     m_bAltPressed   = false;
+
     QDialog::keyReleaseEvent(event);
 }
