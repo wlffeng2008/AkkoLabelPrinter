@@ -518,14 +518,11 @@ public:
     CustomScene *m_scence=nullptr;
     void bindScence(CustomScene *scence)
     {
-
         this->setScene(scence);
 
-        QSize LSize = this->size();
-
-        int nW = LSize.width();
-        int nH = LSize.height();
-        scence->setSceneRect(QRectF(1,1,nW-1,nH-1));
+        int nW = this->size().width();
+        int nH = this->size().height();
+        scence->setSceneRect(QRectF(1,1,nW-2,nH-2));
 
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -588,6 +585,20 @@ public:
             item->setHLine(len);
         else
             item->setVLine(len);
+    }
+
+    void setItemFont(const QFont&font,bool forAll=false)
+    {
+        for( auto item : this->items() )
+        {
+            if(auto tmp = dynamic_cast<QGraphicsKeyItem*>(item))
+            {
+                if(forAll || tmp->isSelected())
+                {
+                    tmp->setFont(font);
+                }
+            }
+        }
     }
 
     void setPrintMatrix(int nRows=1,int nCols=1)

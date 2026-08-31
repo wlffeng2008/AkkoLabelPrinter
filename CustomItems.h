@@ -19,6 +19,7 @@
 #include <QJsonObject>
 #include <QGraphicsProxyWidget>
 #include <QBuffer>
+#include <QPainter>
 
 
 class CustomBaseItem : public QObject
@@ -422,16 +423,16 @@ public:
     {
         setPos(jObj["x"].toInt(),jObj["y"].toInt());
         setSize(jObj["w"].toInt(),jObj["h"].toInt());
-        setText(jObj["text"].toString());
+        m_hid = jObj["hid"].toInt();
+        m_type = jObj["type"].toInt();
+        m_font.fromString(jObj["font"].toString());
+        m_image = ImageFromBase64(jObj["image"].toString());
         setName(jObj["name"].toString());
         setZValue(jObj["zvalue"].toInt());
-        m_font.fromString(jObj["font"].toString());
         qreal scale = jObj["scale"].toDouble();
         if(scale<=0.1) scale=1.0;
         setScale(scale);
-        m_hid = jObj["hid"].toInt();
-        m_type = jObj["type"].toInt();
-        m_image = ImageFromBase64(jObj["image"].toString());
+        setText(jObj["text"].toString());
     }
 
 private:
@@ -461,12 +462,25 @@ public:
         m_name = name;
     }
 
-    void setFontSize(int size){ m_font.setPixelSize(size); }
-    int  fontSize(){ return m_font.pixelSize(); }
+    void setFontSize(int size){ m_font.setPixelSize(size); resize();}
+    int  fontSize(){ return m_font.pixelSize(); resize();}
     bool bold(){ m_font.bold(); }
-    void setBold(bool bold){ m_font.setBold(bold); }
+    void setBold(bool bold){ m_font.setBold(bold); resize();}
     QFont font(){ return m_font; }
-    void setFont(const QFont&font){ m_font=font; }
+    void setFont(const QFont&font){ m_font=font; resize();}
+
+    void resize(){
+        if(m_type == 0 && m_hid == -1)
+        {
+            QFontMetricsF fmF(m_font);
+            QRectF rcText = fmF.boundingRect(m_text);
+            double textW = rcText.width();
+            double textH = rcText.height();
+            if(textW<40) textW = 40 ;
+            if(textH<40) textH = 40 ;
+            setSize(textW+12,textH+2);
+        }
+    };
 
     int hid(){ return m_hid; }
     void setHid(int hid){ m_hid = hid; }
@@ -515,7 +529,8 @@ public:
     {
         QString tmp(text);
         m_text = tmp.replace("\\n","\n");
-        m_type=0;
+        //m_type=0;
+        resize();
     }
 
     void setImage(const QImage&image)
@@ -781,7 +796,6 @@ public:
             if(!edit)
             {
                 edit = new QLineEdit("");
-                edit->setGeometry(x(),y(),w(),h());
                 edit->setStyleSheet("QLineEdit{border:none;border-radius:14px;background-color:transparent;}");
                 connect(edit,&QLineEdit::editingFinished,this,[=]{
                     this->setText(edit->text().trimmed());
@@ -796,7 +810,8 @@ public:
 
             m_bEditing = true;
             QFont font = m_font;
-            font.setPixelSize(14);
+            //font.setPixelSize(14);
+            edit->setGeometry(x(),y(),w(),h()-2);
             edit->setFont(font);
             edit->setText(this->text());
             edit->selectAll();

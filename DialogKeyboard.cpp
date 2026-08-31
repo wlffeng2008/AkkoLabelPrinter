@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QDir>
 #include <QFileDialog>
+#include <QFontDialog>
 
 #include <DialogHidReview.h>
 
@@ -157,17 +158,6 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
     m_sence = new CustomScene(this);
     ui->graphicsView->bindScence(m_sence);
-    //ui->graphicsView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    //ui->graphicsView->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-
-    // QSize LSize = ui->graphicsView->size();
-
-    // qDebug() << "graphicsView:" << LSize;
-    // int nW = LSize.width();
-    // int nH = LSize.height();
-    // //ui->graphicsView->setFixedSize(nW-1,nH-1);
-    // m_sence->setSceneRect(QRectF(0,0,nW-1,nH-1));
-
     {
         m_pModel = new QStandardItemModel(this);
         m_pModel->setHorizontalHeaderLabels(QString("TEXT,HID,X,Y,W,H,RX,RY").split(','));
@@ -268,6 +258,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             auto itemKey = dynamic_cast<QGraphicsKeyItem*>(item);
             if(itemKey)
             {
+                m_font = itemKey->font();
                 ui->spinBoxX->setValue(itemKey->x());
                 ui->spinBoxY->setValue(itemKey->y());
                 ui->spinBoxW->setValue(itemKey->w());
@@ -277,6 +268,15 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             }
         }
         QTimer::singleShot(5,this,[=]{ updating = false;});
+    });
+
+    connect(ui->pushButtonFont,&QPushButton::clicked,this,[=]{
+                QFontDialog fontDlg(this);
+                fontDlg.setCurrentFont(m_font);
+                if(fontDlg.exec() == QDialog::Accepted)
+                {
+                    ui->graphicsView->setItemFont(fontDlg.selectedFont());
+                }
     });
 
     connect(ui->spinBoxX,&QSpinBox::textChanged,this,[=](const QString & text){
@@ -506,6 +506,8 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHeader->setSectionResizeMode(QHeaderView::Stretch);
         pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
         pHeader->resizeSection(0,200);
+        pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
+        pHeader->resizeSection(1,70);
         {
             static QString strPath =QApplication::applicationDirPath() + "/layouts/";
             QDir d(strPath);
@@ -582,7 +584,8 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         }
     });
     QTimer::singleShot(500,this,[=]{
-        ui->frameEdit->move(ui->tableView2->geometry().topRight());
+       // ui->frameEdit->move(ui->tableView2->geometry().topRight());
+        ui->frameEdit->setFixedWidth(500);
     });
 }
 
@@ -637,7 +640,7 @@ DialogKeyboard::~DialogKeyboard()
 
 void DialogKeyboard::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << Qt::hex << event->key() << Qt::dec << event->nativeScanCode() << event->nativeVirtualKey();
+    // qDebug() << Qt::hex << event->key() << Qt::dec << event->nativeScanCode() << event->nativeVirtualKey();
 
     if(event->key() == Qt::Key_Shift) m_bShiftPressed = true;
     if(event->key() == Qt::Key_Control) m_bCtrlPressed = true;

@@ -64,8 +64,14 @@
       <widget class="QFrame" name="frameEdit">
        <property name="minimumSize">
         <size>
-         <width>560</width>
+         <width>500</width>
          <height>422</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="styleSheet">
@@ -117,7 +123,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0,0,1,0">
           <item>
            <widget class="QSpinBox" name="spinBoxX">
             <property name="prefix">
@@ -162,6 +168,13 @@
            <widget class="QLineEdit" name="lineEditKeytext">
             <property name="placeholderText">
              <string>Text</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonFont">
+            <property name="text">
+             <string>Font ...</string>
             </property>
            </widget>
           </item>
@@ -350,7 +363,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0,0,0">
           <item>
            <widget class="QComboBox" name="comboBoxKey">
             <property name="maxVisibleItems">
