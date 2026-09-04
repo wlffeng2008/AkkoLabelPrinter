@@ -1,4 +1,5 @@
 #include "DialogHidReview.h"
+#include "qglobal.h"
 #include "ui_DialogHidReview.h"
 
 QString strPage0(R"(0x00 – 0x3F 基础键
@@ -490,7 +491,450 @@ QString strDefine(R"(
 #define HID_MEDIA_CALC 0xFB
 )");
 
+QString strPage6(R"(
+键盘按键 HID / VK 码完整对照表
+按键名称          HID码(HEX) HID码(DEC) VK码(HEX) VK码(HEX)
+
+字母与数字键
+A                 0x04	4	0x41	65
+B                 0x05	5	0x42	66
+C                 0x06	6	0x43	67
+D                 0x07	7	0x44	68
+E                 0x08	8	0x45	69
+F                 0x09	9	0x46	70
+G                 0x0A	10	0x47	71
+H                 0x0B	11	0x48	72
+I                 0x0C	12	0x49	73
+J                 0x0D	13	0x4A	74
+K                 0x0E	14	0x4B	75
+L                 0x0F	15	0x4C	76
+M                 0x10	16	0x4D	77
+N                 0x11	17	0x4E	78
+O                 0x12	18	0x4F	79
+P                 0x13	19	0x50	80
+Q                 0x14	20	0x51	81
+R                 0x15	21	0x52	82
+S                 0x16	22	0x53	83
+T                 0x17	23	0x54	84
+U                 0x18	24	0x55	85
+V                 0x19	25	0x56	86
+W                 0x1A	26	0x57	87
+X                 0x1B	27	0x58	88
+Y                 0x1C	28	0x59	89
+Z                 0x1D	29	0x5A	90
+数字键 0          0x1E	30	0x30	48
+数字键 1          0x1F	31	0x31	49
+数字键 2          0x20	32	0x32	50
+数字键 3          0x21	33	0x33	51
+数字键 4          0x22	34	0x34	52
+数字键 5          0x23	35	0x35	53
+数字键 6          0x24	36	0x36	54
+数字键 7          0x25	37	0x37	55
+数字键 8          0x26	38	0x38	56
+数字键 9          0x27	39	0x39	57
+
+控制与编辑键
+ESC               0x29	41	0x1B	27
+Enter             0x28	40	0x0D	13
+Backspace         0x2A	42	0x08	8
+Tab               0x2B	43	0x09	9
+Space             0x2C	44	0x20	32
+Caps Lock         0x39	57	0x14	20
+Insert            0x49	73	0x2D	45
+Delete            0x4C	76	0x2E	46
+Home              0x4A	74	0x24	36
+End               0x4D	77	0x23	35
+Page Up           0x4B	75	0x21	33
+Page Down         0x4E	78	0x22	34
+
+方向键与功能键
+Up Arrow          0x52	82	0x26	38
+Right Arrow       0x4F	79	0x27	39
+Down Arrow        0x51	81	0x28	40
+Left Arrow        0x50	80	0x25	37
+F1                0x3A	58	0x70	112
+F2                0x3B	59	0x71	113
+F3                0x3C	60	0x72	114
+F4                0x3D	61	0x73	115
+F5                0x3E	62	0x74	116
+F6                0x3F	63	0x75	117
+F7                0x40	64	0x76	118
+F8                0x41	65	0x77	119
+F9                0x42	66	0x78	120
+F10               0x43	67	0x79	121
+F11               0x44	68	0x7A	122
+F12               0x45	69	0x7B	123
+Print Screen      0x46	70	0x2C	44
+Scroll Lock       0x47	71	0x91	145
+Pause/Break       0x48	72	0x13	19
+
+修饰键与系统键
+Left Ctrl         0x01	1	0xA2	162
+Right Ctrl        0x10	16	0xA3	163
+Left Shift        0x02	2	0xA0	160
+Right Shift       0x20	32	0xA1	161
+Left Alt          0x04	4	0xA4	164
+Right Alt         0x40	64	0xA5	165
+Left Win          0x08	8	0x5B	91
+Right Win         0x80	128	0x5C	92
+
+小键盘区(Numpad)
+Num Lock          0x53	83	0x90	144
+Num / (除)        0x54	84	0x6F	111
+Num * (乘)        0x55	85	0x6A	106
+Num - (减)        0x56	86	0x6D	109
+Num + (加)        0x57	87	0x6B	107
+Num Enter         0x58	88	0x1C	28
+Num , (点)        0x63	99	0x6E	110
+Num 0             0x62	98	0x60	96
+Num 1             0x59	89	0x61	97
+Num 2             0x5A	90	0x62	98
+Num 3             0x5B	91	0x63	99
+Num 4             0x5C	92	0x64	100
+Num 5             0x5D	93	0x65	101
+Num 6             0x5E	94	0x66	102
+Num 7             0x5F	95	0x67	103
+Num 8             0x60	96	0x68	104
+Num 9             0x61	97	0x69	105
+
+其他常用键
+` (反引号)        0x35	53	0x30	48
+- (减号)          0x2D	45	0xBD	189
++ (加号)          0x2E	46	0xBB	187
+[ (左方括号)      0x2F	47	0xDB	219
+] (右方括号)      0x30	48	0xDD	221
+\ (反斜杠)        0x31	49	0xDC	220
+; (分号)          0x33	51	0xBA	186
+' (单引号)        0x34	52	0xDE	222
+, (逗号)          0x36	54	0xBC	188
+. (句号)          0x37	55	0xBE	190
+/ (斜杠)          0x38	56	0xBF	191
+Num Pad(102型)    0x64	100	0xE0	224)");
+
+#include <QDebug>
 #include <QTimer>
+
+// 1. 定义按键映射结构体
+typedef struct {
+    uint8_t hid0;       // USB HID 码
+    uint8_t hid1;       // USB HID 码
+    uint16_t vk0;       // Windows VK 码
+    uint16_t vk1;       // Windows VK 码
+    const char *name;  // 按键名称
+} KeyMap;
+
+// 2. 完整的按键映射表
+const KeyMap KEYBOARD_MAP[] = {
+    {0x04,  4,0x41, 65,"A"},
+    {0x05,  5,0x42, 66,"B"},
+    {0x06,  6,0x43, 67,"C"},
+    {0x07,  7,0x44, 68,"D"},
+    {0x08,  8,0x45, 69,"E"},
+    {0x09,  9,0x46, 70,"F"},
+    {0x0A, 10,0x47, 71,"G"},
+    {0x0B, 11,0x48, 72,"H"},
+    {0x0C, 12,0x49, 73,"I"},
+    {0x0D, 13,0x4A, 74,"J"},
+    {0x0E, 14,0x4B, 75,"K"},
+    {0x0F, 15,0x4C, 76,"L"},
+    {0x10, 16,0x4D, 77,"M"},
+    {0x11, 17,0x4E, 78,"N"},
+    {0x12, 18,0x4F, 79,"O"},
+    {0x13, 19,0x50, 80,"P"},
+    {0x14, 20,0x51, 81,"Q"},
+    {0x15, 21,0x52, 82,"R"},
+    {0x16, 22,0x53, 83,"S"},
+    {0x17, 23,0x54, 84,"T"},
+    {0x18, 24,0x55, 85,"U"},
+    {0x19, 25,0x56, 86,"V"},
+    {0x1A, 26,0x57, 87,"W"},
+    {0x1B, 27,0x58, 88,"X"},
+    {0x1C, 28,0x59, 89,"Y"},
+    {0x1D, 29,0x5A, 90,"Z"},
+    {0x1E, 30,0x30, 48,"0"},
+    {0x1F, 31,0x31, 49,"1"},
+    {0x20, 32,0x32, 50,"2"},
+    {0x21, 33,0x33, 51,"3"},
+    {0x22, 34,0x34, 52,"4"},
+    {0x23, 35,0x35, 53,"5"},
+    {0x24, 36,0x36, 54,"6"},
+    {0x25, 37,0x37, 55,"7"},
+    {0x26, 38,0x38, 56,"8"},
+    {0x27, 39,0x39, 57,"9"},
+    {0x29, 41,0x1B, 27,"ESC"},
+    {0x28, 40,0x0D, 13,"Enter"},
+    {0x2A, 42,0x08,  8,"Backspace"},
+    {0x2B, 43,0x09,  9,"Tab"},
+    {0x2C, 44,0x20, 32,"Space"},
+    {0x39, 57,0x14, 20,"Caps Lock"},
+    {0x49, 73,0x2D, 45,"Insert"},
+    {0x4C, 76,0x2E, 46,"Delete"},
+    {0x4A, 74,0x24, 36,"Home"},
+    {0x4D, 77,0x23, 35,"End"},
+    {0x4B, 75,0x21, 33,"Page Up"},
+    {0x4E, 78,0x22, 34,"Page Down"},
+    {0x52, 82,0x26, 38,"Up Arrow"},
+    {0x4F, 79,0x27, 39,"Right Arrow"},
+    {0x51, 81,0x28, 40,"Down Arrow"},
+    {0x50, 80,0x25, 37,"Left Arrow"},
+    {0x3A, 58,0x70,112,"F1"},
+    {0x3B, 59,0x71,113,"F2"},
+    {0x3C, 60,0x72,114,"F3"},
+    {0x3D, 61,0x73,115,"F4"},
+    {0x3E, 62,0x74,116,"F5"},
+    {0x3F, 63,0x75,117,"F6"},
+    {0x40, 64,0x76,118,"F7"},
+    {0x41, 65,0x77,119,"F8"},
+    {0x42, 66,0x78,120,"F9"},
+    {0x43, 67,0x79,121,"F10"},
+    {0x44, 68,0x7A,122,"F11"},
+    {0x45, 69,0x7B,123,"F12"},
+    {0x46, 70,0x2C, 44,"Print Screen"},
+    {0x47, 71,0x91,145,"Scroll Lock"},
+    {0x48, 72,0x13, 19,"Pause/Break"},
+    {0x01,  1,0xA2,162,"Left Ctrl"},
+    {0x10, 16,0xA3,163,"Right Ctrl"},
+    {0x02,  2,0xA0,160,"Left Shift"},
+    {0x20, 32,0xA1,161,"Right Shift"},
+    {0x04,  4,0xA4,164,"Left Alt"},
+    {0x40, 64,0xA5,165,"Right Alt"},
+    {0x08,  8,0x5B, 91,"Left Win"},
+    {0x80,128,0x5C, 92,"Right Win"},
+    {0x53, 83,0x90,144,"Num Lock"},
+    {0x54, 84,0x6F,111,"Num / (Division)"},
+    {0x55, 85,0x6A,106,"Num * (Multiple)"},
+    {0x56, 86,0x6D,109,"Num - (Minus)"},
+    {0x57, 87,0x6B,107,"Num + (Plus)"},
+    {0x58, 88,0x1C, 28,"Num Enter"},
+    {0x63, 99,0x6E,110,"Num , (Dot)"},
+    {0x62, 98,0x60, 96,"Num 0"},
+    {0x59, 89,0x61, 97,"Num 1"},
+    {0x5A, 90,0x62, 98,"Num 2"},
+    {0x5B, 91,0x63, 99,"Num 3"},
+    {0x5C, 92,0x64,100,"Num 4"},
+    {0x5D, 93,0x65,101,"Num 5"},
+    {0x5E, 94,0x66,102,"Num 6"},
+    {0x5F, 95,0x67,103,"Num 7"},
+    {0x60, 96,0x68,104,"Num 8"},
+    {0x61, 97,0x69,105,"Num 9"},
+    {0x35, 53,0x30, 48,"` ~ (Back quote)"},
+    {0x2D, 45,0xBD,189," -_ (Minus)"},
+    {0x2E, 46,0xBB,187,"+ = (Plus)"},
+    {0x2F, 47,0xDB,219,"[ { (Left square bracket)"},
+    {0x30, 48,0xDD,221,"] } (Right square bracket)"},
+    {0x31, 49,0xDC,220,"\\ | (Backslash)"},
+    {0x33, 51,0xBA,186,"; : (Semicolon)"},
+    {0x34, 52,0xDE,222,"' \" (Apostrophe)"},
+    {0x36, 54,0xBC,188,", < (Comma)"},
+    {0x37, 55,0xBE,190,". > (Period)"},
+    {0x38, 56,0xBF,191,"/ ? (Slash)"},
+    {0x64,100,0xE0,224,"Num Pad(102 Model)"}
+};
+
+// 计算数组长度
+#define MAP_SIZE (sizeof(KEYBOARD_MAP) / sizeof(KEYBOARD_MAP[0]))
+
+// 3. HID 转 VK 码
+uint16_t hid_to_vk(uint8_t hid_code) {
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].hid0 == hid_code) {
+            return KEYBOARD_MAP[i].vk0;
+        }
+    }
+    return 0;
+}
+
+// 4. VK 转 HID 码
+uint8_t vk_to_hid(uint16_t vk_code) {
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].vk0 == vk_code) {
+            return KEYBOARD_MAP[i].hid0;
+        }
+    }
+    return 0;
+}
+
+const char *get_keyname_vk(uint16_t vk_code)
+{
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].vk0 == vk_code) {
+            return KEYBOARD_MAP[i].name;
+        }
+    }
+    return "";
+}
+
+const char *get_keyname_hid(uint16_t hid_code)
+{
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].hid0 == hid_code) {
+            return KEYBOARD_MAP[i].name;
+        }
+    }
+    return "";
+}
+
+QString strCode(R"(
+// 1. 定义按键映射结构体
+typedef struct {
+    uint8_t hid0;       // USB HID 码
+    uint8_t hid1;       // USB HID 码
+    uint16_t vk0;       // Windows VK 码
+    uint16_t vk1;       // Windows VK 码
+    const char *name;  // 按键名称
+} KeyMap;
+
+// 2. 完整的按键映射表
+const KeyMap KEYBOARD_MAP[] = {
+    {0x04,  4,0x41, 65,"A"},
+    {0x05,  5,0x42, 66,"B"},
+    {0x06,  6,0x43, 67,"C"},
+    {0x07,  7,0x44, 68,"D"},
+    {0x08,  8,0x45, 69,"E"},
+    {0x09,  9,0x46, 70,"F"},
+    {0x0A, 10,0x47, 71,"G"},
+    {0x0B, 11,0x48, 72,"H"},
+    {0x0C, 12,0x49, 73,"I"},
+    {0x0D, 13,0x4A, 74,"J"},
+    {0x0E, 14,0x4B, 75,"K"},
+    {0x0F, 15,0x4C, 76,"L"},
+    {0x10, 16,0x4D, 77,"M"},
+    {0x11, 17,0x4E, 78,"N"},
+    {0x12, 18,0x4F, 79,"O"},
+    {0x13, 19,0x50, 80,"P"},
+    {0x14, 20,0x51, 81,"Q"},
+    {0x15, 21,0x52, 82,"R"},
+    {0x16, 22,0x53, 83,"S"},
+    {0x17, 23,0x54, 84,"T"},
+    {0x18, 24,0x55, 85,"U"},
+    {0x19, 25,0x56, 86,"V"},
+    {0x1A, 26,0x57, 87,"W"},
+    {0x1B, 27,0x58, 88,"X"},
+    {0x1C, 28,0x59, 89,"Y"},
+    {0x1D, 29,0x5A, 90,"Z"},
+    {0x1E, 30,0x30, 48,"0"},
+    {0x1F, 31,0x31, 49,"1"},
+    {0x20, 32,0x32, 50,"2"},
+    {0x21, 33,0x33, 51,"3"},
+    {0x22, 34,0x34, 52,"4"},
+    {0x23, 35,0x35, 53,"5"},
+    {0x24, 36,0x36, 54,"6"},
+    {0x25, 37,0x37, 55,"7"},
+    {0x26, 38,0x38, 56,"8"},
+    {0x27, 39,0x39, 57,"9"},
+    {0x29, 41,0x1B, 27,"ESC"},
+    {0x28, 40,0x0D, 13,"Enter"},
+    {0x2A, 42,0x08,  8,"Backspace"},
+    {0x2B, 43,0x09,  9,"Tab"},
+    {0x2C, 44,0x20, 32,"Space"},
+    {0x39, 57,0x14, 20,"Caps Lock"},
+    {0x49, 73,0x2D, 45,"Insert"},
+    {0x4C, 76,0x2E, 46,"Delete"},
+    {0x4A, 74,0x24, 36,"Home"},
+    {0x4D, 77,0x23, 35,"End"},
+    {0x4B, 75,0x21, 33,"Page Up"},
+    {0x4E, 78,0x22, 34,"Page Down"},
+    {0x52, 82,0x26, 38,"Up Arrow"},
+    {0x4F, 79,0x27, 39,"Right Arrow"},
+    {0x51, 81,0x28, 40,"Down Arrow"},
+    {0x50, 80,0x25, 37,"Left Arrow"},
+    {0x3A, 58,0x70,112,"F1"},
+    {0x3B, 59,0x71,113,"F2"},
+    {0x3C, 60,0x72,114,"F3"},
+    {0x3D, 61,0x73,115,"F4"},
+    {0x3E, 62,0x74,116,"F5"},
+    {0x3F, 63,0x75,117,"F6"},
+    {0x40, 64,0x76,118,"F7"},
+    {0x41, 65,0x77,119,"F8"},
+    {0x42, 66,0x78,120,"F9"},
+    {0x43, 67,0x79,121,"F10"},
+    {0x44, 68,0x7A,122,"F11"},
+    {0x45, 69,0x7B,123,"F12"},
+    {0x46, 70,0x2C, 44,"Print Screen"},
+    {0x47, 71,0x91,145,"Scroll Lock"},
+    {0x48, 72,0x13, 19,"Pause/Break"},
+    {0x01,  1,0xA2,162,"Left Ctrl"},
+    {0x10, 16,0xA3,163,"Right Ctrl"},
+    {0x02,  2,0xA0,160,"Left Shift"},
+    {0x20, 32,0xA1,161,"Right Shift"},
+    {0x04,  4,0xA4,164,"Left Alt"},
+    {0x40, 64,0xA5,165,"Right Alt"},
+    {0x08,  8,0x5B, 91,"Left Win"},
+    {0x80,128,0x5C, 92,"Right Win"},
+    {0x53, 83,0x90,144,"Num Lock"},
+    {0x54, 84,0x6F,111,"Num / (Division)\"},
+    {0x55, 85,0x6A,106,"Num * (Multiple)\"},
+    {0x56, 86,0x6D,109,"Num - (Minus)\"},
+    {0x57, 87,0x6B,107,"Num + (Plus)\"},
+    {0x58, 88,0x1C, 28,"Num Enter"},
+    {0x63, 99,0x6E,110,"Num , (Dot)\"},
+    {0x62, 98,0x60, 96,"Num 0"},
+    {0x59, 89,0x61, 97,"Num 1"},
+    {0x5A, 90,0x62, 98,"Num 2"},
+    {0x5B, 91,0x63, 99,"Num 3"},
+    {0x5C, 92,0x64,100,"Num 4"},
+    {0x5D, 93,0x65,101,"Num 5"},
+    {0x5E, 94,0x66,102,"Num 6"},
+    {0x5F, 95,0x67,103,"Num 7"},
+    {0x60, 96,0x68,104,"Num 8"},
+    {0x61, 97,0x69,105,"Num 9"},
+    {0x35, 53,0x30, 48,"` ~ (Back quote)\"},
+    {0x2D, 45,0xBD,189," -_ (Minus)\"},
+    {0x2E, 46,0xBB,187,"+ = (Plus)\"},
+    {0x2F, 47,0xDB,219,"[ { (Left square bracket)\"},
+    {0x30, 48,0xDD,221,"] } (Right square bracket)\"},
+    {0x31, 49,0xDC,220,"\\ | (Backslash)\"},
+    {0x33, 51,0xBA,186,"; : (Semicolon)\"},
+    {0x34, 52,0xDE,222,"' \" (Apostrophe)\"},
+    {0x36, 54,0xBC,188,", < (Comma)\"},
+    {0x37, 55,0xBE,190,". > (Period)\"},
+    {0x38, 56,0xBF,191,"/ ? (Slash)\"},
+    {0x64,100,0xE0,224,"Num Pad(102 Model)\"}
+};
+
+// 计算数组长度
+#define MAP_SIZE (sizeof(KEYBOARD_MAP) / sizeof(KEYBOARD_MAP[0]))
+
+// 3. HID 转 VK 码
+uint16_t hid_to_vk(uint8_t hid_code) {
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].hid0 == hid_code) {
+            return KEYBOARD_MAP[i].vk0;
+        }
+    }
+    return 0;
+}
+
+// 4. VK 转 HID 码
+uint8_t vk_to_hid(uint16_t vk_code) {
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].vk0 == vk_code) {
+            return KEYBOARD_MAP[i].hid0;
+        }
+    }
+    return 0;
+}
+
+const char *get_keyname_vk(uint16_t vk_code)
+{
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].vk0 == vk_code) {
+            return KEYBOARD_MAP[i].name;
+        }
+    }
+    return "";
+}
+
+const char *get_keyname_hid(uint16_t hid_code)
+{
+    for (size_t i = 0; i < MAP_SIZE; i++) {
+        if (KEYBOARD_MAP[i].hid0 == hid_code) {
+            return KEYBOARD_MAP[i].name;
+        }
+    }
+    return "";
+}
+)");
 
 DialogHidReview::DialogHidReview(QWidget *parent)
     : QDialog(parent)
@@ -500,34 +944,53 @@ DialogHidReview::DialogHidReview(QWidget *parent)
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
     ui->textEdit->setText(strPage0);
 
-    QTimer::singleShot(100,this,[=]{ui->radioButton_1->click();});
-    connect(ui->radioButton_1,&QRadioButton::clicked,this,[=]{
+    QTimer::singleShot(100,this,[=]{ui->radioButton_0->click();});
+    connect(ui->radioButton_0,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage0);
     });
 
-    connect(ui->radioButton_2,&QRadioButton::clicked,this,[=]{
+    connect(ui->radioButton_1,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage1);
     });
 
-    connect(ui->radioButton_3,&QRadioButton::clicked,this,[=]{
+    connect(ui->radioButton_2,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage2);
     });
 
-    connect(ui->radioButton_4,&QRadioButton::clicked,this,[=]{
+    connect(ui->radioButton_3,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage3);
     });
 
-    connect(ui->radioButton_5,&QRadioButton::clicked,this,[=]{
+    connect(ui->radioButton_4,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage4);
     });
 
-    connect(ui->radioButton_6,&QRadioButton::clicked,this,[=]{
+    connect(ui->radioButton_5,&QRadioButton::clicked,this,[=]{
         ui->textEdit->setText(strPage5 + QString("\n\n\n") + strUrl + strDefine);
     });
 
+    connect(ui->radioButton_6,&QRadioButton::clicked,this,[=]{
+        ui->textEdit->setText(strCode.replace(")\\",")"));
+    });
     connect(ui->pushButtonOK,&QPushButton::clicked,this,[=]{
         hide();
     });
+
+//     QStringList lines = strPage6.split('\n');
+//     foreach(const QString&line,lines)
+//     {
+//         QString strLine = line.trimmed();
+//         if(strLine.isEmpty())
+//             continue;
+//         QStringList subs = strLine.split('\t');
+//         if(subs.count()<3)
+//             continue;
+
+//         //qDebug().noquote() << subs;
+//         QString strTmp0 = subs[0].trimmed().right(4);
+//         QString strTmp1 = subs[0].trimmed().replace(strTmp0,"").trimmed();
+//         qDebug().noquote().nospace() <<"{"<< strTmp0.trimmed()<< "," << QString::asprintf("%3d",subs[1].trimmed().toInt()) <<  ","<< subs[2].trimmed() <<  ","<< QString::asprintf("%3d",subs[3].trimmed().toInt()) << ",\"" << strTmp1.trimmed() << "\"},";
+//     }
 }
 
 DialogHidReview::~DialogHidReview()
