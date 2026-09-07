@@ -154,10 +154,11 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     ui->setupUi(this);
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
-    qDebug()<< "g_keyTableCount:" << g_keyTableCount;
 
     m_sence = new CustomScene(this);
     ui->graphicsView->bindScence(m_sence);
+
+    qDebug()<< "g_keyTableCount:" << g_keyTableCount;
     {
         m_pModel = new QStandardItemModel(this);
         m_pModel->setHorizontalHeaderLabels(QString("TEXT,HID,X,Y,W,H,RX,RY").split(','));
@@ -217,14 +218,22 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 case 7: key->setRY(strText.toInt());  break;
                 }
             }
-
         });
     }
 
-    for (int i=0; i<108; i++) {
-        QString strItem=QString::asprintf("%02X[%03d] %-10s",g_keyTable[i].hidUsageId,g_keyTable[i].hidUsageId,g_keyTable[i].name);
-        ui->comboBoxKey->addItem(strItem);
-    };
+    {
+        quint8 count = getHidCount();
+        qDebug() << "-------1-1-1-1--1-1"  << count;
+        for (int i=0; i<count; i++)
+        {
+            const hid_map *map = getHidMap(i);
+            if(map)
+            {
+            QString strItem=QString::asprintf("%02X[%03d] %s",map->hid_hex,map->hid_dex,map->name);
+            ui->comboBoxKey->addItem(strItem);
+            }
+        }
+    }
 
     static bool updating = false;
 

@@ -610,19 +610,259 @@ Num 9             0x61	97	0x69	105
 / (斜杠)          0x38	56	0xBF	191
 Num Pad(102型)    0x64	100	0xE0	224)");
 
-#include <QDebug>
-#include <QTimer>
+const hid_map table[]={
+    {0xFF,255,"KEYID_NOT_FOUND"},
+    {0x00,  0,"KEY_NONE"},
+    {0x01,  1,"ERROR_ROLLOVER"},
+    {0x02,  2,"POST_FAIL"},
+    {0x03,  3,"ERROR_UNDEFINED"},
+    {0x04,  4,"A"},
+    {0x05,  5,"B"},
+    {0x06,  6,"C"},
+    {0x07,  7,"D"},
+    {0x08,  8,"E"},
+    {0x09,  9,"F"},
+    {0x0A, 10,"G"},
+    {0x0B, 11,"H"},
+    {0x0C, 12,"I"},
+    {0x0D, 13,"J"},
+    {0x0E, 14,"K"},
+    {0x0F, 15,"L"},
+    {0x10, 16,"M"},
+    {0x11, 17,"N"},
+    {0x12, 18,"O"},
+    {0x13, 19,"P"},
+    {0x14, 20,"Q"},
+    {0x15, 21,"R"},
+    {0x16, 22,"S"},
+    {0x17, 23,"T"},
+    {0x18, 24,"U"},
+    {0x19, 25,"V"},
+    {0x1A, 26,"W"},
+    {0x1B, 27,"X"},
+    {0x1C, 28,"Y"},
+    {0x1D, 29,"Z"},
+    {0x1E, 30,"1"},
+    {0x1F, 31,"2"},
+    {0x20, 32,"3"},
+    {0x21, 33,"4"},
+    {0x22, 34,"5"},
+    {0x23, 35,"6"},
+    {0x24, 36,"7"},
+    {0x25, 37,"8"},
+    {0x26, 38,"9"},
+    {0x27, 39,"0"},
+    {0x28, 40,"RETURN"},
+    {0x29, 41,"ESCAPE"},
+    {0x2A, 42,"BACKSPACE"},
+    {0x2B, 43,"TAB"},
+    {0x2C, 44,"SPACEBAR"},
+    {0x2D, 45,"UNDERSCORE"},
+    {0x2E, 46,"EQUAL"},
+    {0x2F, 47,"OPEN_BRACE"},
+    {0x30, 48,"CLOSE_BRACE"},
+    {0x31, 49,"BACKSLASH"},
+    {0x32, 50,"HASH_TILDE"},
+    {0x33, 51,"SEMICOLON"},
+    {0x34, 52,"APOSTROPHE"},
+    {0x35, 53,"GRAVE_TILDE"},
+    {0x36, 54,"COMMA"},
+    {0x37, 55,"DOT"},
+    {0x38, 56,"SLASH"},
+    {0x39, 57,"CAPS_LOCK"},
+    {0x3A, 58,"F1"},
+    {0x3B, 59,"F2"},
+    {0x3C, 60,"F3"},
+    {0x3D, 61,"F4"},
+    {0x3E, 62,"F5"},
+    {0x3F, 63,"F6"},
+    {0x40, 64,"F7"},
+    {0x41, 65,"F8"},
+    {0x42, 66,"F9"},
+    {0x43, 67,"F10"},
+    {0x44, 68,"F11"},
+    {0x45, 69,"F12"},
+    {0x68,104,"F13"},
+    {0x69,105,"F14"},
+    {0x6A,106,"F15"},
+    {0x6B,107,"F16"},
+    {0x6C,108,"F17"},
+    {0x6D,109,"F18"},
+    {0x6E,110,"F19"},
+    {0x6F,111,"F20"},
+    {0x70,112,"F21"},
+    {0x71,113,"F22"},
+    {0x72,114,"F23"},
+    {0x73,115,"F24"},
+    {0x46, 70,"PRINTSCREEN"},
+    {0x47, 71,"SCROLL_LOCK"},
+    {0x48, 72,"PAUSE"},
+    {0x49, 73,"INSERT"},
+    {0x4A, 74,"HOME"},
+    {0x4B, 75,"PAGEUP"},
+    {0x4C, 76,"DELETE"},
+    {0x4D, 77,"END"},
+    {0x4E, 78,"PAGEDOWN"},
+    {0x4F, 79,"RIGHT"},
+    {0x50, 80,"LEFT"},
+    {0x51, 81,"DOWN"},
+    {0x52, 82,"UP"},
+    {0x53, 83,"KEYPAD_NUM_LOCK"},
+    {0x54, 84,"KEYPAD_SLASH"},
+    {0x55, 85,"KEYPAD_ASTERISK"},
+    {0x56, 86,"KEYPAD_MINUS"},
+    {0x57, 87,"KEYPAD_PLUS"},
+    {0x58, 88,"KEYPAD_ENTER"},
+    {0x59, 89,"KEYPAD_1"},
+    {0x5A, 90,"KEYPAD_2"},
+    {0x5B, 91,"KEYPAD_3"},
+    {0x5C, 92,"KEYPAD_4"},
+    {0x5D, 93,"KEYPAD_5"},
+    {0x5E, 94,"KEYPAD_6"},
+    {0x5F, 95,"KEYPAD_7"},
+    {0x60, 96,"KEYPAD_8"},
+    {0x61, 97,"KEYPAD_9"},
+    {0x62, 98,"KEYPAD_0"},
+    {0x63, 99,"KEYPAD_DOT"},
+    {0x67,103,"KEYPAD_EQUAL"},
+    {0x85,133,"KEYPAD_COMMA"},
+    {0x86,134,"KEYPAD_EQUALSIGN"},
+    {0xB0,176,"KEYPAD_00"},
+    {0xB1,177,"KEYPAD_000"},
+    {0xB6,182,"KEYPAD_LEFT_PARENTHESIS"},
+    {0xB7,183,"KEYPAD_RIGHT_PARENTHESIS"},
+    {0xB8,184,"KEYPAD_OPEN_BRACE"},
+    {0xB9,185,"KEYPAD_CLOSE_BRACE"},
+    {0xBA,186,"KEYPAD_TAB"},
+    {0xBB,187,"KEYPAD_BACKSPACE"},
+    {0xBC,188,"KEYPAD_A"},
+    {0xBD,189,"KEYPAD_B"},
+    {0xBE,190,"KEYPAD_C"},
+    {0xBF,191,"KEYPAD_D"},
+    {0xC0,192,"KEYPAD_E"},
+    {0xC1,193,"KEYPAD_F"},
+    {0xC2,194,"KEYPAD_XOR"},
+    {0xC3,195,"KEYPAD_POWER_TO"},
+    {0xC4,196,"KEYPAD_PERCENT"},
+    {0xC5,197,"KEYPAD_LEFT_ANGLE_BRACE"},
+    {0xC6,198,"KEYPAD_RIGHT_ANGLE_BRACE"},
+    {0xC7,199,"KEYPAD_AND"},
+    {0xC8,200,"KEYPAD_AND_AND"},
+    {0xC9,201,"KEYPAD_OR"},
+    {0xCA,202,"KEYPAD_OR_OR"},
+    {0xCB,203,"KEYPAD_COLON"},
+    {0xCC,204,"KEYPAD_HASH"},
+    {0xCD,205,"KEYPAD_SPACE"},
+    {0xCE,206,"KEYPAD_AT"},
+    {0xCF,207,"KEYPAD_EXCLAMATION"},
+    {0xD0,208,"KEYPAD_MEM_STORE"},
+    {0xD1,209,"KEYPAD_MEM_RECALL"},
+    {0xD2,210,"KEYPAD_MEM_CLEAR"},
+    {0xD3,211,"KEYPAD_MEM_ADD"},
+    {0xD4,212,"KEYPAD_MEM_SUBTRACT"},
+    {0xD5,213,"KEYPAD_MEM_MULTIPLY"},
+    {0xD6,214,"KEYPAD_MEM_DIVIDE"},
+    {0xD7,215,"KEYPAD_PLUS_MINUS"},
+    {0xD8,216,"KEYPAD_CLEAR"},
+    {0xD9,217,"KEYPAD_CLEAR_ENTRY"},
+    {0xDA,218,"KEYPAD_BINARY"},
+    {0xDB,219,"KEYPAD_OCTAL"},
+    {0xDC,220,"KEYPAD_DECIMAL"},
+    {0xDD,221,"KEYPAD_HEXADECIMAL"},
+    {0x64,100,"AT102"},
+    {0x65,101,"APPLICATION"},
+    {0x66,102,"POWER"},
+    {0x74,116,"EXECUTE"},
+    {0x75,117,"HELP"},
+    {0x76,118,"MENU"},
+    {0x77,119,"SELECT"},
+    {0x78,120,"STOP"},
+    {0x79,121,"AGAIN"},
+    {0x7A,122,"UNDO"},
+    {0x7B,123,"CUT"},
+    {0x7C,124,"COPY"},
+    {0x7D,125,"PASTE"},
+    {0x7E,126,"FIND"},
+    {0x7F,127,"MUTE"},
+    {0x80,128,"VOLUME_UP"},
+    {0x81,129,"VOLUME_DOWN"},
+    {0x82,130,"LOCK_CAPS_LOCK"},
+    {0x83,131,"LOCK_NUM_LOCK"},
+    {0x84,132,"LOCK_SCROLL_LOCK"},
+    {0x87,135,"INTERNATIONAL_1"},
+    {0x88,136,"INTERNATIONAL_2"},
+    {0x89,137,"INTERNATIONAL_3"},
+    {0x8A,138,"INTERNATIONAL_4"},
+    {0x8B,139,"INTERNATIONAL_5"},
+    {0x8C,140,"INTERNATIONAL_6"},
+    {0x8D,141,"INTERNATIONAL_7"},
+    {0x8E,142,"INTERNATIONAL_8"},
+    {0x8F,143,"INTERNATIONAL_9"},
+    {0x90,144,"LANG_1"},
+    {0x91,145,"LANG_2"},
+    {0x92,146,"LANG_3"},
+    {0x93,147,"LANG_4"},
+    {0x94,148,"LANG_5"},
+    {0x95,149,"LANG_6"},
+    {0x96,150,"LANG_7"},
+    {0x97,151,"LANG_8"},
+    {0x98,152,"LANG_9"},
+    {0x99,153,"KB_ALT_ERASE"},
+    {0x9A,154,"KB_SYSREQ"},
+    {0x9B,155,"KB_CANCEL"},
+    {0x9C,156,"KB_CLEAR"},
+    {0x9D,157,"KB_PRIOR"},
+    {0x9E,158,"KB_RETURN"},
+    {0x9F,159,"KB_SEPARATOR"},
+    {0xA0,160,"KB_OUT"},
+    {0xA1,161,"KB_OPER"},
+    {0xA2,162,"KB_CLEAR_AGAIN"},
+    {0xA3,163,"KB_CRSEL"},
+    {0xA4,164,"KB_EXSEL"},
+    {0xB2,178,"1K_SEPARATOR"},
+    {0xB3,179,"DECIMAL_SEPARATOR"},
+    {0xB4,180,"CURRENCY_UNIT"},
+    {0xB5,181,"CURRENCY_SUB_UNIT"},
+    {0xE0,224,"LEFT_CTRL"},
+    {0xE1,225,"LEFT_SHIFT"},
+    {0xE2,226,"LEFT_ALT"},
+    {0xE3,227,"LEFT_GUI"},
+    {0xE4,228,"RIGHT_CTRL"},
+    {0xE5,229,"RIGHT_SHIFT"},
+    {0xE6,230,"RIGHT_ALT"},
+    {0xE7,231,"RIGHT_GUI"},
+    {0xE8,232,"MEDIA_PLAYPAUSE"},
+    {0xE9,233,"MEDIA_STOPCD"},
+    {0xEA,234,"MEDIA_PREVIOUSSONG"},
+    {0xEB,235,"MEDIA_NEXTSONG"},
+    {0xEC,236,"MEDIA_EJECTCD"},
+    {0xED,237,"MEDIA_VOLUMEUP"},
+    {0xEE,238,"MEDIA_VOLUMEDOWN"},
+    {0xEF,239,"MEDIA_MUTE"},
+    {0xF0,240,"MEDIA_WWW"},
+    {0xF1,241,"MEDIA_BACK"},
+    {0xF2,242,"MEDIA_FORWARD"},
+    {0xF3,243,"MEDIA_STOP"},
+    {0xF4,244,"MEDIA_FIND"},
+    {0xF5,245,"MEDIA_SCROLLUP"},
+    {0xF6,246,"MEDIA_SCROLLDOWN"},
+    {0xF7,247,"MEDIA_EDIT"},
+    {0xF8,248,"MEDIA_SLEEP"},
+    {0xF9,249,"MEDIA_COFFEE"},
+    {0xFA,250,"MEDIA_REFRESH"},
+    {0xFB,251,"MEDIA_CALC"}
+};
 
-// 1. 定义按键映射结构体
-typedef struct {
-    uint8_t hid0;       // USB HID 码
-    uint8_t hid1;       // USB HID 码
-    uint16_t vk0;       // Windows VK 码
-    uint16_t vk1;       // Windows VK 码
-    const char *name;  // 按键名称
-} KeyMap;
 
-// 2. 完整的按键映射表
+int getHidCount(){
+    sizeof(table)/sizeof(table[0]);
+}
+const hid_map*getHidMap(quint8 index)
+{
+    return &table[index];
+}
+
+// 完整的按键映射表
 const KeyMap KEYBOARD_MAP[] = {
     {0x04,  4,0x41, 65,"A"},
     {0x05,  5,0x42, 66,"B"},
@@ -772,6 +1012,14 @@ const char *get_keyname_hid(uint16_t hid_code)
     }
     return "";
 }
+
+int getMapSize(){ return MAP_SIZE; };
+const KeyMap *getKeyMap(quint8 index){ return &KEYBOARD_MAP[index];};
+
+
+
+#include <QDebug>
+#include <QTimer>
 
 QString strCode(R"(
 // 1. 定义按键映射结构体
@@ -965,7 +1213,7 @@ DialogHidReview::DialogHidReview(QWidget *parent)
     });
 
     connect(ui->radioButton_5,&QRadioButton::clicked,this,[=]{
-        ui->textEdit->setText(strPage5 + QString("\n\n\n") + strUrl+ QString("\n\n\n") + strDefine);
+        ui->textEdit->setText(strPage5 + QString("\n\n") + strUrl+ QString("\n\n") + strDefine);
     });
 
     connect(ui->radioButton_6,&QRadioButton::clicked,this,[=]{
@@ -975,35 +1223,46 @@ DialogHidReview::DialogHidReview(QWidget *parent)
         hide();
     });
 
-//     QStringList lines = strPage6.split('\n');
-//     foreach(const QString&line,lines)
-//     {
-//         QString strLine = line.trimmed();
-//         if(strLine.isEmpty())
-//             continue;
-//         QStringList subs = strLine.split('\t');
-//         if(subs.count()<3)
-//             continue;
+    // QStringList lines = strPage6.split('\n');
+    // foreach(const QString&line,lines)
+    // {
+    //     QString strLine = line.trimmed();
+    //     if(strLine.isEmpty())
+    //         continue;
+    //     QStringList subs = strLine.split('\t');
+    //     if(subs.count()<3)
+    //         continue;
 
-//         //qDebug().noquote() << subs;
-//         QString strTmp0 = subs[0].trimmed().right(4);
-//         QString strTmp1 = subs[0].trimmed().replace(strTmp0,"").trimmed();
-//         qDebug().noquote().nospace() <<"{"<< strTmp0.trimmed()<< "," << QString::asprintf("%3d",subs[1].trimmed().toInt()) <<  ","<< subs[2].trimmed() <<  ","<< QString::asprintf("%3d",subs[3].trimmed().toInt()) << ",\"" << strTmp1.trimmed() << "\"},";
-//     }
-// QStringList lines = strDefine.split('\n');
-// foreach(const QString&line,lines)
-// {
-//     QString strLine = line.trimmed();
-//     if(strLine.isEmpty())
-//         continue;
-//     QStringList subs = strLine.split(' ');
-//     if(subs.count()<2)
-//         continue;
+    //     //qDebug().noquote() << subs;
+    //     QString strTmp0 = subs[0].trimmed().right(4);
+    //     QString strTmp1 = subs[0].trimmed().replace(strTmp0,"").trimmed();
+    //     qDebug().noquote().nospace() <<"{"<< strTmp0.trimmed()<< "," << QString::asprintf("%3d",subs[1].trimmed().toInt()) <<  ","<< subs[2].trimmed() <<  ","<< QString::asprintf("%3d",subs[3].trimmed().toInt()) << ",\"" << strTmp1.trimmed() << "\"},";
+    // }
+    QStringList lines = strDefine.split('\n');
+    foreach(const QString&line,lines)
+    {
+        QString strLine = line.trimmed();
+        if(strLine.isEmpty())
+            continue;
+        QStringList subs = strLine.split(' ');
+        if(subs.count()<2)
+            continue;
+        //qDebug() << subs;
 
-//     quint8 val = subs[2].toLatin1().toUInt(nullptr,16);
+        quint8 val = subs[1].toLatin1().toUInt(nullptr,16);
+        for(int i=2; i<subs.count(); i++)
+        {
+            if(!subs[i].isEmpty())
+            {
+                val = subs[i].trimmed().toUInt(nullptr,16);
+                break;
+            }
+        }
 
-//     qDebug().noquote() << QString::asprintf("#define %-30s 0x%02X  //%3d",subs[1].toStdString().c_str(),val,val);
-// }
+        QString name = subs[1].replace("HID_","");
+        //qDebug().noquote() << QString::asprintf("#define %-30s 0x%02X  //%3d",subs[1].toStdString().c_str(),val,val);
+        //qDebug().noquote().nospace() << QString::asprintf("{0x%02X,%3d,\"%s\"},",val,val,name.toStdString().c_str());
+    }
 }
 
 DialogHidReview::~DialogHidReview()

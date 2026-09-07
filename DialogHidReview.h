@@ -2,6 +2,7 @@
 #define DIALOGHIDREVIEW_H
 
 //https://onlinedocs.microchip.com/oxy/GUID-49CD424A-D8EB-4F60-95E5-12E07036AA34-en-US-4/GUID-70C4159D-8412-4C45-A6F8-9824A327EF6E.html
+
 #define HID_KEYID_NOT_FOUND            0xFF  //255
 #define HID_KEY_NONE                   0x00  //  0
 #define HID_ERROR_ROLLOVER             0x01  //  1
@@ -243,7 +244,33 @@
 #define HID_MEDIA_REFRESH              0xFA  //250
 #define HID_MEDIA_CALC                 0xFB  //251
 
+#include "qglobal.h"
 
+typedef struct {
+    quint8 hid_hex;
+    quint8 hid_dex;
+    const char *name;
+}hid_map;
+
+int getHidCount();
+const hid_map*getHidMap(quint8 index);
+
+
+
+typedef struct {
+    uint8_t hid0;       // USB HID 码
+    uint8_t hid1;       // USB HID 码
+    uint16_t vk0;       // Windows VK 码
+    uint16_t vk1;       // Windows VK 码
+    const char *name;  // 按键名称
+} KeyMap;
+
+uint16_t hid_to_vk(uint8_t hid_code);
+uint8_t vk_to_hid(uint16_t vk_code);
+const char *get_keyname_vk(uint16_t vk_code);
+const char *get_keyname_hid(uint16_t hid_code);
+int getMapSize();
+const KeyMap *getKeyMap(quint8 index);
 
 #include <QDialog>
 
