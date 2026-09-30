@@ -15,11 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QString strTitle = QString("简易标签打印 - V1.35 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
+    QString strTitle = QString("简易标签打印 - V1.36 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
     setWindowTitle( strTitle );
-    QTimer::singleShot(200,this,[=]{ ui->frameR->BindLabelView(ui->frameL);});
+    QTimer::singleShot(200,this,[=]{ ui->frameR->BindLabelView(ui->frameL); });
 
-    QString strText("使用方法和技巧：单击控件，按上下左右键可移动，＋－键可放大缩小，同时按住Ctrl键可整体控制全部控件；Delete键删除控件。Ctrl+S：快速保存模板！");
+    QString strText("使用方法和技巧：单击标签，按上下左右键可移动，＋－键可放大缩小，同时按住Ctrl键可整体控制全部标签；Delete键删除标签。Ctrl+S：快速保存模板！");
     QLabel *pLabelTip = new QLabel(strText,this);
     pLabelTip->setStyleSheet("QLabel{ padding-left:10px; color:blue; }");
     ui->statusbar->addWidget(pLabelTip);

@@ -170,6 +170,9 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->lineEdit301->setText(m_pSet->value("text301","BUY-12345678").toString());
     ui->textEdit302->setText(m_pSet->value("text302","QWERT-ABC-OPT").toString());
     ui->lineEdit303->setText(m_pSet->value("text303","MT-1234-5678").toString());
+    ui->lineEdit309->setText(m_pSet->value("text309","MT-1234-5678").toString());
+    ui->lineEdit310->setText(m_pSet->value("text310","A班").toString());
+
     ui->spinBoxCount->setValue(m_pSet->value("count304","100").toInt());
     ui->spinBoxUnit->setValue(m_pSet->value("text308","10").toInt());
     ui->dateTimeEdit0->setDateTime(QDateTime::currentDateTime());
@@ -192,6 +195,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->label305->setText(m_pSet->value("name305","生产日期").toString().replace("：","").trimmed() + "：");
     ui->label306->setText(m_pSet->value("name306","交货日期").toString().replace("：","").trimmed() + "：");
     ui->label307->setText(m_pSet->value("name307","检验结果").toString().replace("：","").trimmed() + "：");
+    ui->label309->setText(m_pSet->value("name309","责  任  人").toString().replace("：","").trimmed() + "：");
+    ui->label310->setText(m_pSet->value("name310","班别").toString().replace("：","").trimmed() + "：");
     ui->checkBoxSetBlank0->setChecked(m_pSet->value("setDateBlank0",false).toBool());
     ui->checkBoxSetBlank1->setChecked(m_pSet->value("setDateBlank1",false).toBool());
 
@@ -501,6 +506,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             ui->lineEdit301->setText(vals[1]);
             ui->textEdit302->setText(vals[2]);
             ui->lineEdit303->setText(vals[3]);
+            ui->lineEdit309->setText(vals[9]);
+            ui->lineEdit310->setText(vals[10]);
             ui->spinBoxCount->setValue(vals[4].toInt());
             ui->spinBoxUnit->setValue(vals[5].toInt());
 
@@ -549,6 +556,11 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QString strText306 = QString("%1").arg(ui->dateTimeEdit1->dateTime().toString("yyyy-MM-dd"));
             QString strName307 = ui->label307->text().trimmed();
             QString strText307 = QString("%1").arg(ui->radioButton0->isChecked()?"PASS":"  NG  ");
+            QString strName309 = ui->label309->text().trimmed();
+            QString strText309 = QString("%1").arg(ui->lineEdit309->text().trimmed());
+            QString strName310 = ui->label310->text().trimmed();
+            QString strText310 = QString("%1").arg(ui->lineEdit310->text().trimmed());
+
             if(ui->radioButton2->isChecked()) strText307 = "签章";
 
             if(ui->checkBoxSetBlank0->isChecked()) strText305.clear();
@@ -564,6 +576,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             strName305.replace("：","　　");
             strName306.replace("：","　　");
             strName307.replace("：","　　");
+            strName309.replace("：","　　");
+            strName310.replace("：","　　");
 
             m_pLabelView->AddText(strName300 + strText300, "value300");
             m_pLabelView->AddText(strName301 + strText301, "value301");
@@ -572,6 +586,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddText(strName305 + strText305, "value305");
             m_pLabelView->AddText(strName306 + strText306, "value306");
             m_pLabelView->AddText(strName307.trimmed() , "value307");
+            m_pLabelView->AddText(strName309 + strText309 + QString(" / ") + strName310.trimmed() + QString(": %1").arg(strText310), "value309");
             m_pLabelView->AddText(strText307, "Qpass");
             m_pLabelView->AddImageQR(strText303,"QrCode303");
             if(strText302.toLocal8Bit().size()>32)
@@ -626,12 +641,16 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pSet->setValue("name305",strName305);
             m_pSet->setValue("name306",strName306);
             m_pSet->setValue("name307",strName307);
+            m_pSet->setValue("name309",strName309);
+            m_pSet->setValue("name310",strName310);
 
             m_pSet->setValue("text300",strText300);
             m_pSet->setValue("text301",strText301);
             m_pSet->setValue("text302",strText302);
             m_pSet->setValue("text303",strText303);
             m_pSet->setValue("text308",strText308);
+            m_pSet->setValue("text309",strText309);
+            m_pSet->setValue("text310",strText310);
             m_pSet->setValue("count304",ui->spinBoxCount->value());
             m_pSet->setValue("setDateBlank0",ui->checkBoxSetBlank0->isChecked());
             m_pSet->setValue("setDateBlank1",ui->checkBoxSetBlank1->isChecked());

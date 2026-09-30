@@ -22,21 +22,27 @@ DialogSell::DialogSell(QWidget *parent)
     m_strFile = QApplication::applicationDirPath() + "/config/selldata.csv";
 
     m_model = new QStandardItemModel(this);
-    m_model->setHorizontalHeaderLabels(QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果").split(','));
+    m_model->setHorizontalHeaderLabels(QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果,责任人,班别").split(','));
     ui->tableView->setModel(m_model);
 
     QHeaderView *pHeader = ui->tableView->horizontalHeader();
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
-    pHeader->resizeSection(0,170);
+    pHeader->resizeSection(0,160);
     pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
-    pHeader->resizeSection(1,140);
+    pHeader->resizeSection(1,130);
     pHeader->setSectionResizeMode(2,QHeaderView::Fixed);
-    pHeader->resizeSection(2,280);
+    pHeader->resizeSection(2,240);
     pHeader->setSectionResizeMode(3,QHeaderView::Fixed);
     pHeader->resizeSection(3,140);
+    pHeader->setSectionResizeMode(6,QHeaderView::Fixed);
+    pHeader->resizeSection(6,80);
+    pHeader->setSectionResizeMode(7,QHeaderView::Fixed);
+    pHeader->resizeSection(7,80);
     pHeader->setSectionResizeMode(8,QHeaderView::Fixed);
     pHeader->resizeSection(8,90);
+    pHeader->setSectionResizeMode(9,QHeaderView::Fixed);
+    pHeader->resizeSection(9,120);
 
     ui->tableView->setItemDelegateForColumn(5,new SideValueDelegate(this));
     ui->tableView->setItemDelegateForColumn(4,new SideValueDelegate(this));
@@ -46,7 +52,7 @@ DialogSell::DialogSell(QWidget *parent)
 
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
         QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
-        AddRow("请修改厂商名称","请修改采购订单号","请修改品名/规格","100-456-9987","1000","100",strDate,strDate,"PASS");
+        AddRow("请修改厂商名称","请修改采购订单号","请修改品名/规格","100-456-9987","1000","100",strDate,strDate,"PASS","责任人","班别");
     });
 
     connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
@@ -87,7 +93,7 @@ void DialogSell::saveLoadData(bool save)
             return;
         }
         QTextStream out(&DFile);
-        out << QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果\n").toUtf8();
+        out << QString("厂商名称,采购订单号,品名/规格,物料编码,数量,单箱容量,生产日期,送货日期,供方质检结果,责任人,班别\n").toUtf8();
         for(int i=0; i<count; i++)
         {
             QString val0 = m_model->item(i,0)->text().replace(",",strRepl).trimmed();
@@ -99,7 +105,9 @@ void DialogSell::saveLoadData(bool save)
             QString val6 = m_model->item(i,6)->text().replace(",",strRepl).trimmed();
             QString val7 = m_model->item(i,7)->text().replace(",",strRepl).trimmed();
             QString val8 = m_model->item(i,8)->text().replace(",",strRepl).trimmed();
-            QString line = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9\n").arg(val0,val1,val2,val3,val4,val5,val6,val7,val8);
+            QString val9 = m_model->item(i,9)->text().replace(",",strRepl).trimmed();
+            QString val10 = m_model->item(i,10)->text().replace(",",strRepl).trimmed();
+            QString line = QString("%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11\n").arg(val0,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10);
             out << line;
         }
     }
@@ -111,13 +119,14 @@ void DialogSell::saveLoadData(bool save)
             qDebug() << DFile.errorString() << m_strFile;
             return;
         }
+
         QTextStream in(&DFile);
         qDebug() << in.readLine();
         while(!in.atEnd())
         {
-            QString line = in.readLine();
+            QString line = in.readLine().trimmed();
             QStringList vals = line.split(',');
-            if(vals.count() != 9) continue;
+            if(vals.count() < 9) continue;
 
             QString val0 = vals[0].replace(strRepl,",").trimmed();
             QString val1 = vals[1].replace(strRepl,",").trimmed();
@@ -128,13 +137,17 @@ void DialogSell::saveLoadData(bool save)
             QString val6 = vals[6].replace(strRepl,",").trimmed();
             QString val7 = vals[7].replace(strRepl,",").trimmed();
             QString val8 = vals[8].replace(strRepl,",").trimmed();
+            QString val9("张三");
+            QString val10("A班");
+            if(vals.count() >= 10) val9   = vals[ 9].replace(strRepl,",").trimmed();
+            if(vals.count() >= 11) val10  = vals[10].replace(strRepl,",").trimmed();
 
-            AddRow(val0,val1,val2,val3,val4,val5,val6,val7,val8);
+            AddRow(val0,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10);
         }
     }
 }
 
-void DialogSell::AddRow(const QString&val0, const QString&val1, const QString&val2, const QString&val3, const QString&val4, const QString&val5, const QString &val6, const QString &val7, const QString &val8)
+void DialogSell::AddRow(const QString&val0, const QString&val1, const QString&val2, const QString&val3, const QString&val4, const QString&val5, const QString &val6, const QString &val7, const QString &val8, const QString &val9,const QString &val10)
 {
     QStandardItem *item0 = new QStandardItem(val0);
     QStandardItem *item1 = new QStandardItem(val1);
@@ -145,10 +158,12 @@ void DialogSell::AddRow(const QString&val0, const QString&val1, const QString&va
     QStandardItem *item6 = new QStandardItem(val6);
     QStandardItem *item7 = new QStandardItem(val7);
     QStandardItem *item8 = new QStandardItem(val8);
+    QStandardItem *item9 = new QStandardItem(val9);
+    QStandardItem *item10 = new QStandardItem(val10);
 
-    m_bLoading=true;
-    QTimer::singleShot(100,this,[=]{m_bLoading=false;});
-    m_model->appendRow({item0,item1,item2,item3,item4,item5,item6,item7,item8});
+    m_bLoading = true;
+    QTimer::singleShot(100,this,[=]{ m_bLoading = false; });
+    m_model->appendRow({item0,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10});
 }
 
 QStringList DialogSell::getItemData(int item)
@@ -162,8 +177,10 @@ QStringList DialogSell::getItemData(int item)
     QString val6 = m_model->item(item,6)->text().trimmed();
     QString val7 = m_model->item(item,7)->text().trimmed();
     QString val8 = m_model->item(item,8)->text().trimmed();
+    QString val9 = m_model->item(item,9)->text().trimmed();
+    QString val10 = m_model->item(item,10)->text().trimmed();
 
-    return QStringList{val0,val1,val2,val3,val4,val5,val6,val7,val8};
+    return QStringList{val0,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10};
 }
 
 DialogSell::~DialogSell()

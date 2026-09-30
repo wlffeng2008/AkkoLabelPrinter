@@ -30,7 +30,7 @@ private:
     void saveLoadData(bool save=true);
     int  m_nCurItem=-1;
     bool m_bLoading=false;
-    void AddRow(const QString&val0,const QString&val1,const QString&val2,const QString&val3,const QString&val4,const QString&val5,const QString&val6,const QString&val7,const QString&val8);
+    void AddRow(const QString&val0, const QString&val1, const QString&val2, const QString&val3, const QString&val4, const QString&val5, const QString&val6, const QString&val7, const QString&val8, const QString &val9, const QString &val10);
 };
 
 #endif // DIALOGSELL_H
