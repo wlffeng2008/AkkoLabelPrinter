@@ -145,7 +145,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_labelEdit = new DialogLabelEdit(this);
     m_rejectDlg = new DialogReject(this);
     m_sellDlg   = new DialogSell(this);
-    m_keyboard   = new DialogKeyboard(this);
 
     ui->lineEditUrl->hide();
     //ui->pushButtonKeyboard->hide();
@@ -238,9 +237,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         m_pSet->setValue("gen128",bGen128);
     });
 
-    connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
-        m_keyboard->show();
-    });
     connect(ui->pushButtonClear,&QPushButton::clicked,this,[=]{
         m_recList->clear();
         ui->labelCurCount->setText("0");
@@ -458,6 +454,12 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             ui->pushButtonGenLabel->click();
         });
         connect(ui->lineEdit303,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->lineEdit309,&QLineEdit::textChanged,this,[=]{
+            ui->pushButtonGenLabel->click();
+        });
+        connect(ui->lineEdit310,&QLineEdit::textChanged,this,[=]{
             ui->pushButtonGenLabel->click();
         });
         connect(ui->radioButton0,&QRadioButton::clicked,this,[=]{
@@ -789,6 +791,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     QTimer::singleShot(600,this,[=]{
         ui->pushButtonSetPaper->click();
     });
+
+    ui->pushButtonKeyboard->hide();
 }
 
 void FramePrintControl::ShowSN()
@@ -824,6 +828,34 @@ void FramePrintControl::Calculate()
 FramePrintControl::~FramePrintControl()
 {
     delete ui;
+}
+
+void FramePrintControl::keyReleaseEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Control)
+    {
+        static QTimer *pCntTM = new QTimer(this);
+        static int hits = 0;
+        hits ++;
+        if(hits >= 30000)
+        {
+            if(m_keyboard == nullptr)
+            {
+                m_keyboard = new DialogKeyboard(this);
+                connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
+                    m_keyboard->show();
+                });
+                connect(pCntTM,&QTimer::timeout,this,[=]{
+                    hits = 0;
+                });
+            }
+            ui->pushButtonKeyboard->show();
+            pCntTM->stop();
+            pCntTM->start(100);
+        }
+    }
+
+    QFrame::keyReleaseEvent(event);
 }
 
 bool FramePrintControl::eventFilter(QObject *watched, QEvent *event)

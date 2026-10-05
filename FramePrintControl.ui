@@ -1174,7 +1174,7 @@
        <widget class="QPushButton" name="pushButtonReject">
         <property name="geometry">
          <rect>
-          <x>176</x>
+          <x>180</x>
           <y>468</y>
           <width>100</width>
           <height>28</height>
@@ -1196,9 +1196,9 @@
        <widget class="QPushButton" name="pushButtonKeyboard">
         <property name="geometry">
          <rect>
-          <x>94</x>
+          <x>180</x>
           <y>526</y>
-          <width>180</width>
+          <width>100</width>
           <height>28</height>
          </rect>
         </property>

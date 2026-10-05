@@ -853,12 +853,14 @@ const hid_map table[]={
     {0xFB,251,"MEDIA_CALC"}
 };
 
-
 int getHidCount(){
-    sizeof(table)/sizeof(table[0]);
+   return sizeof(table)/sizeof(table[0]);
 }
+
 const hid_map*getHidMap(quint8 index)
 {
+    if(index >= getHidCount())
+        return nullptr;
     return &table[index];
 }
 

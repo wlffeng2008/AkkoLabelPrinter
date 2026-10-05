@@ -35,6 +35,8 @@ private:
     bool m_bCtrlPressed = false;
     bool m_bAltPressed = false;
 
+    bool updating = false;
+
     QFont m_font;
     CustomScene *m_sence=nullptr;
     QStandardItemModel *m_pModel = nullptr;

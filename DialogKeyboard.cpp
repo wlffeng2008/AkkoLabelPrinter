@@ -154,11 +154,9 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     ui->setupUi(this);
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
-
     m_sence = new CustomScene(this);
     ui->graphicsView->bindScence(m_sence);
 
-    qDebug()<< "g_keyTableCount:" << g_keyTableCount;
     {
         m_pModel = new QStandardItemModel(this);
         m_pModel->setHorizontalHeaderLabels(QString("TEXT,HID,X,Y,W,H,RX,RY").split(','));
@@ -199,6 +197,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             m_sence->itemSelected(pKey);
         });
         connect(m_pModel,&QStandardItemModel::itemChanged,this,[=](QStandardItem *item){
+            if(updating) return;
             int row = item->row();
             int col = item->column();
 
@@ -223,19 +222,16 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
 
     {
         quint8 count = getHidCount();
-        qDebug() << "-------1-1-1-1--1-1"  << count;
         for (int i=0; i<count; i++)
         {
             const hid_map *map = getHidMap(i);
-            if(map)
+            if(map != nullptr)
             {
-            QString strItem=QString::asprintf("%02X[%03d] %s",map->hid_hex,map->hid_dex,map->name);
-            ui->comboBoxKey->addItem(strItem);
+                QString strItem=QString::asprintf("%02X[%03d] %s",map->hid_hex,map->hid_dex,map->name);
+                ui->comboBoxKey->addItem(strItem);
             }
         }
     }
-
-    static bool updating = false;
 
     connect(m_sence,&CustomScene::viewPosition,this,[=](const QPoint&point){
         //qDebug() << point;
@@ -320,6 +316,7 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SetLastItemHid(ui->lineEditKeytHid->text().trimmed().toInt());
     });
 
+    qDebug()<< "g_keyTableCount:" << g_keyTableCount;
     QTimer::singleShot(200,this,[=]{
         ui->frameEdit->setFixedWidth(370);
         ui->pushButtonU->setFixedSize(32,32);
@@ -513,10 +510,12 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         QHeaderView *pHeader = ui->tableView2->horizontalHeader();
         pHeader->setDefaultAlignment(Qt::AlignLeft|Qt::AlignVCenter);
         pHeader->setSectionResizeMode(QHeaderView::Stretch);
-        pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
-        pHeader->resizeSection(0,200);
+
         pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
         pHeader->resizeSection(1,70);
+        pHeader->setSectionResizeMode(2,QHeaderView::Fixed);
+        pHeader->resizeSection(2,150);
+
         {
             static QString strPath =QApplication::applicationDirPath() + "/layouts/";
             QDir d(strPath);
@@ -608,6 +607,7 @@ void DialogKeyboard::UpdateRow(QGraphicsItem *item)
         {
             if(m_pModel->item(i)->data().toInt() == (int)item)
             {
+                updating=true;
                 m_pModel->item(i,0)->setText(itemKey->text());
                 m_pModel->item(i,1)->setText(QString("%1").arg(itemKey->hid()));
                 m_pModel->item(i,2)->setText(QString("%1").arg(itemKey->x()));
@@ -616,6 +616,7 @@ void DialogKeyboard::UpdateRow(QGraphicsItem *item)
                 m_pModel->item(i,5)->setText(QString("%1").arg(itemKey->h()));
                 m_pModel->item(i,6)->setText(QString("%1").arg(itemKey->rx()));
                 m_pModel->item(i,7)->setText(QString("%1").arg(itemKey->ry()));
+                updating=false;
                 return;
             }
         }
@@ -640,7 +641,6 @@ void DialogKeyboard::MoveGroup(int type,int step)
     if(step != 0) fStep = step;
     ui->graphicsView->moveGroup(type,fStep);
 }
-
 
 DialogKeyboard::~DialogKeyboard()
 {
