@@ -7,13 +7,14 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+
     QApplication a(argc, argv);
     QString strStyle=R"(
 
         QPushButton:focus{background-color: #6CCEEF;}
         QPushButton:hover{background-color: #6CCEEF;}
         QPushButton:disabled{background-color: gray;}
-        QPushButton {background-color: #3CBEEF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 26px; padding-left:2px;padding-right:2px;}
+        QPushButton {background-color: #3CBEEF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 24px; padding-left:2px;padding-right:2px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
         QTableView{ border: 1px solid gray; background-color: rgb(226, 240, 255) ; gridline-color: gray;}
@@ -28,6 +29,14 @@ int main(int argc, char *argv[])
         QTableView::indicator { width: 18px; height: 18px; }
         QTableView::indicator:checked { image: url(:/images/BoxChecked.png); }
         QTableView::indicator:unchecked { image: url(:/images/BoxUncheck.png); }
+
+        QCheckBox::indicator{width:20px;height:20px;}
+        QCheckBox::indicator:checked { image: url(:/images/BoxChecked.png); }
+        QCheckBox::indicator:unchecked { image: url(:/images/BoxUncheck.png); }
+
+        QRadioButton::indicator{width:20px;height:20px;}
+        QRadioButton::indicator:checked { image: url(:/images/RadioChecked.png); }
+        QRadioButton::indicator:unchecked { image: url(:/images/RadioUnchecked.png); }
 
         QMessageBox {min-width: 400px; min-height: 300px;}
         QMessageBox QLabel#qt_msgbox_label{max-width: 300px; min-width: 300px;min-height: 120px; qproperty-alignment: AlignLeft;}
@@ -50,6 +59,7 @@ int main(int argc, char *argv[])
 #endif
     a.installTranslator(&translatorA);
     a.installTranslator(&translatorB);
+
     MainWindow w;
     w.show();
     return a.exec();

@@ -328,7 +328,7 @@ public:
 
         if(strFile.isEmpty()) return;
 
-        qDebug() << "SaveToJson" << strFile;
+        //qDebug() << "SaveToJson" << strFile;
         QFile file(strFile);
         if(file.open( QIODevice::WriteOnly ))
         {
@@ -392,7 +392,7 @@ public:
                 strFile = m_strJsonFile;
             if(strFile.isEmpty()) return;
 
-            qDebug() << "LoadFromJson" << strFile;
+            //qDebug() << "LoadFromJson" << strFile;
             QJsonArray jItems;
             QJsonObject jVer;
             if(getJsonInfo(strFile,jItems,jVer))
@@ -842,7 +842,8 @@ private:
         return pixmap2;
     }
 
-    void doPrint(QPrinter *printer) {
+    void doPrint(QPrinter *printer)
+    {
         scene()->clearSelection();
         QPixmap pixmap = grabPixmapMatrix();
         if (pixmap.isNull())
@@ -855,7 +856,6 @@ private:
         painter.setWindow(pixmap.rect());
         painter.drawPixmap(0, 0, pixmap);
     }
-
 };
 
 namespace Ui {

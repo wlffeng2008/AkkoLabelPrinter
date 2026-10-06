@@ -239,11 +239,13 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
     });
     connect(m_sence,&CustomScene::itemChanged,this,[=](QGraphicsItem *item){
         updating = true;
+        QTimer::singleShot(100,this,[=]{ updating = false;});
+
         UpdateRow(item);
-        QTimer::singleShot(20,this,[=]{ updating = false;});
     });
     connect(m_sence,&CustomScene::itemSelected,this,[=](QGraphicsItem *item){
         updating = true;
+        QTimer::singleShot(100,this,[=]{ updating = false; });
 
         {
             int count = m_pModel->rowCount();
@@ -272,7 +274,6 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 ui->lineEditKeytHid->setText(QString("%1").arg(itemKey->hid()));
             }
         }
-        QTimer::singleShot(5,this,[=]{ updating = false;});
     });
 
     connect(ui->pushButtonFont,&QPushButton::clicked,this,[=]{
@@ -316,7 +317,6 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         m_sence->SetLastItemHid(ui->lineEditKeytHid->text().trimmed().toInt());
     });
 
-    qDebug()<< "g_keyTableCount:" << g_keyTableCount;
     QTimer::singleShot(200,this,[=]{
         ui->frameEdit->setFixedWidth(370);
         ui->pushButtonU->setFixedSize(32,32);
@@ -516,44 +516,42 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHeader->setSectionResizeMode(2,QHeaderView::Fixed);
         pHeader->resizeSection(2,140);
 
+        static QString strPath =QApplication::applicationDirPath() + "/layouts/";
+        QDir d(strPath);
+
+        QDir::Filters filters = QDir::Files | QDir::NoDotAndDotDot | QDir::Readable;
+        QStringList nameFilters;
+        nameFilters << "*.json";
+        QStringList fileList = d.entryList(nameFilters, filters);
+        for(const QString &strFile:std::as_const(fileList))
         {
-            static QString strPath =QApplication::applicationDirPath() + "/layouts/";
-            QDir d(strPath);
-
-            QDir::Filters filters = QDir::Files | QDir::NoDotAndDotDot | QDir::Readable;
-            QStringList nameFilters;
-            nameFilters << "*.json";
-            QStringList fileList = d.entryList(nameFilters, filters);
-            for(const QString &strFile:std::as_const(fileList))
+            QJsonArray jArray;
+            QJsonObject jVer;
+            if(CustomScene::getJsonInfo(strPath+strFile,jArray,jVer))
             {
-                QJsonArray jArray;
-                QJsonObject jVer;
-                if(CustomScene::getJsonInfo(strPath+strFile,jArray,jVer))
-                {
-                    qDebug() << jVer ;
-                    QStandardItem *item0 = new QStandardItem(strFile);
-                    QStandardItem *item1 = new QStandardItem(QString("%1").arg(jVer["keycount"].toInt()));
-                    QStandardItem *item2 = new QStandardItem(jVer["datetime"].toString());
-                    m_pModel2->appendRow({item0,item1,item2});
-                }
+                //qDebug() << jVer ;
+                QStandardItem *item0 = new QStandardItem(strFile);
+                QStandardItem *item1 = new QStandardItem(QString("%1").arg(jVer["keycount"].toInt()));
+                QStandardItem *item2 = new QStandardItem(jVer["datetime"].toString());
+                m_pModel2->appendRow({item0,item1,item2});
             }
-
-            connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){
-                QString strFile0 = ui->lineEditJsonFile->text().trimmed();
-                QString strFile1 = m_pModel2->item(index.row(),0)->text().trimmed() ;
-                if(strFile1 != strFile0)
-                {
-                    ui->lineEditJsonFile->setText(strFile1);
-                    ui->pushButtonLoad->click();
-                }
-            });
-            connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
-                m_sence->SaveToJson(strPath+ui->lineEditJsonFile->text().trimmed());
-            });
-            connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
-                m_sence->LoadFromJson(strPath+ui->lineEditJsonFile->text().trimmed());
-            });
         }
+
+        connect(ui->tableView2,&QTableView::clicked,this,[=](const QModelIndex &index){
+            QString strFile0 = ui->lineEditJsonFile->text().trimmed();
+            QString strFile1 = m_pModel2->item(index.row(),0)->text().trimmed() ;
+            if(strFile1 != strFile0)
+            {
+                ui->lineEditJsonFile->setText(strFile1);
+                ui->pushButtonLoad->click();
+            }
+        });
+        connect(ui->pushButtonSave,&QPushButton::clicked,this,[=]{
+            m_sence->SaveToJson(strPath+ui->lineEditJsonFile->text().trimmed());
+        });
+        connect(ui->pushButtonLoad,&QPushButton::clicked,this,[=]{
+            m_sence->LoadFromJson(strPath+ui->lineEditJsonFile->text().trimmed());
+        });
 
         connect(ui->checkBoxRound,&QCheckBox::clicked,this,[=](bool checked){
             m_sence->setVolRoundButon(checked);
