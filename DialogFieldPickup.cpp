@@ -8,6 +8,7 @@ DialogFieldPickup::DialogFieldPickup(QWidget *parent)
     , ui(new Ui::DialogFieldPickup)
 {
     ui->setupUi(this);
+    setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
     static QSettings fieldSet(strCfgPath + "/field.ini",QSettings::IniFormat);

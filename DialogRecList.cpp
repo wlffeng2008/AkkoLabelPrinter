@@ -9,6 +9,7 @@ DialogRecList::DialogRecList(QWidget *parent)
     , ui(new Ui::DialogRecList)
 {
     ui->setupUi(this);
+    setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     m_pModel = new QStandardItemModel(this);
     m_pModel->setHorizontalHeaderLabels(QString("扫码内容").split(','));

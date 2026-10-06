@@ -124,7 +124,6 @@ private:
 
     void Calculate();
 
-    QString m_strTemplFile;
     void LoadTemplate(const QString&strFile);
 
     FrameLabelView *m_pLabelView = nullptr;

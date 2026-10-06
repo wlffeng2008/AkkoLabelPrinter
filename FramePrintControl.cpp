@@ -101,30 +101,29 @@ void drawTextAutoWrapAndScale(QPainter* painter, const QRect& rect, const QStrin
     painter->restore();
 }
 
+
 FramePrintControl::FramePrintControl(QWidget *parent)
     : QFrame(parent)
     , ui(new Ui::FramePrintControl)
 {
     ui->setupUi(this);
+
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
     QString strPutPath = QApplication::applicationDirPath() + "/output";
+
     QDir CfgD(strCfgPath);
     if(!CfgD.exists()) CfgD.mkdir(strCfgPath);
+
     QDir OutD(strPutPath);
     if(!OutD.exists()) OutD.mkdir(strPutPath);
 
     m_pSet = new QSettings(strCfgPath + "/global.ini",QSettings::IniFormat);
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     qDebug() << QT_VERSION;
 #else
     m_pSet->setIniCodec("UTF-8");
 #endif
-    int nFunc = 2;
-    ui->stackedWidget->setCurrentIndex(nFunc);
-
-    QString strTemp = QString("/default%1.tem").arg(nFunc);
-
-    m_strTemplFile = strCfgPath + strTemp;
 
     ui->checkBoxDouble->setChecked(true);
 
@@ -147,8 +146,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_sellDlg   = new DialogSell(this);
 
     ui->lineEditUrl->hide();
-    //ui->pushButtonKeyboard->hide();
-    ui->pushButtonGenLabel->setFixedSize(100,28);
 
     connect(ui->textEdit302,&QTextEdit::textChanged,this,[=]{
         QString strInfo=QString("长度：%1 字节").arg(ui->textEdit302->toPlainText().trimmed().toLocal8Bit().size());
@@ -482,18 +479,17 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             QDesktopServices::openUrl(QUrl::fromLocalFile(ui->lineEditPdfFile->text()));
         });
 
-        ui->pushButtonReject->hide();
-        connect(ui->checkBoxReject,&QCheckBox::clicked,this,[=](bool checked){
+        ui->pushButtonReject->setEnabled(false);
+        connect(ui->checkBoxReject,&QCheckBox::toggled,this,[=](bool checked){
+            m_rejectDlg->hide();
+            ui->pushButtonReject->setEnabled(checked);
             if(checked)
             {
-                ui->pushButtonReject->show();
                 LoadTemplate(strCfgPath + "/reject.tem");
             }
             else
             {
                 LoadTemplate(strCfgPath + "/default2.tem");
-                ui->pushButtonReject->hide();
-                m_rejectDlg->hide();
             }
         });
 
@@ -792,7 +788,13 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         ui->pushButtonSetPaper->click();
     });
 
-    ui->pushButtonKeyboard->hide();
+    //ui->pushButtonKeyboard->hide();
+    connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
+        if(!m_keyboard) m_keyboard = new DialogKeyboard(this);
+        m_keyboard->show();
+    });
+
+    ui->labelMode->installEventFilter(this);
 }
 
 void FramePrintControl::ShowSN()
@@ -837,18 +839,9 @@ void FramePrintControl::keyReleaseEvent(QKeyEvent *event)
         static QTimer *pCntTM = new QTimer(this);
         static int hits = 0;
         hits ++;
-        if(hits >= 30000)
+        if(hits >= 30)
         {
-            if(m_keyboard == nullptr)
-            {
-                m_keyboard = new DialogKeyboard(this);
-                connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
-                    m_keyboard->show();
-                });
-                connect(pCntTM,&QTimer::timeout,this,[=]{
-                    hits = 0;
-                });
-            }
+            connect(pCntTM,&QTimer::timeout,this,[=]{ hits = 0; });
             ui->pushButtonKeyboard->show();
             pCntTM->stop();
             pCntTM->start(100);
@@ -858,14 +851,24 @@ void FramePrintControl::keyReleaseEvent(QKeyEvent *event)
     QFrame::keyReleaseEvent(event);
 }
 
-bool FramePrintControl::eventFilter(QObject *watched, QEvent *event)
-{
-    return QFrame::eventFilter(watched,event);
-}
-
 void FramePrintControl::LoadTemplate(const QString&strFile)
 {
     m_pLabelView->Load(strFile);
+}
+
+bool FramePrintControl::eventFilter(QObject *watched, QEvent *event)
+{
+    if(watched == ui->labelMode && event->type() == QEvent::MouseButtonRelease)
+    {
+        int nFunc = (m_pSet->value("function",0).toInt() + 1) % 3;
+        m_pSet->setValue("function",nFunc);
+        ui->stackedWidget->setCurrentIndex(nFunc);
+        QString strTemp = QString("/default%1.tem").arg(nFunc);
+        QString strCfgPath = QApplication::applicationDirPath() + "/config";
+        LoadTemplate(strCfgPath + strTemp);
+        ui->checkBoxReject->setChecked(false);
+    }
+    return QFrame::eventFilter(watched,event);
 }
 
 void FramePrintControl::BindLabelView(FrameLabelView *pView)
@@ -874,7 +877,11 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
     m_labelEdit->BindLabelView(pView);
     ui->pushButtonSetPaper->click();
     QTimer::singleShot(100,this,[=]{
-        LoadTemplate(m_strTemplFile);
+        int nFunc = m_pSet->value("function",2).toInt();
+        ui->stackedWidget->setCurrentIndex(nFunc);
+        QString strTemp = QString("/default%1.tem").arg(nFunc);
+        QString strCfgPath = QApplication::applicationDirPath() + "/config";
+        LoadTemplate(strCfgPath + strTemp);
     });
 
     connect(pView,&FrameLabelView::onItemLoaded,this,[=](int paperW,int paperH){

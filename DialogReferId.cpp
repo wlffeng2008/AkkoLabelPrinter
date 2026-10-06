@@ -8,6 +8,7 @@ DialogReferId::DialogReferId(QWidget *parent)
     , ui(new Ui::DialogReferId)
 {
     ui->setupUi(this);
+    setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     QString strCfgPath = QApplication::applicationDirPath() + "/config";
     static QSettings referSet(strCfgPath + "/referid.ini",QSettings::IniFormat);

@@ -170,8 +170,8 @@ bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath
             if(scale <= 0.05) scale = 0.5;
             if(x < 0) x = 0;
             if(y < 0) y = 0;
-            if(x > nW-10) x = nW-10 ;
-            if(y > nH-10) y = nH-10 ;
+            //if(x > nW-10) x = nW-10 ;
+            //if(y > nH-10) y = nH-10 ;
 
             text.replace("：","　　");
 
@@ -212,10 +212,12 @@ bool CLabelSave::loadSceneWithImages(CustomScene *scene, const QString &filePath
             QString imageData = obj["imageData"].toString();
 
             if(scale <= 0.05) scale = 0.5;
+
             if(x < 0) x = 0;
             if(y < 0) y = 0;
-            if(x > nW-10) x = nW-10 ;
-            if(y > nH-10) y = nH-10 ;
+
+            //if(x > nW-10) x = nW-10 ;
+            //if(y > nH-10) y = nH-10 ;
 
             QImage image = decodeImage(imageData);
             CustomPixmapItem *pixmapItem = new CustomPixmapItem(QPixmap::fromImage(image));

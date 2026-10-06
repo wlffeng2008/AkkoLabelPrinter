@@ -512,9 +512,9 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHeader->setSectionResizeMode(QHeaderView::Stretch);
 
         pHeader->setSectionResizeMode(1,QHeaderView::Fixed);
-        pHeader->resizeSection(1,70);
+        pHeader->resizeSection(1,60);
         pHeader->setSectionResizeMode(2,QHeaderView::Fixed);
-        pHeader->resizeSection(2,150);
+        pHeader->resizeSection(2,140);
 
         {
             static QString strPath =QApplication::applicationDirPath() + "/layouts/";
@@ -591,9 +591,9 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
             ui->graphicsView->addImage(QImage(strImg));
         }
     });
-    QTimer::singleShot(500,this,[=]{
+    QTimer::singleShot(200,this,[=]{
        // ui->frameEdit->move(ui->tableView2->geometry().topRight());
-        ui->frameEdit->setFixedWidth(500);
+       ui->frameEdit->setFixedWidth(600);
     });
 }
 

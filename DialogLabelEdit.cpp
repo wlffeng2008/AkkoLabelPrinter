@@ -298,6 +298,16 @@ void DialogLabelEdit::AppendRow(QGraphicsItem *item)
     m_bLoading=false;
 }
 
+static QString getItemName(QGraphicsItem *item){
+    QString name="";
+    if (auto pixmapItem = dynamic_cast<CustomPixmapItem*>(item))
+        name=pixmapItem->getName();
+
+    if (auto textItem = dynamic_cast<CustomTextItem*>(item))
+        name=textItem->getName();
+    return name.trimmed();
+}
+
 void DialogLabelEdit::LoadLabels()
 {
     qDebug() << "DialogLabelEdit::LoadLabels()";
@@ -309,13 +319,22 @@ void DialogLabelEdit::LoadLabels()
 
     m_bLoading = true;
     QTimer::singleShot(500,this,[=]{ m_bLoading = false;});
-    m_pModel->removeRows(0,m_pModel->rowCount());
-    QList<QGraphicsItem *> items = this->m_pView->GetItems();
 
-    for(int i=items.count()-1;i>=0; i--)
-    //for( int i = 0; i < items.size(); i++ )
+    m_pModel->removeRows(0,m_pModel->rowCount());
+
+    QList<QGraphicsItem *> items = this->m_pView->GetItems();
+    int count = items.size();
+
+    std::sort(items.begin(), items.end(), [](QGraphicsItem* a, QGraphicsItem* b){
+        QString nameA = getItemName(a);
+        QString nameB = getItemName(b);
+        return nameA < nameB;
+    });
+
+    for( int i = 0; i < count; i++ )
     {
         AppendRow(items[i]);
+        items[i]->setZValue(i);
     }
 }
 

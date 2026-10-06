@@ -8,6 +8,7 @@ DialogSet::DialogSet(QWidget *parent)
     , ui(new Ui::DialogSet)
 {
     ui->setupUi(this);
+    setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     connect(ui->pushButtonOK,&QPushButton::clicked,this,[=]{
         m_strCount = ui->lineEdit->text().trimmed();
