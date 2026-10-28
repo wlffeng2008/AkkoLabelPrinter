@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>703</width>
-    <height>720</height>
+    <width>1000</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -32,12 +32,8 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item alignment="Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignVCenter">
-    <widget class="CustomView" name="graphicsView">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 170, 255);</string>
-     </property>
-    </widget>
+   <item>
+    <widget class="CustomView" name="graphicsView"/>
    </item>
   </layout>
  </widget>

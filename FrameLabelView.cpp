@@ -131,8 +131,12 @@ void FrameLabelView::SetPaperSize(qreal width, qreal height)
         nW = nH * ratio;
     }
 
-    ui->graphicsView->setFixedSize(nW-1,nH-1);
+    //ui->graphicsView->setGeometry(0,0,nW-1,nH-1);
+    //ui->graphicsView->setFixedSize(nW-1,nH-1);
+    ui->graphicsView->resize(nW-1,nH-1);
+    ui->graphicsView->setMaximumSize(nW-1,nH-1);
     m_pScene->setSceneRect(QRectF(0,0,nW-3,nH-3));
+    qDebug() << "SetPaperSize" << nW << nH;
 
     m_paperW = width;
     m_paperH = height;

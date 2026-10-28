@@ -38,10 +38,10 @@ int main(int argc, char *argv[])
         QRadioButton::indicator:checked { image: url(:/images/RadioChecked.png); }
         QRadioButton::indicator:unchecked { image: url(:/images/RadioUnchecked.png); }
 
-        QMessageBox {min-width: 400px; min-height: 300px;}
-        QMessageBox QLabel#qt_msgbox_label{max-width: 300px; min-width: 300px;min-height: 120px; qproperty-alignment: AlignLeft;}
-        QMessageBox QLabel#qt_msgboxex_icon_label{ min-width: 50px; min-height: 80px; qproperty-alignment: AlignTop;}
-        QMessageBox QPushButton {background-color: #303CCF; border-radius: 4px; color:white; min-width: 80px;min-height: 24px;}
+        QMessageBox {min-width: 500px; min-height: 400px;}
+        QMessageBox QLabel#qt_msgbox_label{max-width: 400px; min-width: 400px; min-height: 120px; qproperty-alignment: AlignLeft;}
+        QMessageBox QLabel#qt_msgboxex_icon_label{ min-width: 60px; min-height: 60px; qproperty-alignment: AlignTop;}
+        QMessageBox QPushButton {background-color: #B0BCCF; border-radius: 8px; color:white; min-width: 80px; min-height: 24px;}
 
     )";
 

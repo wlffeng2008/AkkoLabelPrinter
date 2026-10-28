@@ -21,6 +21,15 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPrintPreviewDialog>
+#include <QRegularExpression>
+
+// 校验：整个字符串 仅字母+数字
+bool isAlphaNumOnly(const QString &s)
+{
+    // ^ 开头，[a-zA-Z0-9] 字母数字，+ 至少1个，$ 结尾
+    static const QRegularExpression reg("^[a-zA-Z0-9]+$");
+    return reg.match(s).hasMatch();
+}
 
 bool hasRealPhysicalPrinter()
 {
@@ -125,7 +134,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     m_pSet->setIniCodec("UTF-8");
 #endif
 
-    ui->checkBoxDouble->setChecked(true);
+    ui->checkBoxDouble->setChecked(m_pSet->value("DoubleCol").toBool());
+    ui->checkBoxKickout->setChecked(m_pSet->value("Kicpout",true).toBool());
 
     connect(ui->pushButtonPrinter,&QPushButton::clicked,this,[=]{
         ui->comboBoxPrinter->clear();
@@ -158,9 +168,11 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->lineEditCode2->setText(m_pSet->value("Code2","A").toString());
     ui->lineEditCode3->setText(m_pSet->value("Code3","0001").toString());
 
-    ui->lineEditLenght->setText(m_pSet->value("askLen","16").toString());
+    ui->spinBoxlLength->setValue(m_pSet->value("askLen","16").toInt());
     ui->checkBoxCheckLen->setChecked(m_pSet->value("checkLen",true).toBool());
     ui->checkBoxGen128->setChecked(m_pSet->value("gen128",true).toBool());
+    ui->checkBoxGen128->setChecked(true);
+    ui->checkBoxGen128->hide();
 
     ui->lineEdit300->setText(m_pSet->value("text300","深圳大牛科技有限公司").toString());
     ui->lineEdit301->setText(m_pSet->value("text301","BUY-12345678").toString());
@@ -173,6 +185,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->spinBoxUnit->setValue(m_pSet->value("text308","10").toInt());
     ui->dateTimeEdit0->setDateTime(QDateTime::currentDateTime());
     ui->dateTimeEdit1->setDateTime(QDateTime::currentDateTime());
+
     QString strLast = m_pSet->value("lastPdf").toString().trimmed();
     ui->lineEditPdfFile->setText(strLast);
     connect(ui->pushButtonSetPdf,&QPushButton::clicked,this,[=]{
@@ -182,6 +195,17 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     if(strLast.isEmpty())
         ui->pushButtonSetPdf->click();
+
+    connect(ui->lineEditSavepath,&QLineEdit::textChanged,this,[=](const QString&text){
+        m_recList->setPath(text);
+    });
+    ui->lineEditSavepath->setText(m_pSet->value("recordpath","/output/").toString());
+    connect(ui->pushButtonGetPath,&QPushButton::clicked,this,[=]{
+        QString strPath = QFileDialog::getExistingDirectory(this);
+        if(strPath.isEmpty()) return;
+        m_pSet->setValue("recordpath",strPath);
+        ui->lineEditSavepath->setText(strPath);
+    });
 
     ui->label300->setText(m_pSet->value("name300","厂商名称").toString().replace("：","").trimmed() + "：");
     ui->label301->setText(m_pSet->value("name301","采购订单号").toString().replace("：","").trimmed() + "：");
@@ -212,8 +236,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         QString strCode2 = ui->lineEditCode2->text().trimmed();
         QString strCode3 = ui->lineEditCode3->text().trimmed();
         QString strCode = strCode0 + strCode1 + strCode2 + strCode3;
-        QString newValue = QString::asprintf("%04d",strCode3.toInt()+1);
-        ui->lineEditCode3->setText(newValue);
 
         bool bGen128 = ui->checkBoxGen128->isChecked();
         if(bGen128)
@@ -230,8 +252,26 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         m_pSet->setValue("Code0",strCode0);
         m_pSet->setValue("Code1",strCode1);
         m_pSet->setValue("Code2",strCode2);
-        m_pSet->setValue("Code3",newValue);
         m_pSet->setValue("gen128",bGen128);
+    });
+
+    connect(ui->pushButtonBoxnum,&QPushButton::clicked,this,[=]{
+        QString strCode3 = ui->lineEditCode3->text().trimmed();
+        QString newValue = QString::asprintf("%04d",strCode3.toInt()+1);
+        ui->lineEditCode3->setText(newValue);
+        m_pSet->setValue("Code3",newValue);
+
+        {
+            QString strCode0 = ui->lineEditCode0->text().trimmed();
+            QString strCode1 = ui->lineEditCode1->text().trimmed();
+            QString strCode2 = ui->lineEditCode2->text().trimmed();
+            QString strCode3 = ui->lineEditCode3->text().trimmed();
+            QString strCode = strCode0 + strCode1 + strCode2 + strCode3;
+            m_recList->setBoxnum(strCode);
+
+            m_pLabelView->AddImage128(strCode,"128Code");
+            m_pLabelView->AddText(strCode,"128Text");
+        }
     });
 
     connect(ui->pushButtonClear,&QPushButton::clicked,this,[=]{
@@ -259,6 +299,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     connect(ui->lineEditQrInput,&QLineEdit::textChanged,this,[=]{
         pTMGet->stop();
         pTMGet->start(500);
+        ui->labelCurTextLen->setText(QString("当前长度：%1").arg(ui->lineEditQrInput->text().count()));
     });
 
     connect(m_recList,&DialogRecList::onTextChanged,this,[=]{
@@ -267,55 +308,88 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     connect(pTMGet,&QTimer::timeout,this,[=]{
         pTMGet->stop();
-        int askLen = ui->lineEditLenght->text().toInt();
+
+        int askLen = ui->spinBoxlLength->value();
         m_pSet->setValue("askLen",askLen);
         m_pSet->setValue("checkLen",ui->checkBoxCheckLen->isChecked());
-        if(!ui->checkBoxCheckLen->isChecked())
-            askLen = 4;
 
         QString strSN = ui->lineEditQrInput->text().trimmed();
-        if(strSN.length() >= askLen)
+        int SNLength = strSN.length();
+        if(SNLength<4)
+            return;
+
+        if(ui->checkBoxCheckLen->isChecked())
         {
-            if(m_recList->contains(strSN))
+            int checkMode = ui->comboBoxCheckmode->currentIndex();
+            switch(checkMode)
             {
-                QMessageBox::information(this,"温馨提示",QString("此条码 %1 已扫入!").arg(strSN));
-                ui->lineEditQrInput->clear();
-                ui->lineEditQrInput->setFocus();
-                return;
+            case 0: if(!(SNLength == askLen)) return;break;
+            case 1: if(!(SNLength >  askLen)) return;break;
+            case 2: if(!(SNLength <  askLen)) return;break;
             }
-
-            m_recList->appendCode(strSN);
-
-            m_nAllCount++;
-            ui->labelAllCount->setText(QString("%1").arg(m_nAllCount));
-
-            int nCount = m_recList->count();
-            ui->labelCurCount->setText(QString("%1").arg(nCount));
-
-            //ShowSN();
-
-            QTimer::singleShot(1000,this,[=]{
-                ui->lineEditQrInput->clear();
-                ui->lineEditQrInput->setFocus();
-                if(nCount >= ui->lineEditLimit->text().trimmed().toInt())
-                {
-                    if(ui->checkBoxAutoPrint->isChecked())
-                    {
-                        QTimer::singleShot(100,this,[=]{
-                            ui->pushButtonPrint->click();
-                        });
-                    }
-
-                    if(QMessageBox::question(this,"温馨提示","本次扫码数量已达上限,自动清零吗?") == QMessageBox::Yes)
-                    {
-                        ui->pushButtonClear->click();
-                    }
-                }
-            });
         }
+
+        if(m_recList->contains(strSN))
+        {
+            QMessageBox::information(this,"温馨提示",QString("此条码 %1 已扫入!").arg(strSN));
+            ui->lineEditQrInput->clear();
+            ui->lineEditQrInput->setFocus();
+            return;
+        }
+
+        if(ui->checkBoxKickout->isChecked() && !isAlphaNumOnly(strSN))
+        {
+            QMessageBox::information(this,"温馨提示",QString("发现 符号，请重试！").arg(strSN));
+            ui->lineEditQrInput->clear();
+            ui->lineEditQrInput->setFocus();
+            return;
+        }
+
+        {
+            QString strCode0 = ui->lineEditCode0->text().trimmed();
+            QString strCode1 = ui->lineEditCode1->text().trimmed();
+            QString strCode2 = ui->lineEditCode2->text().trimmed();
+            QString strCode3 = ui->lineEditCode3->text().trimmed();
+            QString strCode = strCode0 + strCode1 + strCode2 + strCode3;
+            m_recList->setBoxnum(strCode);
+        }
+
+        m_recList->appendCode(strSN);
+
+        m_nAllCount++;
+        ui->labelAllCount->setText(QString("%1").arg(m_nAllCount));
+
+        int nCount = m_recList->count();
+        ui->labelCurCount->setText(QString("%1").arg(nCount));
+
+        //ShowSN();
+
+        QTimer::singleShot(1000,this,[=]{
+            ui->lineEditQrInput->clear();
+            ui->lineEditQrInput->setFocus();
+            if(nCount >= ui->lineEditLimit->text().trimmed().toInt())
+            {
+                if(ui->checkBoxAutoPrint->isChecked())
+                {
+                    QTimer::singleShot(100,this,[=]{
+                        ui->pushButtonPrint->click();
+                    });
+                }
+
+                if(QMessageBox::question(this,"温馨提示","本次扫码数量已达上限,自动清零吗?") == QMessageBox::Yes)
+                {
+                    ui->pushButtonClear->click();
+                }
+            }
+        });
     });
 
-    connect(ui->checkBoxDouble,&QCheckBox::clicked,this,[=]{
+    connect(ui->checkBoxKickout,&QCheckBox::clicked,this,[=](bool checked){
+        m_pSet->setValue("Kicpout",checked);
+    });
+
+    connect(ui->checkBoxDouble,&QCheckBox::clicked,this,[=](bool checked){
+        m_pSet->setValue("DoubleCol",checked);
         ShowSN();
     });
     connect(ui->pushButtonSetPaper,&QPushButton::clicked,this,[=]{        
@@ -784,10 +858,6 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         });
     }
 
-    QTimer::singleShot(600,this,[=]{
-        ui->pushButtonSetPaper->click();
-    });
-
     //ui->pushButtonKeyboard->hide();
     connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
         if(!m_keyboard) m_keyboard = new DialogKeyboard(this);
@@ -795,6 +865,8 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     });
 
     ui->labelMode->installEventFilter(this);
+
+    ui->labelMode->hide();
 }
 
 void FramePrintControl::ShowSN()
@@ -811,10 +883,13 @@ void FramePrintControl::ShowSN()
 
 void FramePrintControl::Calculate()
 {
-    if(ui->stackedWidget->currentIndex() != 2)
-        return;
     int nCols = ui->spinBoxPrintCol->value();
     int nRows = ui->spinBoxPrintRow->value();
+    m_pSet->setValue("PrintCol",nCols);
+    m_pSet->setValue("PrintRow",nRows);
+
+    if(ui->stackedWidget->currentIndex() != 2)
+        return;
     int nUnit = ui->spinBoxUnit->value() * nCols * nRows;
     int nCount = ui->spinBoxCount->value();
     if(nUnit <= 0) return;
@@ -823,8 +898,6 @@ void FramePrintControl::Calculate()
 
     ui->spinBoxPrintCount->setValue(nPrintCount);
 
-    m_pSet->setValue("PrintCol",nCols);
-    m_pSet->setValue("PrintRow",nRows);
 }
 
 FramePrintControl::~FramePrintControl()
@@ -875,7 +948,7 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
 {
     m_pLabelView = pView;
     m_labelEdit->BindLabelView(pView);
-    ui->pushButtonSetPaper->click();
+    //ui->pushButtonSetPaper->click();
     QTimer::singleShot(100,this,[=]{
         int nFunc = m_pSet->value("function",2).toInt();
         ui->stackedWidget->setCurrentIndex(nFunc);

@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QString strTitle = QString("简易标签打印 - V1.36 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
     setWindowTitle( strTitle );
-    QTimer::singleShot(200,this,[=]{ ui->frameR->BindLabelView(ui->frameL); });
 
     QString strText("使用方法和技巧：单击标签，按上下左右键可移动，＋－键可放大缩小，同时按住Ctrl键可整体控制全部标签；Delete键删除标签。Ctrl+S：快速保存模板！");
     QLabel *pLabelTip = new QLabel(strText,this);
@@ -48,11 +47,38 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     pTimerFlash->start(1000);
+
+    this->resize(1200,768);
+    this->setFixedSize(1366,768);
+    QTimer::singleShot(1000,this,[=]{
+        ui->frameR->BindLabelView(ui->frameL);
+        // setMinimumSize(0, 0);
+        // setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+        // // setMinimumWidth(0);
+        // // setMaximumWidth(QWIDGETSIZE_MAX);
+        // // setMinimumHeight(0);
+        // // setMaximumHeight(QWIDGETSIZE_MAX);
+
+        // Qt::WindowFlags f = this->windowFlags();
+        // f &= ~Qt::MSWindowsFixedSizeDialogHint;
+        // f |= Qt::WindowMaximizeButtonHint;
+        // this->setWindowFlags(f);
+        // this->show();
+        // setWindowState(windowState());
+        // layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    qDebug() << "MainWindow::resizeEvent";
+    QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

@@ -1,8 +1,12 @@
 #include "DialogRecList.h"
+#include "qdebug.h"
+#include "qevent.h"
 #include "ui_DialogRecList.h"
 
 #include <QTimer>
 #include <QModelIndex>
+#include <QDateTime>
+#include <QFile>
 
 DialogRecList::DialogRecList(QWidget *parent)
     : QDialog(parent)
@@ -12,7 +16,7 @@ DialogRecList::DialogRecList(QWidget *parent)
     setWindowFlags((windowFlags()|Qt::MSWindowsFixedSizeDialogHint)  & ~Qt::WindowContextHelpButtonHint);
 
     m_pModel = new QStandardItemModel(this);
-    m_pModel->setHorizontalHeaderLabels(QString("扫码内容").split(','));
+    m_pModel->setHorizontalHeaderLabels(QString("扫码内容,时间").split(','));
     ui->tableView->setModel(m_pModel);
     QHeaderView *pHeader = ui->tableView->horizontalHeader();
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
@@ -21,8 +25,8 @@ DialogRecList::DialogRecList(QWidget *parent)
         m_pModel->setRowCount(0);
         emit onTextChanged();
     });
-    connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
 
+    connect(ui->pushButtonDel,&QPushButton::clicked,this,[=]{
         QItemSelectionModel* selection = ui->tableView->selectionModel();
         QModelIndexList rows = selection->selectedRows();
 
@@ -60,6 +64,33 @@ DialogRecList::~DialogRecList()
     delete ui;
 }
 
+void DialogRecList::setPath(const QString&path)
+{
+    QString strText = path ;
+    if(!path.contains(":"))
+        strText = qApp->applicationDirPath() + "/" + path;
+    m_strPath = strText;
+    qDebug() << m_strPath;
+}
+
+void DialogRecList::setBoxnum(const QString&boxnum)
+{
+    m_strboxnum = boxnum;
+}
+
+void DialogRecList::saveToFile()
+{
+    QString strFile = m_strPath + QString("/datalog-") + QDateTime::currentDateTime().toString("yyyyMMdd") + QString(".csv");
+    QFile SF(strFile);
+    if (!SF.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        qWarning() << "打开失败:" << SF.errorString();
+        return;
+    }
+    QTextStream w(&SF);
+
+    SF.close();
+}
+
 void DialogRecList::clear()
 {
     ui->pushButtonClear->click();
@@ -68,8 +99,35 @@ void DialogRecList::clear()
 
 void DialogRecList::appendCode(const QString&text)
 {
-    QStandardItem *item = new QStandardItem(text.trimmed());
-    m_pModel->appendRow(item);
+    QString strTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    QStandardItem *item0 = new QStandardItem(text.trimmed());
+    QStandardItem *item1 = new QStandardItem(strTime);
+    item1->setEditable(false);
+    m_pModel->appendRow({item0,item1});
+
+    m_saveList.append(text + QString(",") + strTime);
+    {
+        QString strFile = m_strPath + QString("/datalog-") + QDateTime::currentDateTime().toString("yyyyMMdd") + QString(".csv");
+        QFile SF(strFile);
+        if (!SF.open(QIODevice::WriteOnly | QIODevice::Append)) {
+            qWarning() << "打开失败:" << SF.errorString();
+            return;
+        }
+        QTextStream w(&SF);
+
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        w.setEncoding(QStringConverter::Utf8);
+#else
+        w.setCodec("UTF-8");
+        //w.setCodec("GBK");
+#endif
+        w.setGenerateByteOrderMark(true);
+
+        if(SF.size() == 0) w <<"二维码,时间,箱号\n";
+        w << text << "," << strTime << "," << m_strboxnum << "\n";
+        SF.close();
+    }
 
     emit onTextChanged();
 }
