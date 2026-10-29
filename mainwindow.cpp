@@ -48,8 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     pTimerFlash->start(1000);
 
-    this->resize(1200,768);
-    this->setFixedSize(1366,768);
+    this->setFixedSize(1200,800);
     QTimer::singleShot(1000,this,[=]{
         ui->frameR->BindLabelView(ui->frameL);
         // setMinimumSize(0, 0);

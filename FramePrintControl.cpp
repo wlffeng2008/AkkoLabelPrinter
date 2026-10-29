@@ -866,7 +866,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
 
     ui->labelMode->installEventFilter(this);
 
-    ui->labelMode->hide();
+    //ui->labelMode->hide();
 }
 
 void FramePrintControl::ShowSN()
