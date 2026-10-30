@@ -14,6 +14,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    Qt::WindowFlags f = this->windowFlags();
+    f |= Qt::MSWindowsFixedSizeDialogHint;
+    this->setWindowFlags(f);
+    this->setFixedSize(1200,700);
 
     QString strTitle = QString("简易标签打印 - V1.36 (Build: %1) - by QT%2 [正式版]").arg(__TIMESTAMP__, QT_VERSION_STR);
     setWindowTitle( strTitle );
@@ -48,9 +52,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     pTimerFlash->start(1000);
 
-    this->setFixedSize(1200,800);
     QTimer::singleShot(1000,this,[=]{
         ui->frameR->BindLabelView(ui->frameL);
+        this->setFixedSize(1200,700);
         // setMinimumSize(0, 0);
         // setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
@@ -83,7 +87,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     ui->frameL->Save();
-    if(QMessageBox::question(this, "提示", "确定要退出标签打印程序吗？") != QMessageBox::Yes)
+    if(QMessageBox::question(this, tr("提示"), tr("确定要退出标签打印程序吗？")) != QMessageBox::Yes)
     {
         event->ignore();
         return;

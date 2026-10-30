@@ -131,12 +131,13 @@ void FrameLabelView::SetPaperSize(qreal width, qreal height)
         nW = nH * ratio;
     }
 
+    //if(nH>700) nH = 700;
     //ui->graphicsView->setGeometry(0,0,nW-1,nH-1);
     //ui->graphicsView->setFixedSize(nW-1,nH-1);
     ui->graphicsView->resize(nW-1,nH-1);
     ui->graphicsView->setMaximumSize(nW-1,nH-1);
     m_pScene->setSceneRect(QRectF(0,0,nW-3,nH-3));
-    qDebug() << "SetPaperSize" << nW << nH;
+    qDebug() << "SetPaperSize" << nW << nH << ui->graphicsView->size();
 
     m_paperW = width;
     m_paperH = height;
@@ -261,7 +262,7 @@ void FrameLabelView::AddImage128(const QString&strQrText, const QString&strName)
     QString strFile = localAppData + QString("/barcode2026.bmp");
     QFile::remove(strFile);
     QImage image = ::genQrCodeImage(strQrText,strFile,BARCODE_CODE128,0);
-    QRect rcCut(0,0,image.size().width(),image.size().height()*0.3);
+    QRect rcCut(0,0,image.size().width(),image.size().height()*1.0);
     AddImage(image.copy(rcCut),strName);
 }
 
