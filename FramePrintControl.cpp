@@ -224,6 +224,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     ui->lineEditPaperH->setText(m_pSet->value("PaperH","40").toString());
     ui->spinBoxPrintCol->setValue(m_pSet->value("PrintCol",1).toInt());
     ui->spinBoxPrintRow->setValue(m_pSet->value("PrintRow",1).toInt());
+    ui->spinBoxPrintCount->setValue(m_pSet->value("PrintCnt",1).toInt());
 
     connect(ui->pushButtonCreate,&QPushButton::clicked,this,[=]{
         QString strSN = ui->textEditAll->toPlainText().trimmed();
@@ -235,13 +236,13 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         QString strCode1 = ui->lineEditCode1->text().trimmed();
         QString strCode2 = ui->lineEditCode2->text().trimmed();
         QString strCode3 = ui->lineEditCode3->text().trimmed();
-        QString strCode = strCode0 + strCode1 + strCode2 + strCode3;
+        QString strCodeA = strCode0 + strCode1 + strCode2 + strCode3;
 
         bool bGen128 = ui->checkBoxGen128->isChecked();
         if(bGen128)
         {
-            m_pLabelView->AddImage128(strCode,"128Code");
-            m_pLabelView->AddText(strCode,"128Text");
+            m_pLabelView->AddImage128(strCodeA,"128Code");
+            m_pLabelView->AddText(strCodeA,"128Text");
         }
         else
         {
@@ -256,21 +257,19 @@ FramePrintControl::FramePrintControl(QWidget *parent)
     });
 
     connect(ui->pushButtonBoxnum,&QPushButton::clicked,this,[=]{
-        QString strCode3 = ui->lineEditCode3->text().trimmed();
-        QString newValue = QString::asprintf("%04d",strCode3.toInt()+1);
-        ui->lineEditCode3->setText(newValue);
-        m_pSet->setValue("Code3",newValue);
-
         {
             QString strCode0 = ui->lineEditCode0->text().trimmed();
             QString strCode1 = ui->lineEditCode1->text().trimmed();
             QString strCode2 = ui->lineEditCode2->text().trimmed();
             QString strCode3 = ui->lineEditCode3->text().trimmed();
-            QString strCode = strCode0 + strCode1 + strCode2 + strCode3;
-            m_recList->setBoxnum(strCode);
+            QString strCodeA = strCode0 + strCode1 + strCode2 + strCode3;
+            m_recList->setBoxnum(strCodeA);
 
-            m_pLabelView->AddImage128(strCode,"128Code");
-            m_pLabelView->AddText(strCode,"128Text");
+            m_pLabelView->AddImage128(strCodeA,"128Code");
+            m_pLabelView->AddText(strCodeA,"128Text");
+            QString newValue = QString::asprintf("%04d",strCode3.toInt()+1);
+            ui->lineEditCode3->setText(newValue);
+            m_pSet->setValue("Code3",newValue);
         }
     });
 
@@ -369,6 +368,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             ui->lineEditQrInput->setFocus();
             if(nCount >= ui->lineEditLimit->text().trimmed().toInt())
             {
+                ui->pushButtonBoxnum->click();
                 if(ui->checkBoxAutoPrint->isChecked())
                 {
                     QTimer::singleShot(100,this,[=]{
@@ -858,15 +858,14 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         });
     }
 
-    //ui->pushButtonKeyboard->hide();
+    ui->pushButtonKeyboard->hide();
     connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
         if(!m_keyboard) m_keyboard = new DialogKeyboard(this);
         m_keyboard->show();
     });
 
-    ui->labelMode->installEventFilter(this);
-
     ui->labelMode->hide();
+    ui->labelMode->installEventFilter(this);
 }
 
 void FramePrintControl::ShowSN()
@@ -885,19 +884,10 @@ void FramePrintControl::Calculate()
 {
     int nCols = ui->spinBoxPrintCol->value();
     int nRows = ui->spinBoxPrintRow->value();
+    int nCount = ui->spinBoxPrintCount->value();
     m_pSet->setValue("PrintCol",nCols);
     m_pSet->setValue("PrintRow",nRows);
-
-    if(ui->stackedWidget->currentIndex() != 2)
-        return;
-    int nUnit = ui->spinBoxUnit->value() * nCols * nRows;
-    int nCount = ui->spinBoxCount->value();
-    if(nUnit <= 0) return;
-    int nPrintCount = nCount / nUnit;
-    if(nCount % nUnit) nPrintCount ++;
-
-    ui->spinBoxPrintCount->setValue(nPrintCount);
-
+    m_pSet->setValue("PrintCnt",nCount);
 }
 
 FramePrintControl::~FramePrintControl()
@@ -1006,20 +996,15 @@ void FramePrintControl::doPrint(QPrinter *printer)
     if(ui->checkBoxReject->isChecked())
         nLabelCount = rejectitems.count();
 
-    int index = 0;
     bool finish = false;
     int nPages = nLabelCount/(nCols * nRows);
     if(nLabelCount % (nCols * nRows))
         nPages++;
 
-    if(ui->stackedWidget->currentIndex() != 2)
-    {
-        nPages=1;
-        nRows=1;
-        nCols=1;
-        nLabelCount=ui->spinBoxPrintCount->value();
-    }
+    if(ui->stackedWidget->currentIndex() == 0 || ui->stackedWidget->currentIndex() == 1)
+        nPages = 1;
 
+    int index = 0;
     for(int page=0; page<nPages; page++)
     {
         if(finish) break;
@@ -1101,11 +1086,15 @@ void FramePrintControl::doPrint(QPrinter *printer)
 
                 QPixmap pixmap = m_pLabelView->toPixmap();
                 painter2.drawPixmap(col*nW+2,row*nH,nW,nH,pixmap);
-                index++;
-                if(index >= nLabelCount)
+
+                if(ui->stackedWidget->currentIndex() == 2)
                 {
-                    finish = true;
-                    break;
+                    index++;
+                    if(index >= nLabelCount)
+                    {
+                        finish = true;
+                        break;
+                    }
                 }
             }
         }
@@ -1118,67 +1107,50 @@ void FramePrintControl::doPrint(QPrinter *printer)
 
 void FramePrintControl::on_pushButtonPreview_clicked()
 {
-    //if(ui->stackedWidget->currentIndex() == 2)
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::NativeFormat);
+    if(ui->comboBoxPrinter->currentIndex() != 0)
     {
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::NativeFormat);
-        if(ui->comboBoxPrinter->currentIndex() != 0)
-        {
-            printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
-        }
-
-        QPrintPreviewDialog previewDialog(&printer, this);
-        connect(&previewDialog, &QPrintPreviewDialog::paintRequested, this, [=](QPrinter *printer) {
-            doPrint(printer);
-        });
-
-        previewDialog.exec();
+        printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
     }
 
-    // int nCols = ui->spinBoxPrintCol->value();
-    // int nRows = ui->spinBoxPrintRow->value();
-    // if(nCols < 1) nCols = 1;
-    // if(nRows < 1) nRows = 1;
-    // m_pLabelView->SetPrintMatrix(nRows,nCols);
-    // m_pLabelView->Preview();
+    QPrintPreviewDialog previewDialog(&printer, this);
+    connect(&previewDialog, &QPrintPreviewDialog::paintRequested, this, [=](QPrinter *printer) {
+        doPrint(printer);
+    });
+
+    previewDialog.exec();
 }
 
 void FramePrintControl::on_pushButtonPrint_clicked()
 {
-    //if(ui->stackedWidget->currentIndex() == 2)
+    QString strPdf = ui->lineEditPdfFile->text().trimmed();
+
+    QPrinter printer(QPrinter::HighResolution);
+    if(ui->comboBoxPrinter->currentIndex() != 0)
     {
-        QString strPdf = ui->lineEditPdfFile->text().trimmed();
-
-        QPrinter printer(QPrinter::HighResolution);
-        if(ui->comboBoxPrinter->currentIndex() != 0)
-        {
-            printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
-        }
-        if(ui->checkBoxWritePdf->isChecked())
-        {
-            m_pSet->setValue("lastPdf",strPdf);
-            printer.setOutputFormat(QPrinter::PdfFormat);
-            printer.setOutputFileName(strPdf);
-            printer.setPageSize(QPageSize(QPageSize::A4));
-        }
-        else
-        {
-            printer.setOutputFormat(QPrinter::NativeFormat);
-        }
-        doPrint(&printer);
-
-        if(ui->checkBoxWritePdf->isChecked())
-        {
-            QMessageBox::information(this,"温馨提示","标签已输入到PDF文件：\n" + strPdf);
-        }
+        printer.setPrinterName(ui->comboBoxPrinter->currentText().trimmed());
+    }
+    if(ui->checkBoxWritePdf->isChecked())
+    {
+        m_pSet->setValue("lastPdf",strPdf);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(strPdf);
+        printer.setPageSize(QPageSize(QPageSize::A4));
+    }
+    else
+    {
+        printer.setOutputFormat(QPrinter::NativeFormat);
     }
 
-    // int nCols = ui->spinBoxPrintCol->value();
-    // int nRows = ui->spinBoxPrintRow->value();
-    // m_pLabelView->SetPrintMatrix(nRows,nCols);
-    // int nCount = ui->spinBoxPrintCount->value();
-    // for(int i=0; i<nCount; i++)
-    //     m_pLabelView->Print();
+    int printCount = ui->spinBoxPrintCount->value();
+    for(int print=0; print < printCount; print++)
+        doPrint(&printer);
+
+    if(ui->checkBoxWritePdf->isChecked())
+    {
+        QMessageBox::information(this,"温馨提示","标签已输入到PDF文件：\n" + strPdf);
+    }
 
     if(ui->stackedWidget->currentIndex() == 1)
     {
