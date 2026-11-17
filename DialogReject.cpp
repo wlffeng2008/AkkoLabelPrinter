@@ -25,12 +25,10 @@ DialogReject::DialogReject(QWidget *parent)
     m_model->setHorizontalHeaderLabels(QString("厂商名称,品名/规格,物料编码,数量,退料日期,线别,是否打印").split(','));
     ui->tableView->setModel(m_model);
 
-    ui->tableView->setItemDelegateForColumn(3,new SideValueDelegate(this));
-    ui->tableView->setItemDelegateForColumn(4,new DateTimeDelegate(this));
-    ComboBoxDelegate *pSetDele = new ComboBoxDelegate(this);
+    new SideValueDelegate(ui->tableView,3,this);
+    new DateTimeDelegate(ui->tableView,4,this);
+    ComboBoxDelegate *pSetDele = new ComboBoxDelegate(ui->tableView,5,this);
     pSetDele->setItems({"A线","B线","其它"});
-    ui->tableView->setItemDelegateForColumn(5,pSetDele);
-
     QHeaderView *pHeader = ui->tableView->horizontalHeader();
     pHeader->setSectionResizeMode(QHeaderView::Stretch);
     pHeader->setSectionResizeMode(0,QHeaderView::Fixed);

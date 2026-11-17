@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
+    <width>1140</width>
     <height>800</height>
    </rect>
   </property>
@@ -83,17 +83,58 @@
          <number>5</number>
         </property>
         <property name="leftMargin">
-         <number>5</number>
+         <number>0</number>
         </property>
         <property name="topMargin">
-         <number>5</number>
+         <number>0</number>
         </property>
         <property name="rightMargin">
-         <number>5</number>
+         <number>0</number>
         </property>
         <property name="bottomMargin">
-         <number>5</number>
+         <number>0</number>
         </property>
+        <item>
+         <widget class="QTableView" name="tableView2">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLineEdit" name="lineEditJsonFile">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonSave">
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonLoad">
+            <property name="text">
+             <string>Load</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
@@ -444,47 +485,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLineEdit" name="lineEditJsonFile">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonSave">
-            <property name="text">
-             <string>Save</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonLoad">
-            <property name="text">
-             <string>Load</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QTableView" name="tableView2">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
-          </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::SingleSelection</enum>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>

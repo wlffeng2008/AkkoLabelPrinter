@@ -168,24 +168,12 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
         pHeader->setSectionResizeMode(0,QHeaderView::Fixed);
         pHeader->resizeSection(0,150);
 
-        pDele0 = new SideValueDelegate(this);
-        pDele1 = new SideValueDelegate(this);
-        pDele2 = new SideValueDelegate(this);
-        pDele3 = new SideValueDelegate(this);
-        pDele4 = new SideValueDelegate(this);
-        pDele5 = new SideValueDelegate(this);
-        pDele0->setTableView(ui->tableView) ;
-        pDele1->setTableView(ui->tableView) ;
-        pDele2->setTableView(ui->tableView) ;
-        pDele3->setTableView(ui->tableView) ;
-        pDele4->setTableView(ui->tableView) ;
-        pDele5->setTableView(ui->tableView) ;
-        ui->tableView->setItemDelegateForColumn(2,pDele0);
-        ui->tableView->setItemDelegateForColumn(3,pDele1);
-        ui->tableView->setItemDelegateForColumn(4,pDele2);
-        ui->tableView->setItemDelegateForColumn(5,pDele3);
-        ui->tableView->setItemDelegateForColumn(6,pDele4);
-        ui->tableView->setItemDelegateForColumn(7,pDele5);
+        pDele0 = new SideValueDelegate(ui->tableView,2,this);
+        pDele1 = new SideValueDelegate(ui->tableView,3,this);
+        pDele2 = new SideValueDelegate(ui->tableView,4,this);
+        pDele3 = new SideValueDelegate(ui->tableView,5,this);
+        pDele4 = new SideValueDelegate(ui->tableView,6,this);
+        pDele5 = new SideValueDelegate(ui->tableView,7,this);
 
         connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
             m_nSelected = index.row();
@@ -271,18 +259,18 @@ DialogKeyboard::DialogKeyboard(QWidget *parent)
                 ui->spinBoxW->setValue(itemKey->w());
                 ui->spinBoxH->setValue(itemKey->h());
                 ui->lineEditKeytext->setText(itemKey->text());
-                ui->lineEditKeytHid->setText(QString("%1").arg(itemKey->hid()));
+                ui->lineEditKeytHid->setText(QString("hid: %1").arg(itemKey->hid()));
             }
         }
     });
 
     connect(ui->pushButtonFont,&QPushButton::clicked,this,[=]{
-                QFontDialog fontDlg(this);
-                fontDlg.setCurrentFont(m_font);
-                if(fontDlg.exec() == QDialog::Accepted)
-                {
-                    ui->graphicsView->setItemFont(fontDlg.selectedFont());
-                }
+        QFontDialog fontDlg(this);
+        fontDlg.setCurrentFont(m_font);
+        if(fontDlg.exec() == QDialog::Accepted)
+        {
+            ui->graphicsView->setItemFont(fontDlg.selectedFont());
+        }
     });
 
     connect(ui->spinBoxX,&QSpinBox::textChanged,this,[=](const QString & text){

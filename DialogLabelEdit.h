@@ -23,8 +23,7 @@ class UppercaseHexSpinBox : public QSpinBox
 public:
     explicit UppercaseHexSpinBox(QWidget *parent = nullptr) : QSpinBox(parent)
     {
-        // 设置为16进制显示
-        //setDisplayIntegerBase(16);
+        // setDisplayIntegerBase(16);
     }
 
 protected:
@@ -41,8 +40,14 @@ class DateTimeDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    DateTimeDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent)
+    DateTimeDelegate(QTableView *pView,int column=0,QObject *parent = nullptr) : QStyledItemDelegate(parent)
     {
+        if(column >= 0x2000)
+            pView->setItemDelegate(this);
+        else if(column >= 0x1000)
+            pView->setItemDelegateForRow(column - 0x1000,this);
+        else
+            pView->setItemDelegateForColumn(column,this);
     }
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override {
         Q_UNUSED(option)
@@ -67,16 +72,25 @@ public:
     }
 };
 
-class ComboBoxDelegate : public QStyledItemDelegate {
+class ComboBoxDelegate : public QStyledItemDelegate
+{
     Q_OBJECT
 public:
-    ComboBoxDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent)
+    ComboBoxDelegate(QTableView *pView,int column=0,QObject *parent = nullptr) : QStyledItemDelegate(parent)
     {
+        if(column >= 0x2000)
+            pView->setItemDelegate(this);
+        else if(column >= 0x1000)
+            pView->setItemDelegateForRow(column - 0x1000,this);
+        else
+            pView->setItemDelegateForColumn(column,this);
     }
 
     void setItems(const QStringList&strItems){_strItems=strItems;}
-    QStringList _strItems{"PASS","NG","签章"};
+
 protected:
+
+    QStringList _strItems{"PASS","NG","签章"};
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override {
         Q_UNUSED(option)
         Q_UNUSED(index)
@@ -111,14 +125,23 @@ protected:
     }
 };
 
-class SideValueDelegate : public QStyledItemDelegate {
+class SideValueDelegate : public QStyledItemDelegate
+{
     Q_OBJECT
 public:
-    SideValueDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {
+    SideValueDelegate(QTableView *pView,int column=0,QObject *parent = nullptr) : QStyledItemDelegate(parent) {
+        if(column >= 0x2000)
+            pView->setItemDelegate(this);
+        else if(column >= 0x1000)
+            pView->setItemDelegateForRow(column - 0x1000,this);
+        else
+            pView->setItemDelegateForColumn(column,this);
+
         connect(this,&SideValueDelegate::onSaveOldText,this,[=](int nRow,const QString&text){
             setText(nRow,text);
         });
     }
+
     void setText(int nRow,const QString&text){
         _texts[nRow] = text;
         if(m_bFloatMode)

@@ -29,22 +29,12 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
     pHeader->setSectionResizeMode(8,QHeaderView::Fixed);
     pHeader->resizeSection(8,80);
 
-    pDele0 = new SideValueDelegate(this);
-    pDele1 = new SideValueDelegate(this);
-    pDele2 = new SideValueDelegate(this);
-    pDele3 = new SideValueDelegate(this);
-    pDele4 = new SideValueDelegate(this);
-    pDele0->setTableView(ui->tableView) ;
-    pDele1->setTableView(ui->tableView) ;
-    pDele2->setTableView(ui->tableView) ;
-    pDele3->setTableView(ui->tableView) ;
-    pDele4->setTableView(ui->tableView) ;
+    pDele0 = new SideValueDelegate(ui->tableView,2,this);
+    pDele1 = new SideValueDelegate(ui->tableView,3,this);
+    pDele2 = new SideValueDelegate(ui->tableView,4,this);
+    pDele3 = new SideValueDelegate(ui->tableView,5,this);
+    pDele4 = new SideValueDelegate(ui->tableView,6,this);
     pDele4->setFloatMode(true,0.1);
-    ui->tableView->setItemDelegateForColumn(2,pDele0);
-    ui->tableView->setItemDelegateForColumn(3,pDele1);
-    ui->tableView->setItemDelegateForColumn(4,pDele2);
-    ui->tableView->setItemDelegateForColumn(5,pDele3);
-    ui->tableView->setItemDelegateForColumn(6,pDele4);
 
     connect(ui->tableView,&QTableView::clicked,this,[=](const QModelIndex &index){
         m_nSelected = index.row();
@@ -67,8 +57,6 @@ DialogLabelEdit::DialogLabelEdit(QWidget *parent)
 
                 if (!strImg.isEmpty())
                 {
-                    qDebug() << "选中文件路径：" << strImg;
-
                     pixmapItem->setPixmap(QPixmap(strImg));
                     AppendRow(pLabel);
                 }
@@ -310,7 +298,6 @@ static QString getItemName(QGraphicsItem *item){
 
 void DialogLabelEdit::LoadLabels()
 {
-    qDebug() << "DialogLabelEdit::LoadLabels()";
     pDele0->resetText();
     pDele1->resetText();
     pDele2->resetText();

@@ -11,18 +11,18 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QString strStyle=R"(
 
-        QPushButton:focus{background-color: #6CCEEF;}
-        QPushButton:hover{background-color: #6CCEEF;}
+        QPushButton:focus{background-color: #6992D7;}
+        QPushButton:hover{background-color: #79A2E7;}
         QPushButton:disabled{background-color: gray;}
-        QPushButton {background-color: #3CBEEF; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 24px; padding-left:2px;padding-right:2px;}
+        QPushButton {background-color: #6992D7; border-radius: 6px; color:white; border:1px solid gray;max-width: 360px; min-width: 52px; min-height: 24px; padding-left:2px;padding-right:2px;}
         QLineEdit {border: 1px solid gray; border-radius: 4px; }
 
         QTableView{ border: 1px solid gray; background-color: rgb(226, 240, 255) ; gridline-color: gray;}
         QTableView::Item{padding-left:2px; background-color: rgb(226, 240, 255) ; border-top: 0px solid gray; border-bottom: 1px solid transparent;border-right: 0px solid gray;}
         QTableView::Item::selected{ background-color: #a0bb9e ; color:white; }
-        QTableView QTableCornerButton::section { background-color: skyblue ; min-width: 32px; border-top: 0px solid gray; border-bottom: 1px solid gray; border-left: 0px solid gray; border-right: 1px solid gray; }
+        QTableView QTableCornerButton::section { background-color: #6992D7 ; min-width: 32px; border-top: 0px solid gray; border-bottom: 1px solid gray; border-left: 0px solid gray; border-right: 1px solid gray; }
 
-        QHeaderView::section{ background-color:skyblue;}
+        QHeaderView::section{ background-color:#6992D7;}
         QHeaderView::section:horizontal{ padding-left: 2px; border-top: 0px solid gray; border-bottom: 1px solid gray; border-right: 1px solid gray; font-weight: bold;}
         QHeaderView::section:vertical{ padding-left: 2px; text-align: right; min-width: 36px; border-top: 0px solid gray; border-bottom: 1px solid gray; border-left: 0px solid gray; border-right: 1px solid gray;}
 

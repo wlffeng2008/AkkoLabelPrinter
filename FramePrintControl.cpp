@@ -663,7 +663,7 @@ FramePrintControl::FramePrintControl(QWidget *parent)
             m_pLabelView->AddImageQR(strText303,"QrCode303");
             if(strText302.toLocal8Bit().size()>32)
             {
-                QImage textImg(480,104,QImage::Format_ARGB32);
+                QImage textImg(520,104,QImage::Format_ARGB32);
                 QPainter painter(&textImg);
                 painter.fillRect(textImg.rect(),Qt::white);
 
@@ -858,13 +858,13 @@ FramePrintControl::FramePrintControl(QWidget *parent)
         });
     }
 
-    ui->pushButtonKeyboard->hide();
+    //ui->pushButtonKeyboard->hide();
     connect(ui->pushButtonKeyboard,&QPushButton::clicked,this,[=]{
         if(!m_keyboard) m_keyboard = new DialogKeyboard(this);
         m_keyboard->show();
     });
 
-    ui->labelMode->hide();
+    //ui->labelMode->hide();
     ui->labelMode->installEventFilter(this);
 }
 
@@ -938,7 +938,6 @@ void FramePrintControl::BindLabelView(FrameLabelView *pView)
 {
     m_pLabelView = pView;
     m_labelEdit->BindLabelView(pView);
-    //ui->pushButtonSetPaper->click();
     QTimer::singleShot(100,this,[=]{
         int nFunc = m_pSet->value("function",2).toInt();
         ui->stackedWidget->setCurrentIndex(nFunc);
@@ -1047,7 +1046,7 @@ void FramePrintControl::doPrint(QPrinter *printer)
                         if(strText301.toLocal8Bit().size()>32)
                         {
                             m_pLabelView->AddText(strName301.trimmed() , "value301");
-                            QImage textImg(480,120,QImage::Format_ARGB32);
+                            QImage textImg(520,120,QImage::Format_ARGB32);
                             QPainter painter(&textImg);
                             painter.fillRect(textImg.rect(),Qt::white);
 

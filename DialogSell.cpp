@@ -44,11 +44,12 @@ DialogSell::DialogSell(QWidget *parent)
     pHeader->setSectionResizeMode(9,QHeaderView::Fixed);
     pHeader->resizeSection(9,120);
 
-    ui->tableView->setItemDelegateForColumn(5,new SideValueDelegate(this));
-    ui->tableView->setItemDelegateForColumn(4,new SideValueDelegate(this));
-    ui->tableView->setItemDelegateForColumn(6,new DateTimeDelegate(this));
-    ui->tableView->setItemDelegateForColumn(7,new DateTimeDelegate(this));
-    ui->tableView->setItemDelegateForColumn(8,new ComboBoxDelegate(this));
+    new SideValueDelegate(ui->tableView,4,this);
+    new SideValueDelegate(ui->tableView,5,this);
+
+    new DateTimeDelegate(ui->tableView,6,this);
+    new DateTimeDelegate(ui->tableView,7,this);
+    new ComboBoxDelegate(ui->tableView,8,this);
 
     connect(ui->pushButtonAdd,&QPushButton::clicked,this,[=]{
         QString strDate = QDateTime::currentDateTime().toString("yyyy-MM-dd");
